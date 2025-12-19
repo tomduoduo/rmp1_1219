@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DataSelector">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="left"
+        android:background="@drawable/gradient_black">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/colorGreenDark"
+            android:text="Select Data to Playback"
+            android:paddingTop="10dp"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="12sp">
+        </TextView>
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:background="@color/colorGreenDark"-->
+<!--            android:gravity="left"-->
+<!--            android:alpha="1">-->
+
+<!--            <TextView-->
+<!--                android:layout_width="60dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="@color/colorWhite"-->
+<!--                android:text="序号"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/colorGrayDark"-->
+<!--                android:textSize="10sp"-->
+<!--                android:alpha="0.8">-->
+<!--            </TextView>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="60dp"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="@color/colorWhite"-->
+<!--                android:text="Dots"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/colorGrayDark"-->
+<!--                android:textSize="10sp"-->
+<!--                android:alpha="0.8">-->
+<!--            </TextView>-->
+
+<!--            <TextView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:background="@color/colorWhite"-->
+<!--                android:text="数据录制时间"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="@color/colorGrayDark"-->
+<!--                android:textSize="10sp"-->
+<!--                android:alpha="0.8">-->
+<!--            </TextView>-->
+
+<!--        </LinearLayout>-->
+
+<!--        <ListView-->
+<!--            android:id="@+id/lv_log_list"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:alpha="1">-->
+
+<!--        </ListView>-->
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/lv_log_list_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

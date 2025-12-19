@@ -1,0 +1,276 @@
+<resources>
+    <string name="app_name">
+        RowMasterPro
+    </string>
+
+    <string name="version">
+        20240111
+    </string>
+
+    <string-array name="ItemType">
+        <item>1x</item>
+        <item>2x</item>
+        <item>2+</item>
+        <item>2-</item>
+        <item>4x</item>
+        <item>4+</item>
+        <item>4-</item>
+        <item>8+</item>
+    </string-array>
+
+    <string-array name="ItemWeight">
+        <item>H</item>
+        <item>F</item>
+        <item>HPL</item>
+        <item>FPL</item>
+    </string-array>
+
+    <string-array name="ItemTrain">
+        <item>常规训练</item>
+        <item>专项技术</item>
+        <item>耐力训练</item>
+        <item>模拟比赛</item>
+    </string-array>
+
+    <string-array name="DotsName">
+        <item>-</item>
+    </string-array>
+
+<!--    <string-array name="AthleteName_GD_Female">-->
+<!--        <item>-</item>-->
+<!--        <item>宋琴</item>-->
+<!--        <item>郭雪颖</item>-->
+<!--        <item>梁国汝</item>-->
+<!--        <item>魏倩</item>-->
+<!--        <item>景祥慧</item>-->
+<!--        <item>王森</item>-->
+<!--        <item>孙韵轩</item>-->
+<!--        <item>任佳琪</item>-->
+<!--        <item>余育男</item>-->
+<!--        <item>王桃桃</item>-->
+<!--        <item>陈璐</item>-->
+<!--        <item>李玟静</item>-->
+<!--        <item>肖惠晨</item>-->
+<!--        <item>黄梦怡</item>-->
+<!--        <item>陆飞燕</item>-->
+<!--        <item>聂毅德</item>-->
+<!--        <item>王凡予</item>-->
+<!--        <item>柳思</item>-->
+<!--        <item>蔡晓彤</item>-->
+<!--        <item>魏思懿</item>-->
+<!--        <item>宋艳晨</item>-->
+<!--        <item>1号选手</item>-->
+<!--        <item>2号选手</item>-->
+<!--        <item>3号选手</item>-->
+<!--        <item>4号选手</item>-->
+<!--        <item>5号选手</item>-->
+<!--        <item>6号选手</item>-->
+<!--        <item>7号选手</item>-->
+<!--        <item>8号选手</item>-->
+<!--        <item>9号选手</item>-->
+<!--        <item>10号选手</item>-->
+<!--    </string-array>-->
+
+<!--    <string-array name="polarID_GD_Female">-->
+<!--        <item>-</item>-->
+<!--        <item>BE610028</item>-->
+<!--        <item>BE610820</item>-->
+<!--        <item>BE612422</item>-->
+<!--        <item>BE622625</item>-->
+<!--        <item>BE624F24</item>-->
+<!--        <item>BE61A026</item>-->
+<!--        <item>BE615B22</item>-->
+<!--        <item>BE61062E</item>-->
+<!--        <item>BE613A2B</item>-->
+<!--        <item>BE61112C</item>-->
+<!--        <item>BE60AB20</item>-->
+<!--        <item>BE61AD23</item>-->
+<!--        <item>BE61B52E</item>-->
+<!--        <item>BE61F82D</item>-->
+<!--        <item>BE61D726</item>-->
+<!--        <item>BE61FC21</item>-->
+<!--        <item>BE61ED2F</item>-->
+<!--        <item>BE62102C</item>-->
+<!--        <item>BE62112D</item>-->
+<!--        <item>BE624C21</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--    </string-array>-->
+
+<!--    <string-array name="polarID_GD_Male">-->
+<!--        <item>-</item>-->
+<!--        <item>B95F9D26</item>-->
+<!--        <item>B95FBE2D</item>-->
+<!--        <item>B95C3B2F</item>-->
+<!--        <item>B95BB12C</item>-->
+<!--        <item>AE592B2B</item>-->
+<!--        <item>B95FAC28</item>-->
+<!--        <item>B9610326</item>-->
+<!--        <item>B95FCD2F</item>-->
+<!--        <item>B95BB42F</item>-->
+<!--        <item>B95B8B2D</item>-->
+<!--        <item>B95FA723</item>-->
+<!--        <item>B95F852B</item>-->
+<!--        <item>AE598D2F</item>-->
+<!--        <item>B9610E21</item>-->
+<!--        <item>AE59882A</item>-->
+<!--        <item>AE58472C</item>-->
+<!--        <item>B95FAF2B</item>-->
+<!--        <item>AE590C26</item>-->
+<!--        <item>AE577C29</item>-->
+<!--        <item>B960F423</item>-->
+<!--        <item>AE579023</item>-->
+<!--        <item>AE578A2A</item>-->
+<!--        <item>B95F8228</item>-->
+<!--        <item>B95FA12D</item>-->
+<!--        <item>AE568C2B</item>-->
+<!--        <item>B95F9922</item>-->
+<!--        <item>B9605B2C</item>-->
+<!--        <item>B95F5D2A</item>-->
+<!--        <item>B95F6222</item>-->
+<!--        <item>AE568928</item>-->
+<!--        <item>5432D32E</item>-->
+<!--        <item>9EEC4D2E</item>-->
+<!--        <item>860F9A28</item>-->
+<!--        <item>80BBC826</item>-->
+<!--        <item>42380F24</item>-->
+<!--        <item>4237F526</item>-->
+<!--        <item>86A0E925</item>-->
+<!--        <item>8F4CC12A</item>-->
+<!--        <item>88D3A422</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--        <item>-</item>-->
+<!--    </string-array>-->
+
+
+<!--    <string-array name="AthleteName_GD_Male">-->
+<!--        <item>-</item>-->
+<!--        <item>蔡敬赢</item>-->
+<!--        <item>蔡垚</item>-->
+<!--        <item>范俊杰</item>-->
+<!--        <item>韩叶文</item>-->
+<!--        <item>江旭克</item>-->
+<!--        <item>黎庆</item>-->
+<!--        <item>李家豪</item>-->
+<!--        <item>李世龙</item>-->
+<!--        <item>李书瑶</item>-->
+<!--        <item>刘百顺</item>-->
+<!--        <item>刘万铖</item>-->
+<!--        <item>刘祥</item>-->
+<!--        <item>米浩帅</item>-->
+<!--        <item>母晓龙</item>-->
+<!--        <item>倪旭林</item>-->
+<!--        <item>聂毅德</item>-->
+<!--        <item>宋浩丞</item>-->
+<!--        <item>宋刘洋</item>-->
+<!--        <item>孙吉财</item>-->
+<!--        <item>孙佳辉</item>-->
+<!--        <item>王飞</item>-->
+<!--        <item>王林青</item>-->
+<!--        <item>王梓龙</item>-->
+<!--        <item>旺加</item>-->
+<!--        <item>于高贤</item>-->
+<!--        <item>张宸宇</item>-->
+<!--        <item>张佳乐</item>-->
+<!--        <item>周睿</item>-->
+<!--        <item>周学武</item>-->
+<!--        <item>朱国鑫</item>-->
+<!--        <item>崔兵辉</item>-->
+<!--        <item>吕毅</item>-->
+<!--        <item>冀高星</item>-->
+<!--        <item>苏明华</item>-->
+<!--        <item>张露通</item>-->
+<!--        <item>孙露</item>-->
+<!--        <item>窦小伟</item>-->
+<!--        <item>金学成</item>-->
+<!--        <item>葛迦立</item>-->
+<!--        <item>1号选手</item>-->
+<!--        <item>2号选手</item>-->
+<!--        <item>3号选手</item>-->
+<!--        <item>4号选手</item>-->
+<!--        <item>5号选手</item>-->
+<!--        <item>6号选手</item>-->
+<!--        <item>7号选手</item>-->
+<!--        <item>8号选手</item>-->
+<!--        <item>9号选手</item>-->
+<!--        <item>10号选手</item>-->
+<!--    </string-array>-->
+
+    <string-array name="guest_list">
+        <item>-</item>
+        <item>1号选手</item>
+        <item>2号选手</item>
+        <item>3号选手</item>
+        <item>4号选手</item>
+        <item>5号选手</item>
+        <item>6号选手</item>
+        <item>7号选手</item>
+        <item>8号选手</item>
+        <item>9号选手</item>
+        <item>10号选手</item>
+        <item>11号选手</item>
+        <item>12号选手</item>
+        <item>13号选手</item>
+        <item>14号选手</item>
+        <item>15号选手</item>
+        <item>16号选手</item>
+    </string-array>
+
+    <string-array name="guest_polar_list">
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+        <item>-</item>
+    </string-array>
+
+
+
+    <string-array name="BeltsName">
+        <item>-</item>
+    </string-array>
+
+    <string-array name="polarID_empty">
+        <item>-</item>
+    </string-array>
+
+    <string name="title_activity_data_playback">DataPlayback</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+
+    <string name="tip">We recommend attaching adhesive Velcro on both a dedicated phone case and the T-bracket (or the Plain Mounting Dock) to secure your phone.</string>
+    <string name="tip2">We tested the reliability of this mounting method and it should be able to keep your phone well steady in place under even intensive rowing motions.</string>
+
+
+</resources>

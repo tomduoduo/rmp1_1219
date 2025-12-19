@@ -1,0 +1,1708 @@
+package com.motionrivalry.rowmasterpro;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.alibaba.fastjson.JSON;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.kyleduo.switchbutton.SwitchButton;
+import com.opencsv.CSVWriter;
+import com.tarek360.instacapture.Instacapture;
+import com.tarek360.instacapture.listener.SimpleScreenCapturingListener;
+import com.xw.repo.BubbleSeekBar;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import cn.iwgang.countdownview.CountdownView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class Speedometer extends AppCompatActivity {
+
+    private static final String TAG = "SensorTest";
+    private static final int REQUEST_PERMISSION_LOCATION = 2048;
+    private static final int REQUEST_ENABLE_BLUETOOTH = 1024;
+
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private Sensor mAccelerometerLinear;
+    private Sensor mMagnetic;
+    private Sensor mAllData;
+    private TestSensorListener mSensorListener;
+
+    private float[] accelerometerValues = new float[3];
+    private float[] magneticFieldValues = new float[3];
+    private float[] accelerometerLinearValues = new float[3];
+
+    private ImageView boatRoll;
+    private ImageView boatYaw;
+
+    private Button mSelectDistance;
+    private Button mStart;
+    private int mStartStatus = 0;
+
+    private String[] mItemsType;
+    private String[] mWeightType;
+    private String[] mTrainType;
+
+    private ArrayList<String> distanceSections = new ArrayList<String>();
+
+    private PopupWindow windowDistance = null;
+    private PopupWindow windowCountdown = null;
+    private PopupWindow windowResult = null;
+    private PopupWindow windowUploadResult = null;
+    private BubbleSeekBar mDistanceSlider;
+    private BubbleSeekBar mSRThreshSlider;
+    private BubbleSeekBar mSRGapSlider;
+    private BubbleSeekBar mSRCacheLengthSlider;
+
+    private View popupWindowView;
+    private View popupCountdownView;
+    private View popupResultView;
+    private View popupUploadResultView;
+
+    private String selectedType = "1x";
+    private String selectedWeight = "H";
+    private String selectedTrain = "常规训练";
+    private int selectedDistance = 2000;
+
+    private TextView boatTravelTarget;
+
+    private Chronometer totalElapse;
+    private TextView halfKmElapse;
+
+    private SwitchButton mCountDownSwitch;
+    private int mCountDownSwitchStatus;
+    private int mStartTerminate = 0;
+
+    private Spinner spinnerTypeSelect;
+    private Spinner spinnerWeightSelect;
+    private Spinner spinnerTrainSelect;
+
+    private float speed = 0;
+    private Location mLocation;
+    private LocationManager locationManager;
+    private TextView mSpeed;
+    private TextView mDistance;
+    private TextView mSpeedAvg;
+    private TextView mSpeedMax;
+    private TextView mStrokeRate;
+    private TextView mStrokeCount;
+    private TextView mStrokeRateAvg;
+    private ImageView mBoatYaw;
+    private String strokeRateAvgTx = "0";
+    private String speedTx = "0";
+
+    private TextView mDateResult;
+    private TextView mDistanceResult;
+    private TextView mAvgSPMResult;
+    private TextView mStrokeCountResult;
+    private TextView mSectionTimeResult;
+    private TextView mAvgBoatSpeed;
+    private TextView mMaxBoatSpeed;
+    private TextView mUserName;
+    private Button mSaveExit;
+    private Button mNoSaveExit;
+
+    private double latitude_0;
+    private double longitude_0;
+    private double traveledDistance = 0;
+    private double speedLowLimit = 0.5;
+    private double distanceTempHighLimit = 50;
+    private double distanceTempLowLimit = 1;
+    private double speedLastUpdate;
+    private double speedNewUpdate;
+    private double speedIdle;
+    private int speedReset;
+    private double distanceTemp = 0;
+    private double speedAvg = 0;
+    private double speedMax = 0;
+    private int initiateLock = 5;
+    private int updateCount = 0;
+
+    private double minStrokeGap = 1400;
+    private double minBoatAccl = 1.3;
+    private double strokeCount = 0;
+    private double strokeRateAvg = 0;
+    private double strokeIdleMax = 5000;
+
+    private int acclCacheLength = 30;
+    private double[] acclCacheSamples = new double[acclCacheLength];
+    private int acclCachePointer = 0;
+    private int acclCacheSize = 0;
+    private double acclCacheSum = 0.0;
+
+    double strokeNow;
+    double strokeCache;
+
+    private String mDistanceResultTx = "0";
+    private String mAvgSPMResultTx = "0";
+    private String mStrokeCountResultTx = "0";
+    private String mSectionTimeResultTx = "0";
+    private String mAvgBoatSpeedTx = "0";
+    private String mMaxBoatSpeedTx = "0";
+
+    private String addressRowData = null;
+    private String addressRowDataLive = null;
+    private FileWriter customData;
+    private FileWriter customDataLive;
+    private CSVWriter writerCustomData;
+    private CSVWriter writerCustomDataLive;
+    private int logCreated = 0;
+    private String uploadPATH = "";
+    private String updatePATH = "";
+    private String strBegTime = "";
+    private String strokeRateTx = "0";
+    private double logBeginTime = 0;
+
+    private int SRCacheLength = 2;
+    private double[] SRCacheSamples = new double[SRCacheLength];
+    private int SRCachePointer = 0;
+    private int SRCacheSize = 0;
+    private double SRCacheSum = 0.0;
+
+    private int uploadStatus = 0;
+    private int timeCorrectSec = 0;
+    private int timeCorrectMin = 0;
+
+    private HttpURLConnection httpURLConnectionUpdate;
+    private Timer timer;
+    private TimerTask task;
+    private String sectionTimeTX = "0.0";
+    private String userName;
+    private String mDistanceTx;
+    private String mDisplayTimeTx;
+
+    private AMapLocationClient mLocationClientGD = null;
+    private AMapLocationListener mLocationListenerGD = null;
+    private AMapLocationClientOption mLocationOptionGD = null;
+
+    private double latitude_0_GD;
+    private double longitude_0_GD;
+
+    private int elapsedHour = 0;
+    private int hourMarker = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.activity_speedometer);
+
+        int REQUEST_EXTERNAL_STORAGE = 1;
+        String[] PERMISSIONS_STORAGE = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        };
+        int permission = ActivityCompat.checkSelfPermission(Speedometer.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    Speedometer.this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE);
+        }
+
+        Intent intent = getIntent();
+        userName = intent.getStringExtra("userName");
+        System.out.println(userName);
+
+        boatRoll = findViewById(R.id.img_roll_boat);
+        boatYaw = findViewById(R.id.img_yaw_boat);
+
+        mSpeedAvg = findViewById(R.id.boat_speed_average);
+        mSpeedMax = findViewById(R.id.boat_speed_max);
+        mStrokeRate = findViewById(R.id.stroke_rate);
+        mStrokeCount = findViewById(R.id.stroke_count);
+        mStrokeRateAvg = findViewById(R.id.stroke_rate_average);
+        mBoatYaw = findViewById(R.id.img_yaw_boat);
+
+        mSpeed = findViewById(R.id.gps_speed);
+        mDistance = findViewById(R.id.boat_travel_distance_actual);
+        String serviceName = this.LOCATION_SERVICE;
+        locationManager = (LocationManager) getSystemService(serviceName);
+
+        mSelectDistance = findViewById(R.id.distance_select_speedometer);
+        mStart = findViewById(R.id.start_measure_speedometer);
+
+        mCountDownSwitch = findViewById(R.id.countdown_switch);
+        mCountDownSwitch.setCheckedNoEvent(false);
+        mCountDownSwitchStatus = 0;
+
+        mCountDownSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    mCountDownSwitchStatus = 1;
+                } else {
+                    mCountDownSwitchStatus = 0;
+                }
+            }
+        });
+
+        mItemsType = getResources().getStringArray(R.array.ItemType);
+        mWeightType = getResources().getStringArray(R.array.ItemWeight);
+        mTrainType = getResources().getStringArray(R.array.ItemTrain);
+
+        boatTravelTarget = findViewById(R.id.boat_travel_distance);
+
+        totalElapse = (Chronometer) this.findViewById(R.id.boat_travel_total_time);
+        // totalElapse.setFormat("0"+String.valueOf(hour)+":%s");
+
+        halfKmElapse = findViewById(R.id.boat_travel_split_time);
+
+        spinnerTypeSelect = findViewById(R.id.spinner_type_select);
+        spinnerWeightSelect = findViewById(R.id.spinner_weight_select);
+        spinnerTrainSelect = findViewById(R.id.spinner_train_select);
+
+        ArrayAdapter<String> adapterType = new ArrayAdapter(this, R.layout.my_spinner, mItemsType);
+        ArrayAdapter<String> adapterWeight = new ArrayAdapter(this, R.layout.my_spinner, mWeightType);
+        ArrayAdapter<String> adapterTrain = new ArrayAdapter(this, R.layout.my_spinner, mTrainType);
+
+        adapterType.setDropDownViewResource(R.layout.my_drop_down);
+        adapterWeight.setDropDownViewResource(R.layout.my_drop_down);
+        adapterTrain.setDropDownViewResource(R.layout.my_drop_down);
+
+        spinnerTypeSelect.setAdapter(adapterType);
+        spinnerWeightSelect.setAdapter(adapterWeight);
+        spinnerTrainSelect.setAdapter(adapterTrain);
+
+        spinnerTypeSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                // TODO Auto-generated method stub
+                selectedType = arg0.getItemAtPosition(arg2).toString();
+                System.out.println(selectedType);
+
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        spinnerWeightSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                // TODO Auto-generated method stub
+                selectedWeight = arg0.getItemAtPosition(arg2).toString();
+                System.out.println(selectedWeight);
+
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        spinnerTrainSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                    int arg2, long arg3) {
+                // TODO Auto-generated method stub
+                selectedTrain = arg0.getItemAtPosition(arg2).toString();
+                System.out.println(selectedTrain);
+
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        popupWindowView = inflater.inflate(R.layout.popup_distance, null, false);
+        popupCountdownView = inflater.inflate(R.layout.popup_countdown, null, false);
+        popupResultView = inflater.inflate(R.layout.popup_result_old, null, false);
+        popupUploadResultView = inflater.inflate(R.layout.popup_upload, null, false);
+
+        mDistanceSlider = popupWindowView.findViewById(R.id.distance_slider);
+        mSRCacheLengthSlider = popupWindowView.findViewById(R.id.SR_sensitivity_slider);
+        mSRGapSlider = popupWindowView.findViewById(R.id.SR_minGap_slider);
+        mSRThreshSlider = popupWindowView.findViewById(R.id.SR_minSpeed_slider);
+
+        mDistanceSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+                selectedDistance = progress;
+                String selectedDistanceTx = selectedDistance + "M";
+                mSelectDistance.setText(selectedDistanceTx);
+                System.out.println(selectedDistance);
+                boatTravelTarget.setText(selectedDistanceTx);
+            }
+
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+            }
+
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+            }
+        });
+
+        mSRCacheLengthSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+                SRCacheLength = progress;
+            }
+
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+            }
+
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+            }
+        });
+
+        mSRGapSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+                minStrokeGap = progress * 1000;
+            }
+
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+            }
+
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+            }
+        });
+
+        mSRThreshSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+                minBoatAccl = progress;
+            }
+
+            @Override
+            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
+            }
+
+            @Override
+            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
+                    boolean fromUser) {
+            }
+        });
+
+        mSensorListener = new TestSensorListener();
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mAccelerometerLinear = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
+        mLocationClientGD = new AMapLocationClient(getApplicationContext());
+        mLocationListenerGD = new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation aMapLocation) {
+
+                latitude_0_GD = aMapLocation.getLatitude();
+                longitude_0_GD = aMapLocation.getLongitude();
+
+            }
+
+        };
+
+        mLocationClientGD.setLocationListener(mLocationListenerGD);
+        mLocationOptionGD = new AMapLocationClientOption();
+
+        AMapLocationClientOption option = new AMapLocationClientOption();
+        option.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.Sport);
+        mLocationOptionGD.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+        mLocationOptionGD.setInterval(2000);
+        mLocationClientGD.startLocation();
+
+        mSelectDistance.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                showWindowDistance();
+                backgroundAlpha(0.2f);
+
+            }
+
+        });
+
+        final TextView mGo = popupCountdownView.findViewById(R.id.go_mark);
+
+        mStart.setOnClickListener(new View.OnClickListener() {
+
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onClick(View v) {
+
+                if (mStartStatus == 1) {
+
+                    shutdownAlert();
+
+                } else {
+
+                    strokeCache = System.currentTimeMillis();
+                    strokeCount = 0;
+
+                    acclCacheSamples = new double[acclCacheLength];
+                    acclCachePointer = 0;
+                    acclCacheSize = 0;
+                    acclCacheSum = 0.0;
+
+                    strokeRateTx = "0";
+
+                    SRCacheSamples = new double[SRCacheLength];
+                    SRCachePointer = 0;
+                    SRCacheSize = 0;
+                    SRCacheSum = 0.0;
+
+                    // mBoatYaw.setRotation(0);
+                    // timeCorrectSec = 0;
+                    // timeCorrectMin = 0;
+
+                    mStartStatus = 1;
+                    mGo.setAlpha(0);
+                    mGo.animate().setStartDelay(5050).alpha(1).setDuration(1).start();
+                    mStart.setBackgroundResource(R.drawable.button_6);
+                    mStart.setText("结束");
+                    mStart.setTextColor(Color.WHITE);
+
+                    spinnerTypeSelect.setEnabled(false);
+                    spinnerWeightSelect.setEnabled(false);
+                    spinnerTrainSelect.setEnabled(false);
+                    mSelectDistance.setEnabled(false);
+
+                    locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 500, 3, locationListener);
+
+                    if (mCountDownSwitchStatus == 0) {
+
+                        showCountdown();
+                        try {
+                            startTimer(5500);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        backgroundAlpha(0.3f);
+
+                    } else {
+
+                        try {
+                            startTimer(10);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+            }
+
+        });
+
+        if ((ActivityCompat.checkSelfPermission(Speedometer.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                && (ActivityCompat.checkSelfPermission(Speedometer.this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+
+            return;
+        }
+
+        // locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 200, 1,
+        // locationListener);
+
+    }
+
+    private final LocationListener locationListener = new LocationListener() {
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            switch (status) {
+                // GPS状态为可见时
+                case LocationProvider.AVAILABLE:
+                    Log.i(TAG, "当前GPS状态为可见状态");
+                    break;
+                // GPS状态为服务区外时
+                case LocationProvider.OUT_OF_SERVICE:
+                    Log.i(TAG, "当前GPS状态为服务区外状态");
+                    break;
+                // GPS状态为暂停服务时
+                case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                    Log.i(TAG, "当前GPS状态为暂停服务状态");
+                    break;
+            }
+        }
+
+        public void onProviderEnabled(String provider) {
+
+            if (ActivityCompat.checkSelfPermission(Speedometer.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(Speedometer.this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                // ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                // public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                // int[] grantResults)
+                // to handle the case where the user grants the permission. See the
+                // documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mLocation = locationManager.getLastKnownLocation(provider);
+            latitude_0 = mLocation.getLatitude();
+            longitude_0 = mLocation.getLongitude();
+            speedLastUpdate = System.currentTimeMillis();
+
+        }
+
+        public void onProviderDisabled(String provider) {
+            mLocation = null;
+        }
+
+        public void onLocationChanged(Location location) {
+            updateToNewLocation(location);
+        }
+    };
+
+    public double getDistance(double lat1, double lon1,
+            double lat2, double lon2) {
+        float[] results = new float[1];
+        try {
+            Location.distanceBetween(lat1, lon1, lat2, lon2, results);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return results[0];
+    }
+
+    private void updateToNewLocation(Location location) {
+
+        DecimalFormat decimalFormat = new DecimalFormat("0.0");
+        DecimalFormat decimalFormat_1 = new DecimalFormat("0");
+        SimpleDateFormat formatterSplitTime = new SimpleDateFormat("HH:mm:ss");
+
+        speedNewUpdate = System.currentTimeMillis();
+
+        if (location != null) {
+            // double latitude = location.getLatitude();
+            // double longitude = location.getLongitude();
+
+            double latitude = latitude_0_GD;
+            double longitude = longitude_0_GD;
+
+            distanceTemp = 0;
+            speed = 0;
+            updateCount = updateCount + 1;
+
+            int tempMin = 0;
+            int tempSec = 0;
+            int tempHour = 0;
+
+            if (totalElapse.length() <= 5) {
+
+                tempHour = 0;
+                tempMin = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                tempSec = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+
+            } else {
+                tempHour = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                tempMin = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                tempSec = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
+
+            }
+
+            int tempTotalSec = tempHour * 3600 + tempMin * 60 + tempSec;
+
+            mSectionTimeResultTx = elapsedHour + String.valueOf(tempMin + timeCorrectMin) + ":" + tempSec;
+            // System.out.println("total sec: " + tempTotalSec);
+            // System.out.println("update count: " + updateCount);
+
+            if (location.hasSpeed() && location.getSpeed() > speedLowLimit && updateCount > initiateLock) {
+                try {
+                    distanceTemp = getDistance(latitude_0, longitude_0, latitude, longitude);
+                    // boatTravelTarget.setText(String.valueOf(distanceTemp));
+                    if (distanceTemp > distanceTempHighLimit || distanceTemp < distanceTempLowLimit) {
+                        distanceTemp = 0;
+                    }
+
+                    traveledDistance = traveledDistance + distanceTemp;
+                    String distanceTx = decimalFormat_1.format(traveledDistance);
+                    mDistance.setText(distanceTx);
+                    latitude_0 = latitude;
+                    longitude_0 = longitude;
+                    speedLastUpdate = speedNewUpdate;
+
+                } catch (Exception e) {
+                    latitude_0 = latitude;
+                    longitude_0 = longitude;
+                    speed = 0;
+                    distanceTemp = 0;
+
+                }
+
+                if (distanceTemp != 0 && location.getSpeed() > speedLowLimit) {
+                    speed = location.getSpeed();
+
+                    int splitTime = (int) (500 / speed);
+                    int splitTimeSec = splitTime % 60;
+                    splitTime = splitTime - splitTimeSec;
+                    int splitTimeMin = splitTime / 60;
+
+                    String splitTimeTx = splitTimeMin + ":" + splitTimeSec;
+                    halfKmElapse.setText(splitTimeTx);
+
+                    speedAvg = traveledDistance / tempTotalSec;
+                    System.out.println("avg speed:" + speedAvg);
+
+                    String speedAvgTx = decimalFormat.format(speedAvg);
+                    mSpeedAvg.setText(speedAvgTx);
+
+                    if (speed > speedMax) {
+
+                        speedMax = speed;
+                        String speedMaxTx = decimalFormat.format(speedMax);
+                        mSpeedMax.setText(speedMaxTx);
+
+                    }
+                    speedTx = decimalFormat.format(speed);
+                    mSpeed.setText(speedTx);
+                    speed = 0;
+                }
+
+            } else {
+                mSpeed.setText("0.0");
+                latitude_0 = latitude;
+                longitude_0 = longitude;
+
+            }
+        }
+
+    }
+
+    private void shutdownAlert() {
+
+        new AlertDialog.Builder(Speedometer.this).setTitle("系统提示")// 设置对话框标题
+
+                .setMessage("确认结束此次划行吗？")// 设置显示的内容
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {// 添加确定按钮
+
+                    @Override
+
+                    public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
+                        mStartStatus = 0;
+
+                        DecimalFormat decimalFormat = new DecimalFormat("0.0");
+                        DecimalFormat decimalFormat_1 = new DecimalFormat("0");
+                        String distanceTx = decimalFormat_1.format(traveledDistance);
+                        // String speedTx = decimalFormat.format(speed);
+                        String speedAvgTx = decimalFormat.format(speedAvg);
+                        String speedMaxTx = decimalFormat.format(speedMax);
+                        strokeRateAvgTx = decimalFormat.format(strokeRateAvg);
+                        String strokeCountTx = decimalFormat_1.format(strokeCount);
+
+                        int tempHourResult = 0;
+                        int tempMinResult = 0;
+                        int tempSecResult = 0;
+
+                        if (totalElapse.length() <= 5) {
+
+                            tempHourResult = 0;
+                            tempMinResult = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                            tempSecResult = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+
+                        } else {
+                            tempHourResult = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                            tempMinResult = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                            tempSecResult = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
+
+                        }
+
+                        mSectionTimeResultTx = tempHourResult + ":" + tempMinResult + ":" + tempSecResult;
+
+                        mDistanceResultTx = distanceTx;
+                        mAvgSPMResultTx = strokeRateAvgTx;
+                        mStrokeCountResultTx = strokeCountTx;
+                        mAvgBoatSpeedTx = speedAvgTx;
+                        mMaxBoatSpeedTx = speedMaxTx;
+
+                        mStart.setBackgroundResource(R.drawable.button_4);
+                        mStart.setText("开始");
+                        mStart.setTextColor(Color.parseColor("#6C6C6C"));
+
+                        spinnerTypeSelect.setEnabled(true);
+                        spinnerWeightSelect.setEnabled(true);
+                        spinnerTrainSelect.setEnabled(true);
+                        mSelectDistance.setEnabled(true);
+
+                        totalElapse.setBase(SystemClock.elapsedRealtime());
+                        totalElapse.stop();
+
+                        elapsedHour = 0;
+                        hourMarker = 0;
+
+                        acclCachePointer = 0;
+                        acclCacheSize = 0;
+                        acclCacheSum = 0.0;
+
+                        traveledDistance = 0;
+                        distanceTemp = 0;
+                        speed = 0;
+                        speedAvg = 0;
+                        speedMax = 0;
+                        strokeCount = 0;
+
+                        mBoatYaw.setRotation(0);
+                        // timeCorrectSec = 0;
+                        // timeCorrectMin = 0;
+
+                        mDistance.setText("0");
+                        mSpeed.setText("0.0");
+                        mSpeedMax.setText("0.0");
+                        mSpeedAvg.setText("0.0");
+                        halfKmElapse.setText("00:00");
+                        mStrokeRate.setText("0.0");
+                        mStrokeCount.setText("0");
+                        mStrokeRateAvg.setText("0.0");
+
+                        updateCount = 0;
+
+                        locationManager.removeUpdates(locationListener);
+
+                        try {
+                            writerCustomData.close();
+                            logCreated = 0;
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(Speedometer.this, "Close Writer Failed", Toast.LENGTH_SHORT).show();
+                        }
+                        showResult();
+
+                    }
+
+                }).setNegativeButton("返回", new DialogInterface.OnClickListener() {// 添加返回按钮
+
+                    @Override
+
+                    public void onClick(DialogInterface dialog, int which) {// 响应事件
+                        return;
+                    }
+
+                }).show();// 在按键响应事件中显示此对话框
+
+    }
+
+    private void showResult() {
+
+        backgroundAlpha(0.2f);
+        WindowManager manager = this.getWindowManager();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(outMetrics);
+        int width = outMetrics.widthPixels;
+        int height = outMetrics.heightPixels;
+
+        // windowResult = new
+        // PopupWindow(popupResultView,width*65/100,height*85/100,true);
+        windowResult = new PopupWindow(popupResultView, WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT, true);
+
+        // windowResult.update();
+
+        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
+        windowResult.showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        // windowResult.setBackgroundDrawable(new ColorDrawable(0x00000000));
+        // windowResult.setFocusable(false);
+        // windowResult.setOutsideTouchable(false);
+
+        mDateResult = popupResultView.findViewById(R.id.log_time);
+        mDistanceResult = popupResultView.findViewById(R.id.result_distance_actual);
+        mAvgSPMResult = popupResultView.findViewById(R.id.result_SPM_average);
+        mStrokeCountResult = popupResultView.findViewById(R.id.result_stroke_count);
+        mSectionTimeResult = popupResultView.findViewById(R.id.result_section_time);
+        mAvgBoatSpeed = popupResultView.findViewById(R.id.result_boatspeed_avg);
+        mMaxBoatSpeed = popupResultView.findViewById(R.id.result_boatspeed_max);
+        mSaveExit = popupResultView.findViewById(R.id.result_save);
+        mNoSaveExit = popupResultView.findViewById(R.id.result_no_save);
+        mUserName = popupResultView.findViewById(R.id.user_id);
+
+        SimpleDateFormat simpleDateFormatResult = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        Date dateResult = new Date(System.currentTimeMillis());
+        mDateResult.setText(simpleDateFormatResult.format(dateResult));
+
+        mDistanceResult.setText(mDistanceResultTx);
+        mAvgSPMResult.setText(mAvgSPMResultTx);
+        mStrokeCountResult.setText(mStrokeCountResultTx);
+        mSectionTimeResult.setText(mSectionTimeResultTx);
+        mAvgBoatSpeed.setText(mAvgBoatSpeedTx);
+        mMaxBoatSpeed.setText(mMaxBoatSpeedTx);
+        mUserName.setText(userName);
+
+        mSaveExit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                Instacapture.INSTANCE.capture(Speedometer.this, new SimpleScreenCapturingListener() {
+                    @Override
+                    public void onCaptureComplete(Bitmap bitmap) {
+
+                        saveImageToGallery(bitmap, Speedometer.this);
+
+                    }
+                }, mSaveExit, mNoSaveExit);
+
+                timer.cancel();
+                task.cancel();
+                sectionTimeTX = "0.0";
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        try {
+                            upload();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }).start();
+
+                windowResult.dismiss();
+            }
+
+        });
+
+        mNoSaveExit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                timer.cancel();
+                task.cancel();
+                sectionTimeTX = "0.0";
+                windowResult.dismiss();
+                backgroundAlpha(1f);
+
+            }
+
+        });
+
+        windowResult.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+            @Override
+            public void onDismiss() {
+
+                backgroundAlpha(1f);
+
+            }
+
+        });
+
+    }
+
+    private void showWindowUploadResult() {
+        WindowManager manager = this.getWindowManager();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(outMetrics);
+        int width = outMetrics.widthPixels;
+
+        windowUploadResult = new PopupWindow(popupUploadResultView, width * 20 / 100, width * 20 / 100, false);
+        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
+        windowUploadResult.showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        windowUploadResult.setFocusable(false);
+
+    }
+
+    private void showWindowDistance() {
+
+        WindowManager manager = this.getWindowManager();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(outMetrics);
+        int width = outMetrics.widthPixels;
+        int height = outMetrics.heightPixels;
+
+        windowDistance = new PopupWindow(popupWindowView, width * 75 / 100, height * 85 / 100, true);
+        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
+        windowDistance.showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        windowDistance.setFocusable(true);
+
+        windowDistance.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+            @Override
+            public void onDismiss() {
+
+                backgroundAlpha(1f);
+
+            }
+
+        });
+    }
+
+    private void showCountdown() {
+
+        WindowManager manager = this.getWindowManager();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        manager.getDefaultDisplay().getMetrics(outMetrics);
+        int width = outMetrics.widthPixels;
+        int height = outMetrics.heightPixels;
+
+        windowCountdown = new PopupWindow(popupCountdownView, width * 30 / 100, width * 30 / 100, true);
+        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
+        windowCountdown.showAtLocation(parentView, Gravity.CENTER, 0, 0);
+        windowCountdown.setFocusable(true);
+
+        windowCountdown.setOnDismissListener(new PopupWindow.OnDismissListener() {
+
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onDismiss() {
+
+                if (mStartTerminate == 1) {
+
+                    mStartStatus = 0;
+                    mStart.setBackgroundResource(R.drawable.button_4);
+                    mStart.setText("开始");
+                    mStart.setTextColor(Color.parseColor("#6C6C6C"));
+
+                    spinnerTypeSelect.setEnabled(true);
+                    spinnerWeightSelect.setEnabled(true);
+                    spinnerTrainSelect.setEnabled(true);
+                    mSelectDistance.setEnabled(true);
+
+                    totalElapse.setBase(SystemClock.elapsedRealtime());
+                    totalElapse.stop();
+
+                    traveledDistance = 0;
+                    distanceTemp = 0;
+                    speed = 0;
+
+                    DecimalFormat decimalFormat = new DecimalFormat("0.0");
+                    DecimalFormat decimalFormat_1 = new DecimalFormat("0");
+                    String distanceTx = decimalFormat_1.format(traveledDistance);
+                    mDistance.setText(distanceTx);
+                    speedTx = decimalFormat.format(speed);
+                    mSpeed.setText(speedTx);
+
+                    speedMax = 0;
+                    String speedMaxTx = decimalFormat.format(speedMax);
+                    mSpeedMax.setText(speedMaxTx);
+
+                    speedAvg = 0;
+                    String speedAvgTx = decimalFormat.format(speedAvg);
+                    mSpeedAvg.setText(speedAvgTx);
+
+                    String splitTimeTx = "00:00";
+                    halfKmElapse.setText(splitTimeTx);
+
+                    mStrokeRate.setText("0.0");
+                    mStrokeCount.setText("0");
+                    strokeCount = 0;
+
+                    mStrokeRateAvg.setText("0.0");
+                    mBoatYaw.setRotation(0);
+
+                    // mBoatYaw.setRotation(0);
+                    // timeCorrectSec = 0;
+                    // timeCorrectMin = 0;
+
+                    updateCount = 0;
+
+                    locationManager.removeUpdates(locationListener);
+
+                }
+
+                backgroundAlpha(1f);
+
+            }
+
+        });
+
+    }
+
+    private void startTimer(long delayed) throws Exception {
+
+        SimpleDateFormat simpleDateFormatCache = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        logBeginTime = System.currentTimeMillis();
+        strBegTime = simpleDateFormatCache.format(logBeginTime);
+        addressRowData = this.getFilesDir() + "/" + strBegTime + ".csv";
+        addressRowDataLive = this.getFilesDir() + "/rowDataLive.csv";
+
+        startConnection();
+        startUpdate();
+
+        try {
+            customData = new FileWriter(addressRowData);
+            writerCustomData = new CSVWriter(customData);
+
+            writerCustomData.writeNext(new String[] { "time", "distance",
+                    "Stroke_Rate", "Boat_Speed", "Boat_Acceleration",
+                    "Boat_Roll", "Boat_Yaw" });
+
+            logCreated = 1;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            Toast.makeText(Speedometer.this, "file creation failed", Toast.LENGTH_SHORT).show();
+        }
+
+        mStartTerminate = 1;
+        CountdownView mCvCountdownView = popupCountdownView.findViewById(R.id.countdown_view);
+        mCvCountdownView.start(delayed); // Millisecond
+
+        // mCvCountdownView.setOnCountdownIntervalListener(100, new
+        // CountdownView.OnCountdownIntervalListener() {
+        // @Override
+        // public void onInterval(CountdownView cv, long remainTime) {
+        //
+        // }
+        // });
+
+        mCvCountdownView.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+
+            @Override
+            public void onEnd(CountdownView cv) {
+
+                mStartTerminate = 0;
+                totalElapse.setBase(SystemClock.elapsedRealtime());
+                // totalElapse.setBase(SystemClock.elapsedRealtime() - 3590*1000);
+                totalElapse.start();
+
+                if (mCountDownSwitchStatus == 0) {
+                    windowCountdown.dismiss();
+                }
+
+            }
+        });
+
+    }
+
+    private static void saveImageToGallery(Bitmap bmp, Activity context) {
+
+        File appDir = new File(getDCIM());
+        if (!appDir.exists()) {
+            appDir.mkdir();
+        }
+        String fileName = System.currentTimeMillis() + ".jpg";
+        File file = new File(appDir, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 通知图库更新
+        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + getDCIM())));
+    }
+
+    private static String getDCIM() {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            return "";
+        }
+        String path = Environment.getExternalStorageDirectory().getPath() + "/dcim/";
+        if (new File(path).exists()) {
+            return path;
+        }
+        path = Environment.getExternalStorageDirectory().getPath() + "/DCIM/";
+        File file = new File(path);
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                return "";
+            }
+        }
+        return path;
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 注册传感器监听函数
+        mSensorManager.registerListener(mSensorListener, mAccelerometer, 50000);
+        mSensorManager.registerListener(mSensorListener, mMagnetic, 50000);
+        mSensorManager.registerListener(mSensorListener, mAccelerometerLinear, 50000);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // 注销监听函数
+        mSensorManager.unregisterListener(mSensorListener);
+    }
+
+    private void calculateVectorData() {
+
+        float[] values = new float[3];
+        float[] R = new float[9];
+        SensorManager.getRotationMatrix(R, null, accelerometerValues,
+                magneticFieldValues);
+        SensorManager.getOrientation(R, values);
+        values[0] = (float) Math.toDegrees(values[0]);
+        values[1] = (float) Math.toDegrees(values[1]);
+        values[2] = (float) Math.toDegrees(values[2]);
+
+        boatRoll.setRotation(-values[1]);
+
+        float xAcclLinear = accelerometerLinearValues[0];
+        float yAcclLinear = accelerometerLinearValues[1];
+        float zAcclLinear = accelerometerLinearValues[2];
+
+        double tiltAngleX = values[2] * Math.PI / 180;
+        double tiltCosX = Math.cos(tiltAngleX);
+        double tiltAngleZ = (90 - Math.abs(values[2])) * Math.PI / 180;
+        double tiltCosZ = Math.cos(tiltAngleZ);
+
+        double xAcclActual = -xAcclLinear * tiltCosX;
+        double zAcclActual = zAcclLinear * tiltCosZ;
+
+        double boatAcclActualNow = xAcclActual + zAcclActual;
+
+        double boatYawTan = yAcclLinear / boatAcclActualNow;
+        float boatYawAngle = 0f;
+
+        double strokeNow = System.currentTimeMillis();
+        double strokeGap = strokeNow - strokeCache;
+
+        int tempHourStrokeRateAvg = 0;
+        int tempMinStrokeRateAvg = 0;
+        int tempSecStrokeRateAvg = 0;
+
+        if (totalElapse.length() <= 5) {
+            tempHourStrokeRateAvg = 0;
+            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+
+        } else {
+            tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
+        }
+        mDisplayTimeTx = tempHourStrokeRateAvg + ":" + tempMinStrokeRateAvg + ":" + tempSecStrokeRateAvg;
+
+        // System.out.println(tempHourStrokeRateAvg+":"+ tempMinStrokeRateAvg+":" +
+        // tempSecStrokeRateAvg);
+
+        double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
+                + tempSecStrokeRateAvg;
+        // Log.e("totalSec:", tempTotalSecStrokeRateAvg+"");
+
+        sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
+
+        if (acclCacheSize < acclCacheLength) {
+
+            acclCacheSamples[acclCachePointer++] = boatAcclActualNow;
+            acclCacheSize++;
+
+        } else {
+
+            acclCachePointer = acclCachePointer % acclCacheLength;
+            acclCacheSum -= acclCacheSamples[acclCachePointer];
+            acclCacheSamples[acclCachePointer++] = boatAcclActualNow;
+        }
+
+        double boatAcclActual = doubleArrAverage(acclCacheSamples);
+
+        if (strokeGap > strokeIdleMax) {
+            mStrokeRate.setText("0.0");
+            // strokeRateTx = "0.0";
+            double strokeRateActual = 0;
+            DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
+            strokeRateTx = StrokeRateFormatter.format(strokeRateActual);
+            mStrokeRate.setText(strokeRateTx);
+            mBoatYaw.setRotation(0);
+        }
+
+        if (boatAcclActual > minBoatAccl && mStartStatus == 1) {
+
+            strokeNow = System.currentTimeMillis();
+            strokeGap = strokeNow - strokeCache;
+
+            if (strokeGap > minStrokeGap) {
+
+                strokeCache = strokeNow;
+                double strokeRate = 0;
+
+                if (strokeCount < 1) {
+                    strokeRate = 0;
+                } else {
+                    strokeRate = 60000 / strokeGap;
+                }
+
+                if (SRCacheSize < SRCacheLength) {
+
+                    SRCacheSamples[SRCachePointer++] = strokeRate;
+                    SRCacheSize++;
+
+                } else {
+
+                    SRCachePointer = SRCachePointer % SRCacheLength;
+                    SRCacheSum -= SRCacheSamples[SRCachePointer];
+                    SRCacheSamples[SRCachePointer++] = strokeRate;
+                }
+
+                double strokeRateActual = doubleArrAverage(SRCacheSamples);
+                Log.i("sr actual:", String.valueOf(strokeRateActual));
+
+                DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
+                strokeRateTx = StrokeRateFormatter.format(strokeRateActual);
+                mStrokeRate.setText(strokeRateTx);
+
+                DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
+                String strokeCountTx = StrokeCountFormatter.format(strokeCount);
+
+                strokeCount = strokeCount + 1;
+                mStrokeCount.setText(strokeCountTx);
+                double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
+                double strokeCountDouble = strokeCount;
+
+                if (strokeCount < 2) {
+                    strokeRateAvg = 0;
+                } else {
+                    strokeRateAvg = strokeCountDouble / totalElapsedMin;
+                }
+
+                strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
+                mStrokeRateAvg.setText(strokeRateAvgTx);
+
+                boatYawAngle = (float) (Math.atan(boatYawTan) * 180 / Math.PI);
+                mBoatYaw.setRotation(-boatYawAngle);
+
+            }
+        }
+
+        SimpleDateFormat simpleDateFormatCache = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        logBeginTime = System.currentTimeMillis();
+        strBegTime = simpleDateFormatCache.format(logBeginTime);
+        addressRowData = this.getFilesDir() + "/" + strBegTime + ".csv";
+
+        try {
+            writerCustomData
+                    .writeNext(new String[] { String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
+                            String.valueOf((double) traveledDistance),
+                            strokeRateTx, speedTx, String.valueOf((double) boatAcclActual),
+                            String.valueOf((float) values[1]), String.valueOf((float) boatYawAngle) });
+
+        } catch (Exception e) {
+            writerCustomData
+                    .writeNext(new String[] { String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000), "0",
+                            "0", "0", "0",
+                            "0", "0" });
+        }
+    }
+
+    public void startConnection() throws Exception {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    URL updateUrl = new URL(updatePATH);
+                    // System.out.println(updateUrl);
+                    httpURLConnectionUpdate = (HttpURLConnection) updateUrl.openConnection();
+                    httpURLConnectionUpdate.setRequestMethod("POST");
+                    httpURLConnectionUpdate.setConnectTimeout(3000);
+                    httpURLConnectionUpdate.setDoOutput(true);
+                    httpURLConnectionUpdate.setDoInput(true);
+                    httpURLConnectionUpdate.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                    httpURLConnectionUpdate.setRequestProperty("accept", "application/json");
+
+                    Map<String, Object> Data = new HashMap<>();
+                    Data.put("FieldName", "CacheData");
+                    Data.put("Type", "1");
+                    Data.put("userName", 0);
+                    Data.put("sectionTime", 0);
+                    Data.put("SPM", 0);
+                    Data.put("boatSpeed", 0);
+                    Data.put("actualDistance", 0);
+                    Data.put("latitude", 0);
+                    Data.put("longitude", 0);
+                    Data.put("sectionType", 0);
+                    Data.put("playerType", 0);
+                    Data.put("boatType", 0);
+                    Data.put("targetDistance", 0);
+
+                    String paramsJson = JSON.toJSONString(Data);
+                    httpURLConnectionUpdate.setRequestProperty("Content-Length", String.valueOf(paramsJson.length()));
+
+                    OutputStream outputStream = httpURLConnectionUpdate.getOutputStream();
+                    outputStream.write(paramsJson.getBytes());
+
+                    InputStream inputStream = httpURLConnectionUpdate.getInputStream();
+                    final Map<String, Object> inputStreamMap = JSON.parseObject(inputStream, Map.class);
+                    int responseCode = httpURLConnectionUpdate.getResponseCode();
+                    // System.out.println("response code HTTP: " + responseCode);
+                    // System.out.println("response code API:" + inputStreamMap.get("code"));
+                    // System.out.println("response success:" + inputStreamMap.get("success"));
+                    // System.out.println("response data:" + inputStreamMap.get("data"));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void startUpdate() throws Exception {
+
+        task = new TimerTask() {
+
+            @Override
+            public void run() {
+
+                try {
+
+                    URL updateUrl = new URL(updatePATH);
+                    // System.out.println(updateUrl);
+                    httpURLConnectionUpdate = (HttpURLConnection) updateUrl.openConnection();
+                    httpURLConnectionUpdate.setRequestMethod("POST");
+                    httpURLConnectionUpdate.setConnectTimeout(3000);
+                    httpURLConnectionUpdate.setDoOutput(true);
+                    httpURLConnectionUpdate.setDoInput(true);
+                    httpURLConnectionUpdate.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                    httpURLConnectionUpdate.setRequestProperty("accept", "application/json");
+
+                    Map<String, Object> Data = new HashMap<>();
+                    Data.put("FieldName", "CacheData");
+                    Data.put("Type", "1");
+                    Data.put("userName", userName);
+                    Data.put("sectionTime", sectionTimeTX);
+                    Data.put("displayTime", mDisplayTimeTx);
+                    Data.put("SPM", mStrokeRate.getText());
+                    Data.put("boatSpeed", mSpeed.getText());
+                    Data.put("actualDistance", mDistance.getText());
+                    Data.put("latitude", BigDecimal.valueOf(latitude_0_GD));
+                    Data.put("longitude", BigDecimal.valueOf(longitude_0_GD));
+                    Data.put("sectionType", selectedTrain);
+                    Data.put("playerType", selectedWeight);
+                    Data.put("boatType", selectedType);
+                    Data.put("targetDistance", String.valueOf(selectedDistance));
+
+                    String paramsJson = JSON.toJSONString(Data);
+
+                    // System.out.println("sectionTime：" + sectionTimeTX);
+                    // System.out.println("displayTime："+ mDisplayTimeTx);
+
+                    int lengthLocal = paramsJson.getBytes().length;
+                    httpURLConnectionUpdate.setRequestProperty("Content-Length", String.valueOf(lengthLocal));
+                    OutputStream outputStream = httpURLConnectionUpdate.getOutputStream();
+                    outputStream.write(paramsJson.getBytes());
+
+                    InputStream inputStream = httpURLConnectionUpdate.getInputStream();
+                    final Map<String, Object> inputStreamMap = JSON.parseObject(inputStream, Map.class);
+                    int responseCode = httpURLConnectionUpdate.getResponseCode();
+                    // System.out.println("response code HTTP: " + responseCode);
+                    // System.out.println("response code API:" + inputStreamMap.get("code"));
+                    // System.out.println("response success:" + inputStreamMap.get("success"));
+                    System.out.println("response data:" + inputStreamMap.get("data"));
+
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+
+            }
+        };
+
+        timer = new Timer();
+        timer.schedule(task, 5000, 2000);
+
+    }
+
+    public void upload() throws IOException {
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        File file = new File(addressRowData);
+        String filename = strBegTime + ".csv";
+        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addPart(Headers.of(
+                        "Content-Disposition",
+                        "form-data; name=\"originalData\"; filename=\"" + filename + "\""), fileBody)
+                .build();
+        Request request = new Request.Builder()
+                .url(uploadPATH)
+                .post(requestBody)
+                .build();
+
+        Call call = okHttpClient.newCall(request);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("text", "failure upload!");
+                uploadStatus = 2;
+                Looper.prepare();
+                Toast.makeText(Speedometer.this, "上传失败", Toast.LENGTH_SHORT).show();
+                Looper.loop();
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.i("text", "success upload!");
+                String json = response.body().string();
+                Log.i("success........", "成功" + json);
+                uploadStatus = 1;
+                Looper.prepare();
+                Toast.makeText(Speedometer.this, "上传成功", Toast.LENGTH_SHORT).show();
+                Looper.loop();
+
+            }
+        });
+
+    }
+
+    // public Call file_submit(String filepath, String url, String filename){
+    // OkHttpClient client = new OkHttpClient();
+    // File file = new File(filepath);
+    // Log.i("text",filepath);
+    // RequestBody fileBody =
+    // RequestBody.create(MediaType.parse("application/octet-stream"), file);
+    // //请求体
+    // RequestBody requestBody = new MultipartBody.Builder()
+    // .setType(MultipartBody.FORM)
+    //// .addPart(Headers.of(
+    //// "Content-Disposition",
+    //// "form-data; name=\"filename\""),
+    //// RequestBody.create(null, "lzr"))//这里是携带上传的其他数据
+    // .addPart(Headers.of(
+    // "Content-Disposition",
+    // "form-data; name=\"mFile\"; filename=\"" + filename + "\""), fileBody)
+    // .build();
+    // //请求的地址
+    // Request request = new Request.Builder()
+    // .url(url)
+    // .post(requestBody)
+    // .build();
+    //
+    // System.out.println(client.newCall(request));
+    // return client.newCall(request);
+    // }
+
+    private void backgroundAlpha(float f) {
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.alpha = f;
+        getWindow().setAttributes(lp);
+    }
+
+    public double doubleArrAverage(double[] arr) {
+        double sum = 0;
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+        }
+        return sum / arr.length;
+    }
+
+    private void resetSpeed(int milliSec) {
+        speedIdle = speedNewUpdate - speedLastUpdate;
+        if (speedIdle >= milliSec) {
+            speed = 0;
+        }
+    }
+
+    class TestSensorListener implements SensorEventListener {
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            // 读取加速度传感器数值，values数组0,1,2分别对应x,y,z轴的加速度
+
+            // Log.i(TAG, "onSensorChanged: " + event.values[0] + ", " + event.values[1] +
+            // ", " + event.values[2]);
+
+            // TODO Auto-generated method stub
+            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                accelerometerValues = event.values;
+                // float xAccl = accelerometerValues[0];
+                // float yAccl = accelerometerValues[1];
+                // float zAccl = accelerometerValues[2] + 9.8f;
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                magneticFieldValues = event.values;
+            }
+
+            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+                accelerometerLinearValues = event.values;
+            }
+
+            if (logCreated == 1) {
+
+                calculateVectorData();
+
+            }
+
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            Log.i(TAG, "onAccuracyChanged");
+        }
+    }
+
+    // public static class Utils {
+    //
+    // public static boolean isBluetoothAdapterEnabled(Context context) {
+    // BluetoothManager bluetoothManager = (BluetoothManager)
+    // context.getSystemService(Context.BLUETOOTH_SERVICE);
+    //
+    // if (bluetoothManager != null) {
+    // BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+    //
+    // if (bluetoothAdapter != null) {
+    // return bluetoothAdapter.isEnabled();
+    // }
+    // }
+    //
+    // return false;
+    // }
+    //
+    // }
+    //
+    //
+    // private boolean hasLocationPermission() {
+    // return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
+    // PackageManager.PERMISSION_GRANTED;
+    // }
+    //
+    // private void requestLocationPermission() {
+    // requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+    // REQUEST_PERMISSION_LOCATION);
+    // }
+    //
+    // private void requestEnableBluetooth() {
+    // Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+    // startActivityForResult(intent, REQUEST_ENABLE_BLUETOOTH);
+    // }
+    //
+    // private void checkBluetoothPermissions() {
+    // boolean isBluetoothAdapterEnabled = Utils.isBluetoothAdapterEnabled(this);
+    // boolean hasLocationPermission = hasLocationPermission();
+    //
+    // if (isBluetoothAdapterEnabled) {
+    // if (!hasLocationPermission) {
+    // requestLocationPermission();
+    // }
+    // } else {
+    // requestEnableBluetooth();
+    // }
+    //
+    // Log.d(TAG, "isBluetoothAdapterEnabled " + isBluetoothAdapterEnabled + ",
+    // hasLocationPermission " + hasLocationPermission);
+    //
+    // }
+    //
+    // @Override
+    // public void onRequestPermissionsResult(int requestCode, @NonNull String[]
+    // permissions, @NonNull int[] grantResults) {
+    // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    //
+    // Log.d(TAG, "onRequestPermissionsResult() - requestCode = " + requestCode);
+    //
+    // if (requestCode == REQUEST_PERMISSION_LOCATION) {
+    //
+    // for (int i = 0; i < grantResults.length; i++) {
+    //
+    // if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
+    // if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+    // checkBluetoothPermissions();
+    // } else {
+    // Toast.makeText(this, "Please allow location permission to use your
+    // trackers.", Toast.LENGTH_LONG).show();
+    // }
+    // }
+    // }
+    // }
+    // }
+
+}

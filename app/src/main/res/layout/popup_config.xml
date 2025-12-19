@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center">
+
+    <FrameLayout
+        android:layout_width="650dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_grid"
+        android:alpha="1">
+
+        <TextView
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/colorGrayDark"
+            android:text="设置"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp" />
+
+
+        <Button
+            android:id="@+id/config_close_RM"
+            android:layout_width="70dp"
+            android:layout_height="25dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="10sp"
+            android:textColor="@color/colorGrayDark"
+            android:background="@color/colorGrayLight"
+            android:text="关闭"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp" />
+
+        <FrameLayout
+            android:layout_width="340dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/input_box_6">
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="拉桨强度设置"
+                android:layout_gravity="left|top"
+                android:textStyle="bold"
+                android:gravity="left|bottom"
+                android:layout_marginLeft="5dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="默认"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="70dp"
+                android:text="业余"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="140dp"
+                android:text="儿童"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-70dp"
+                android:text="专业"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-140dp"
+                android:text="专业+"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+
+
+            <com.xw.repo.BubbleSeekBar
+                android:id="@+id/SR_minSpeed_slider_RM"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="20dp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:bsb_min="0"
+                app:bsb_max="80"
+                app:bsb_progress="40"
+                app:bsb_second_track_color="@color/colorGreenDark"
+                app:bsb_track_color="@color/colorGrayDark" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="340dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="110dp"
+            android:background="@drawable/input_box_6">
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="桨频刷新速度"
+                android:layout_gravity="left|top"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:gravity="left|bottom"
+                android:paddingBottom="2dp"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="每2桨"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginRight="50dp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="140dp"
+                android:text="每1桨"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-50dp"
+                android:text="每3桨"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-140dp"
+                android:text="每4桨"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+
+
+            <com.xw.repo.BubbleSeekBar
+                android:id="@+id/SR_minResponse_slider_RM"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="20dp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:bsb_min="0"
+                app:bsb_max="100"
+                app:bsb_progress="50"
+                app:bsb_second_track_color="@color/colorGreenDark"
+                app:bsb_track_color="@color/colorGrayDark" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="340dp"
+            android:layout_height="70dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="180dp"
+            android:background="@drawable/input_box_6">
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="最小两桨间隔 (最大桨频)"
+                android:layout_gravity="left|top"
+                android:gravity="left|bottom"
+                android:paddingBottom="2dp"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="1.4s"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="70dp"
+                android:text="1.2s"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="140dp"
+                android:text="1.0s"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-70dp"
+                android:text="1.6s"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-140dp"
+                android:text="1.8s"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="10dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:text="(48 spm)"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginBottom="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="70dp"
+                android:text="(50 spm)"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="140dp"
+                android:text="(60 spm)"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-70dp"
+                android:text="(38 spm)"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="200dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="-140dp"
+                android:text="(34 spm)"
+                android:layout_gravity="bottom|center"
+                android:gravity="center"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+
+
+            <com.xw.repo.BubbleSeekBar
+                android:id="@+id/SR_minGap_slider_RM"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="20dp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                app:bsb_min="0"
+                app:bsb_max="100"
+                app:bsb_progress="50"
+                app:bsb_second_track_color="@color/colorGreenDark"
+                app:bsb_track_color="@color/colorGrayDark" />
+
+
+
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="210dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="375dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/input_box_6">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_orange"
+                android:alpha="0">
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:background="@color/colorOrangeDark"
+                android:layout_gravity="top|center"
+                android:layout_marginTop="90dp"
+                android:alpha="0.7">
+            </TextView>
+
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:text="目标桨频"
+                android:layout_gravity="left|top"
+                android:textStyle="bold"
+                android:gravity="left|bottom"
+                android:layout_marginLeft="5dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <com.motionrivalry.rowmasterpro.CustomNumberPicker
+                android:id="@+id/SPM_select_RM"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="20dp"
+                android:focusable="true">
+
+            </com.motionrivalry.rowmasterpro.CustomNumberPicker>
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|center"
+                android:layout_marginTop="84dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|center"
+                android:layout_marginTop="134dp">
+            </TextView>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_height="210dp"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="485dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/input_box_6">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_orange"
+                android:alpha="0">
+            </FrameLayout>
+
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:background="@color/colorOrangeDark"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="90dp"
+                android:alpha="0.7">
+            </TextView>
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="40dp"
+                android:background="@color/colorOrangeDark"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="75dp"
+                android:layout_marginTop="90dp"
+                android:alpha="0.7">
+            </TextView>
+
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:text="目标配速"
+                android:layout_gravity="left|top"
+                android:textStyle="bold"
+                android:gravity="left|bottom"
+                android:layout_marginLeft="5dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="10sp"
+                android:layout_marginTop="0dp">
+            </TextView>
+
+            <com.motionrivalry.rowmasterpro.CustomNumberPicker
+                android:id="@+id/Split_min_select_RM"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:focusable="true">
+            </com.motionrivalry.rowmasterpro.CustomNumberPicker>
+
+            <com.motionrivalry.rowmasterpro.CustomNumberPicker
+                android:id="@+id/Split_sec_select_RM"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="80dp"
+                android:focusable="true">
+
+            </com.motionrivalry.rowmasterpro.CustomNumberPicker>
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="84dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="134dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="84dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="2dp"
+                android:background="@color/colorGrayLight"
+                android:layout_gravity="top|left"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="134dp">
+            </TextView>
+
+
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text=":"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_gravity="top|left"
+                android:textColor="@color/colorNearBlack"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="93dp">
+            </TextView>
+
+
+
+        </FrameLayout>
+
+
+
+
+    </FrameLayout>
+
+
+</FrameLayout>

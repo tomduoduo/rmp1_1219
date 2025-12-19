@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('Xsens DOT SDK (Android v2020.4).aar'))

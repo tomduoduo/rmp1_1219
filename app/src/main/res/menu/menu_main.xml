@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!--    <item-->
+<!--        android:id="@+id/GDM_list"-->
+<!--        android:title="广东男队"/>-->
+<!--    <item-->
+<!--        android:id="@+id/GDF_list"-->
+<!--        android:title="广东女队"/>-->
+    <item
+        android:id="@+id/Private_list"
+        android:title="专用"/>
+    <item
+        android:id="@+id/Guest_list"
+        android:title="游客"/>
+
+</menu>

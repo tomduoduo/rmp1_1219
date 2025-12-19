@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_black"
+    android:keepScreenOn="true"
+    tools:context=".Speedometer">
+
+
+    <TextView
+        android:id="@+id/stroke_rate"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="80sp"
+        android:textColor="#ffffff"
+        android:text="0.0"
+        android:layout_gravity="center"
+        android:layout_marginRight="140dp"
+        android:layout_marginBottom="85dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_green"/>
+
+    <TextView
+        android:id="@+id/stroke_count"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="30dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_green"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="0"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/stroke_rate_average"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="110dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_green"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="0.0"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textColor="#ffffff"
+        android:text="SPM"
+        android:layout_gravity="center"
+        android:layout_marginRight="85dp"
+        android:layout_marginBottom="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:textColor="#ffffff"
+        android:text="实时桨频"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:layout_marginRight="200dp"
+        android:layout_marginBottom="140dp"/>
+
+    <TextView
+        android:id="@+id/mode_selector_box"
+        android:layout_width="100dp"
+        android:layout_height="320dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:background="@drawable/input_box"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle=""
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="平均桨频"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="140dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle=""
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="拉桨次数"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="62dp"/>
+
+    <TextView
+        android:id="@+id/stroke_rate_sub_box_low"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="45dp"
+        android:background="@drawable/input_box_3"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/stroke_rate_sub_box_high"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="125dp"
+        android:background="@drawable/input_box_3"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/gps_speed"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:paddingBottom="5dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="80sp"
+        android:textColor="@color/colorGrayDark"
+        android:text="0.0"
+        android:layout_gravity="center"
+        android:layout_marginRight="140dp"
+        android:layout_marginBottom="-85dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_orange"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textColor="@color/colorGrayDark"
+        android:text="M/S"
+        android:layout_gravity="center"
+        android:layout_marginRight="85dp"
+        android:layout_marginBottom="-140dp"/>
+
+    <TextView
+        android:id="@+id/boat_speed_sub_box_low"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-45dp"
+        android:background="@drawable/input_box_4"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/boat_speed_sub_box_high"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-125dp"
+        android:background="@drawable/input_box_4"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle=""
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="最高船速"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-108dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle=""
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="平均船速"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-28dp"/>
+
+    <TextView
+        android:id="@+id/boat_speed_average"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-60dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_orange"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="0.0"
+        android:textColor="@color/colorGrayDark"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/boat_speed_max"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-140dp"
+        android:alpha="1"
+        android:background="@drawable/gradient_orange"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="0.0"
+        android:textColor="@color/colorGrayDark"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textColor="@color/colorGrayDark"
+        android:text="M/S"
+        android:layout_gravity="center"
+        android:layout_marginRight="85dp"
+        android:layout_marginBottom="-140dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorGrayDark"
+        android:text="实时船速"
+        android:layout_gravity="center"
+        android:layout_marginRight="200dp"
+        android:layout_marginBottom="-30dp"/>
+
+    <TextView
+        android:id="@+id/boat_travel_total_time_box"
+        android:layout_width="130dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="-40dp"
+        android:background="@drawable/input_box_4"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <Chronometer
+        android:id="@+id/boat_travel_total_time"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="-50dp"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:textColor="@color/colorOrangeDark"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:textColor="@color/colorOrangeDark"
+        android:text="总划行时间"
+        android:layout_gravity="center"
+        android:layout_marginRight="-100dp"
+        android:layout_marginBottom="-28dp"/>
+
+    <TextView
+        android:id="@+id/boat_travel_split_box"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="0dp"
+        android:layout_marginBottom="-125dp"
+        android:background="@drawable/input_box_4"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/boat_travel_total_split_box"
+        android:layout_width="130dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="-120dp"
+        android:background="@drawable/input_box_4"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/boat_travel_split_time"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="-130dp"
+        android:text="00:00"
+        android:alpha="1"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:textColor="@color/colorOrangeDark"
+        android:textSize="35sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:textColor="@color/colorOrangeDark"
+        android:text="每 500M 耗时"
+        android:layout_gravity="center"
+        android:layout_marginRight="-100dp"
+        android:layout_marginBottom="-95dp"/>
+
+    <TextView
+        android:id="@+id/boat_travel_distance_box"
+        android:layout_width="130dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="85dp"
+        android:background="@drawable/input_box_3"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/boat_travel_distance"
+        android:layout_width="120dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="110dp"
+        android:background="@drawable/gradient_green"
+        android:alpha="1"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="2000M"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="目标划行距离"
+        android:layout_gravity="center"
+        android:layout_marginRight="-100dp"
+        android:layout_marginBottom="140dp"/>
+
+    <TextView
+        android:id="@+id/boat_travel_distance_actual"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="-105dp"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/gradient_green"
+        android:alpha="1"
+        android:gravity="center"
+        android:paddingBottom="0dp"
+        android:text="0"
+        android:textColor="#ffffff"
+        android:textSize="30sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="已完成距离"
+        android:layout_gravity="center"
+        android:layout_marginRight="-100dp"
+        android:layout_marginBottom="80dp"/>
+
+    <ImageView
+        android:id="@+id/img_roll_boat_bg"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="-270dp"
+        android:alpha="1"
+        android:rotation="0"
+        android:src="@drawable/gauge_b" />
+
+    <ImageView
+        android:id="@+id/img_roll_boat"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="80dp"
+        android:layout_marginRight="-270dp"
+        android:alpha="1"
+        android:rotation="0"
+        android:src="@drawable/pointer_b" />
+
+    <ImageView
+        android:id="@+id/img_yaw_boat_bg"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-90dp"
+        android:layout_marginRight="-270dp"
+        android:alpha="1"
+        android:rotation="90"
+        android:src="@drawable/gauge_b" />
+
+    <ImageView
+        android:id="@+id/img_yaw_boat"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-90dp"
+        android:layout_marginRight="-270dp"
+        android:alpha="1"
+        android:rotation="0"
+        android:src="@drawable/boat" />
+
+    <Button
+        android:id="@+id/start_measure_speedometer"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="-125dp"
+        android:background="@drawable/gradient_orange_round_edge"
+        android:textColor="@color/colorGrayDark"
+        android:text="开始"
+        android:textStyle="bold"
+        android:textSize="20sp" />
+
+<!--    <Button-->
+<!--        android:id="@+id/type_select_speedometer"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginRight="300dp"-->
+<!--        android:layout_marginBottom="135dp"-->
+<!--        android:background="@drawable/gradient_green_round_edge"-->
+<!--        android:text="1X"-->
+<!--        android:textColor="#ffffff"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="15sp"-->
+<!--        android:alpha="1"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/weight_select_speedometer"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginRight="300dp"-->
+<!--        android:layout_marginBottom="95dp"-->
+<!--        android:background="@drawable/gradient_green_round_edge"-->
+<!--        android:text="HPL"-->
+<!--        android:textColor="#ffffff"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="15sp" />-->
+
+
+
+<!--    <Button-->
+<!--        android:id="@+id/purpose_select_speedometer"-->
+<!--        android:layout_width="80dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:layout_marginRight="300dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+<!--        android:background="@drawable/gradient_green_round_edge"-->
+<!--        android:text="训练早课"-->
+<!--        android:textColor="#ffffff"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="15sp" />-->
+
+    <com.kyleduo.switchbutton.SwitchButton
+        android:id="@+id/countdown_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="-65dp"
+        android:layout_marginRight="300dp"
+        app:kswThumbColor="@color/colorOrangeDark"
+        app:kswBackColor="@color/colorGrayDark"
+        app:kswThumbWidth="15dp"
+        app:kswThumbHeight="15dp"
+        app:kswThumbMarginTop="5dp"
+        app:kswThumbMarginBottom="4dp"
+        app:kswThumbMarginRight="5dp"
+        app:kswThumbMarginLeft="5dp"
+        app:kswTextExtra="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textColor="@color/colorOrangeDark"
+        android:text="5秒倒计时开始"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="-35dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="开"
+        android:layout_gravity="center"
+        android:layout_marginRight="333dp"
+        android:layout_marginBottom="-65dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="13sp"
+        android:textColor="#ffffff"
+        android:text="关"
+        android:layout_gravity="center"
+        android:layout_marginRight="270dp"
+        android:layout_marginBottom="-65dp"/>
+
+    <Spinner
+        android:id="@+id/spinner_type_select"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="135dp"
+        android:background="@drawable/gradient_green"
+        android:entries="@array/ItemType" />
+
+    <Spinner
+        android:id="@+id/spinner_weight_select"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="95dp"
+        android:background="@drawable/gradient_green"
+        android:entries="@array/ItemWeight" />
+
+    <Spinner
+        android:id="@+id/spinner_train_select"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="55dp"
+        android:background="@drawable/gradient_green"
+        android:entries="@array/ItemTrain" />
+
+    <Button
+        android:id="@+id/distance_select_speedometer"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/gradient_green"
+        android:text="2000m"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/control_masking_0"
+        android:layout_width="100dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/input_box"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorGrayDark"
+        android:textSize="18dp" />
+
+
+
+
+
+</FrameLayout>

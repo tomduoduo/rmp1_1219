@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/gradient_black_2">
+
+
+        <ImageView
+            android:layout_width="700dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginRight="-90dp"
+            android:background="@drawable/gradient_black_2">
+        </ImageView>
+
+        <ImageView
+            android:layout_width="550dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center|top"
+            android:layout_marginRight="-150dp"
+            android:layout_marginTop="350dp"
+            android:background="@drawable/gold"
+            android:rotation="0"
+            android:alpha="0.1">
+        </ImageView>
+
+
+
+        <ImageView
+            android:layout_width="400dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_grid"
+            android:layout_marginRight="290dp"
+            android:layout_gravity="center"/>
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center|top"
+            android:layout_marginRight="420dp"
+            android:layout_marginTop="0dp"
+            android:background="@drawable/blue"
+            android:rotation="0"
+            android:alpha="0.05">
+        </ImageView>
+
+        <ImageView
+            android:layout_width="65dp"
+            android:layout_height="35dp"
+            android:layout_gravity="bottom|left"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="10dp"
+            android:alpha="1"
+            android:background="@drawable/logo_landing_2">
+        </ImageView>
+
+        <TextView
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:textSize="18sp"
+            android:gravity="center|left"
+            android:textColor="@color/colorGrayDark"
+            android:text="训练小结"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="0dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/section_save_time_RM"
+            android:layout_width="120dp"
+            android:layout_height="20dp"
+            android:textSize="10sp"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:text="DATE:"
+            android:layout_gravity="left|top"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="35dp"
+            android:background="@drawable/gradient_black_2"/>
+
+        <FrameLayout
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginRight="240dp"
+            android:paddingTop="20dp">
+
+            <TextView
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="@color/colorGrayDark"
+                android:text="划行距离"
+                android:layout_gravity="left|top"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="45dp" />
+
+            <FrameLayout
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="70dp"
+                android:layout_marginLeft="60dp">
+
+                <TextView
+                    android:id="@+id/result_distance_RM"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:paddingRight="20dp"
+                    android:textColor="@color/colorGrayDark"
+                    android:textStyle="bold"
+                    android:text="50000"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="right|bottom"
+                    android:textSize="15sp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="7dp"
+                    android:textColor="@color/colorGrayDark"
+                    android:text="m"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="180dp"
+                android:layout_height="20dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorGrayDark"
+                android:text="训练时间"
+                android:layout_gravity="left|top"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="125dp" />
+
+            <FrameLayout
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="150dp"
+                android:layout_marginLeft="60dp">
+
+                <TextView
+                    android:id="@+id/result_time_RM"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:paddingRight="0dp"
+                    android:textColor="@color/colorGrayDark"
+                    android:textStyle="bold"
+                    android:text="1:14:24.3"
+                    android:layout_gravity="center" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="180dp"
+                android:layout_height="20dp"
+                android:textSize="15sp"
+                android:textColor="@color/colorGrayDark"
+                android:text="划桨次数"
+                android:layout_gravity="left|top"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="205dp" />
+
+            <FrameLayout
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="top|left"
+                android:layout_marginTop="230dp"
+                android:layout_marginLeft="60dp">
+
+                <TextView
+                    android:id="@+id/result_SR_count_RM"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:paddingRight="30dp"
+                    android:textColor="@color/colorGrayDark"
+                    android:textStyle="bold"
+                    android:text="3478"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="right|bottom"
+                    android:textSize="15sp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="7dp"
+                    android:textColor="@color/colorGrayDark"
+                    android:text="stks"/>
+
+        </FrameLayout>
+
+            <Button
+                android:id="@+id/result_close_RM"
+                android:layout_width="70dp"
+                android:layout_height="25dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                android:textColor="@color/colorGrayDark"
+                android:background="@color/colorGrayLight"
+                android:text="取消退出"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="80dp"
+                android:layout_marginBottom="10dp" />
+
+            <Button
+                android:id="@+id/result_save_RM"
+                android:layout_width="70dp"
+                android:layout_height="25dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/gradient_green"
+                android:text="保存截图"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="10dp" />
+
+
+        </FrameLayout>
+
+        <TextView
+            android:layout_gravity="center|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:gravity="center"
+            android:text="桨频"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:alpha="0.2">
+        </TextView>
+
+        <TextView
+            android:layout_gravity="center|top"
+            android:layout_marginTop="120dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:gravity="center"
+            android:text="船速"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:alpha="0.2">
+        </TextView>
+
+        <TextView
+            android:layout_gravity="center|top"
+            android:layout_marginTop="230dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:gravity="center"
+            android:text="心率"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:alpha="0.2">
+        </TextView>
+
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart_result_SPM_time_RM"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:alpha="0.7"
+            />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart_result_speed_time_RM"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="120dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:alpha="0.7"
+            />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chart_result_HR_time_RM"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="230dp"
+            android:layout_marginLeft="140dp"
+            android:layout_width="440dp"
+            android:layout_height="110dp"
+            android:alpha="0.7"
+            />
+
+
+
+
+
+    </FrameLayout>
+
+</FrameLayout>

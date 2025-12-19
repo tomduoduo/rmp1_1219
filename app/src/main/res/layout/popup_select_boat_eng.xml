@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center">
+
+    <FrameLayout
+        android:layout_width="180dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_grid"
+        android:alpha="1">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Boat Type"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:gravity="center">
+
+        </TextView>
+
+        <Button
+            android:id="@+id/button_1x"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="1x"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="60dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_2x"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="2x"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="100dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_4x"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="4x"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="140dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_4x_front"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="4x [1-2]"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="180dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_4x_back"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="4x [3-4]"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="220dp"
+            android:layout_marginRight="40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_2mi"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="2-"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="60dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_4mi"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="4-"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="100dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_8mi"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="8-"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="140dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_8mi_front"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="8- [1-4]"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="180dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_8mi_back"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="8- [5-8]"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="220dp"
+            android:layout_marginRight="-40dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+        <Button
+            android:id="@+id/button_UDF"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:text="Undefined"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="260dp"
+            android:layout_marginRight="0dp"
+            android:background="@drawable/input_box">
+
+        </Button>
+
+
+
+
+
+
+
+
+    </FrameLayout>
+
+
+</FrameLayout>

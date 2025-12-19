@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient"
+    tools:context=".MainActivity"
+    android:gravity="center_horizontal">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:paddingTop="0dp"
+        tools:ignore="ExtraText">
+
+        <Button
+            android:id="@+id/download_test"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_6"
+            android:text="下载测试"
+            android:textSize="12dp"
+            android:textColor="@color/colorGrayLight"
+            android:layout_marginTop="100dp"
+            android:layout_gravity="center|top"
+            android:alpha="0"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp"
+            android:src="@drawable/gradient_black_2"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:layout_gravity="top|center"
+            android:background="@drawable/input_box"
+            android:textColor="@color/colorWhite"
+            android:layout_marginTop="150dp"
+            android:text="Version">
+
+        </TextView>
+
+
+        <ImageView
+            android:id="@+id/ls"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="230dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/logo_9"/>
+
+
+        <FrameLayout
+            android:layout_width="400dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="830dp">
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="400dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center|top"
+                android:hint="用户名"
+                android:paddingLeft="15dp"
+                android:textSize="18dp"
+                android:textColor="@color/colorGrayLight"
+                android:textColorHint="@color/colorGrayLight"
+                android:background="@drawable/input_box_5"
+                android:layout_marginTop="30dp"
+                android:inputType="text"
+                android:text=""/>
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="400dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center|top"
+
+                android:hint="密码"
+                android:paddingLeft="15dp"
+                android:textSize="18dp"
+                android:textColor="@color/colorGrayLight"
+                android:textColorHint="@color/colorGrayLight"
+                android:background="@drawable/input_box_5"
+                android:layout_marginTop="100dp"
+                android:inputType="textPassword"
+                android:text=""/>
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:background="@drawable/button_1"
+                android:text="登录"
+                android:textSize="15dp"
+                android:textColor="@color/colorGrayLight"
+                android:layout_marginTop="180dp"
+                android:layout_gravity="right"/>
+
+            <Button
+                android:id="@+id/btn_update"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:background="@drawable/button_4"
+                android:text="长按更新软件"
+                android:textSize="12dp"
+                android:textColor="@color/colorNearBlack"
+                android:layout_marginTop="180dp"
+                android:layout_gravity="left"/>
+
+        </FrameLayout>
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="50dp"
+            android:src="@drawable/logo_5"
+            android:layout_gravity="center_horizontal"/>
+
+        <Button
+            android:id="@+id/master_btn_login"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:background="@drawable/button_6"
+            android:text="无验证登录"
+            android:textSize="15dp"
+            android:textColor="@color/colorGrayLight"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center|top"
+            android:alpha="0"/>
+
+    </FrameLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

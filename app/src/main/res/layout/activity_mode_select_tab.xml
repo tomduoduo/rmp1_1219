@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ModeSelect">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:weightSum="4"
+            android:background="@drawable/gradient_black_2">
+
+            <Button
+                android:id="@+id/heartRate_button_tab"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_v2_tab_d"
+                android:layout_weight="1"
+                android:text="心率监控"
+                android:textAlignment="gravity"
+                android:textSize="30sp"
+                android:textColor="@color/colorNearBlack"
+                android:paddingTop="60dp"
+                android:paddingLeft="80dp"
+                android:gravity="left" />
+
+
+            <Button
+                android:id="@+id/speedometer_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_v2_tab_a"
+                android:layout_weight="1"
+                android:text="智能桨频表"
+                android:textAlignment="gravity"
+                android:textSize="30sp"
+                android:textColor="@color/colorNearBlack"
+                android:paddingTop="60dp"
+                android:paddingLeft="80dp"
+                android:gravity="left" />
+
+            <Button
+                android:id="@+id/ble_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_v2_tab_b"
+                android:layout_weight="1"
+                android:text="力学监测"
+                android:textAlignment="gravity"
+                android:textSize="30sp"
+                android:textColor="@color/colorWhite"
+                android:paddingTop="60dp"
+                android:paddingLeft="80dp"
+                android:gravity="left"/>
+
+            <Button
+                android:id="@+id/playback_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_v2_tab_c"
+                android:layout_weight="1"
+                android:text="数据回放"
+                android:textAlignment="gravity"
+                android:textSize="30sp"
+                android:textColor="@color/colorWhite"
+                android:paddingTop="60dp"
+                android:paddingLeft="80dp"
+                android:gravity="left"/>
+
+        </LinearLayout>
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

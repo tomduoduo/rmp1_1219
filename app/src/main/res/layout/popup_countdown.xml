@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:background="@drawable/gradient_orange_round"
+    android:alpha="1">
+
+
+
+    <cn.iwgang.countdownview.CountdownView
+        android:id="@+id/countdown_view"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:layout_marginRight="3dp"
+        android:layout_marginTop="3dp"
+        app:isHideTimeBackground="true"
+        app:isShowMinute="false"
+        app:isShowSecond="true"
+        app:timeTextColor="@color/colorGrayDark"
+        app:timeTextSize="130sp"
+        app:isTimeTextBold="true"
+        app:suffixGravity="center"
+        app:suffixTextColor="@color/colorGrayDark"
+        app:suffixTextSize="50sp"
+   />
+
+    <TextView
+        android:id="@+id/go_mark"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:textAlignment="center"
+        android:paddingTop="28dp"
+        android:textStyle="bold"
+        android:textSize="100sp"
+        android:textColor="#ffffff"
+        android:text="GO!"
+        android:background="@drawable/gradient_green_round"
+        android:layout_gravity="center"
+        android:alpha="0"/>
+
+
+
+
+</FrameLayout>

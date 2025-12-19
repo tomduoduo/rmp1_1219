@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+
+    <FrameLayout
+        android:id="@+id/item_container_HRM"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="left">
+
+        <ImageView
+            android:id="@+id/player_image_HRM"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/input_box_7"
+            >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/player_name_HRM"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="王建国"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="top|left">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/player_polarID_HRM"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:text="B95F4992"
+            android:textColor="@color/colorGrayDark"
+            android:textSize="12sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:layout_gravity="bottom|left">
+
+        </TextView>
+
+
+
+    </FrameLayout>
+
+
+
+</LinearLayout>

@@ -1,0 +1,1561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center">
+
+    <FrameLayout
+        android:layout_width="600dp"
+        android:layout_height="570dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_grid"
+        android:alpha="1">
+
+        <Button
+            android:id="@+id/confirm_plan_HRM"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="确认"
+            android:textSize="12sp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/gradient_green">
+
+        </Button>
+
+        <Button
+            android:id="@+id/clear_plan_HRM"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:text="清除选择"
+            android:textSize="12sp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="275dp"
+            android:background="@drawable/gradient_black_2">
+
+        </Button>
+
+
+        <FrameLayout
+            android:layout_width="110dp"
+            android:layout_height="500dp"
+            android:background="@drawable/input_box_6"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="110dp">
+
+            <Button
+                android:id="@+id/hrm_btn_add_player"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="+"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="15dp"
+                android:alpha="0"
+
+                android:background="@drawable/input_box"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="-105dp">
+            </Button>
+
+            <Button
+                android:id="@+id/hrm_btn_mod_player"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="..."
+                android:textColor="@color/colorGrayDark"
+                android:textSize="20dp"
+                android:alpha="0"
+                android:background="@drawable/input_box"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="-105dp">
+            </Button>
+
+            <Button
+                android:id="@+id/hrm_btn_del_player"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="-"
+                android:textColor="@color/colorGrayDark"
+                android:textSize="20dp"
+                android:alpha="0"
+                android:background="@drawable/input_box"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="75dp"
+                android:layout_marginBottom="-105dp">
+            </Button>
+
+            <ListView
+                android:id="@+id/hrm_player_list_lv"
+                android:layout_width="100dp"
+                android:layout_height="490dp"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="5dp">
+
+            </ListView>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="110dp"
+            android:layout_height="500dp"
+            android:background="@drawable/input_box_6"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="230dp">
+
+            <Button
+                android:id="@+id/hrm_btn_add_plan"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="+"
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp"
+                android:background="@drawable/gradient_green"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp">
+            </Button>
+
+            <Button
+                android:id="@+id/hrm_btn_mod_plan"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="..."
+                android:textColor="@color/colorGrayDark"
+                android:textSize="20dp"
+                android:background="@drawable/input_box"
+                android:layout_gravity="bottom|right"
+                android:alpha="0"
+                android:layout_marginRight="40dp"
+                android:layout_marginBottom="5dp">
+            </Button>
+
+            <Button
+                android:id="@+id/hrm_btn_del_plan"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:text="-"
+                android:textColor="@color/colorWhite"
+                android:textSize="20dp"
+                android:background="@drawable/gradient_red"
+                android:layout_gravity="bottom|right"
+                android:alpha="1"
+                android:layout_marginRight="75dp"
+                android:layout_marginBottom="5dp">
+            </Button>
+
+            <ListView
+                android:id="@+id/hrm_plan_lv"
+                android:layout_width="100dp"
+                android:layout_height="455dp"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="5dp">
+            </ListView>
+
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="330dp"
+            android:layout_height="500dp"
+            android:background="@drawable/input_box_6"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="120dp">
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="1"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:alpha="0"
+                    android:background="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="12sp">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25dp"
+                    android:alpha="0"
+                    android:background="@color/colorNearBlack"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="12sp">
+
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="2"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="3"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="4"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="70dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="5"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="70dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="6"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_6"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="70dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="7"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_7"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_7"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="70dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="8"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_8"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_8"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="130dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="9"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_9"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_9"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="130dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="10"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_10"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_10"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="130dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="11"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_11"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_11"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="130dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="12"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_12"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_12"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="190dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="13"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_13"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_13"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="190dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="14"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_14"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_14"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="190dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="15"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_15"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_15"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="190dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="16"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_16"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_16"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="250dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="17"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_17"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_17"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="250dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="18"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_18"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_18"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="250dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="19"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_19"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_19"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="250dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="20"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_20"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_20"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="310dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="21"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_21"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_21"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="310dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="22"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_22"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_22"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="310dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="23"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_23"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_23"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="310dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="24"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_24"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_24"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="370dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="25"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_25"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_25"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="370dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="26"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_26"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_26"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="370dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="27"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_27"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_27"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="370dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="28"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_28"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_28"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="430dp"
+                android:layout_marginLeft="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="29"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_29"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_29"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="430dp"
+                android:layout_marginLeft="90dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="30"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_30"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_30"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="430dp"
+                android:layout_marginLeft="170dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="31"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_31"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_31"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:background="@drawable/input_box_6"
+                android:layout_gravity="left|top"
+                android:layout_marginTop="430dp"
+                android:layout_marginLeft="250dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="32"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorGrayDark"
+                    android:gravity="center"
+                    android:alpha="0.5">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_name_32"
+                    android:layout_width="match_parent"
+                    android:layout_height="25sp"
+                    android:background="@color/colorGrayDark"
+                    android:text=""
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hrm_selected_polarID_32"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    android:background="@color/colorNearBlack"
+                    android:layout_marginTop="25dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:alpha="0">
+                </TextView>
+
+            </FrameLayout>
+
+
+
+        </FrameLayout>
+
+
+
+
+    </FrameLayout>
+
+
+</FrameLayout>

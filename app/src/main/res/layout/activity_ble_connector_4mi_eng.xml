@@ -1,0 +1,1687 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BleConnector">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_black_2"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="@drawable/gradient"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="-15dp"
+                android:layout_marginTop="720dp"
+                android:gravity="center"
+                android:text="Sensors："
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp"></TextView>
+
+            <TextView
+                android:id="@+id/dots_count"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="720dp"
+                android:background="@drawable/input_box_5"
+                android:gravity="center"
+                android:paddingRight="1dp"
+                android:text="0"
+                android:textColor="@color/colorWhite"
+                android:textSize="13sp"></TextView>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_01"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_01_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="70dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_02"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_02_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="130dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_03"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_03_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="190dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_04"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_04_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="250dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_05"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_05_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="310dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_06"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_06_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="370dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_07"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_07_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="430dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_08"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_08_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="490dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_09"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_09_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="550dp"
+                android:background="@drawable/input_box">
+
+                <com.gigamole.library.ShadowLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    app:sl_shadow_angle="30"
+                    app:sl_shadow_color="@color/colorNearBlack"
+                    app:sl_shadow_distance="5dp"
+                    app:sl_shadow_radius="5dp">
+
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/dots"></ImageView>
+
+                </com.gigamole.library.ShadowLayout>
+
+                <TextView
+                    android:id="@+id/dot_10"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="29dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/gradient_orange"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <TextView
+                    android:id="@+id/dot_10_pos"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="-"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btn_scan"
+                android:layout_width="95dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="615dp"
+                android:background="@drawable/gradient_orange_round_edge"
+                android:text="Scan"
+                android:textColor="@color/colorNearBlack"
+                android:textSize="10sp">
+
+            </Button>
+
+            <Button
+                android:id="@+id/btn_connect"
+                android:layout_width="95dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="650dp"
+                android:background="@drawable/gradient_green_round_edge"
+                android:text="Connect"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp">
+
+            </Button>
+
+            <Button
+                android:id="@+id/btn_poweroff"
+                android:layout_width="95dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="685dp"
+                android:background="@drawable/gradient_red_round_edge"
+                android:text="Power Off"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp">
+
+            </Button>
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="left">
+
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:alpha="0.15"
+                android:background="@drawable/wave">
+
+            </ImageView>
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:alpha="0.9"
+                android:background="@drawable/boat_line_crop_2">
+
+            </ImageView>
+
+            <FrameLayout
+                android:layout_width="230dp"
+                android:layout_height="85dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="290dp"
+                android:alpha="0.9"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="left|top"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@drawable/gradient_black">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="left|top"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="-3dp"
+                    android:background="@drawable/polar_logo">
+
+                </ImageView>
+
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal|right"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginRight="18dp"
+                    android:alpha="1"
+                    android:gravity="center"
+                    android:text="HRM："
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_horizontal|right"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginRight="95dp"
+                    android:alpha="0.9"
+                    android:background="@drawable/heartbeat">
+
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/belts_count"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal|right"
+                    android:background="@drawable/gradient_red"
+                    android:gravity="center"
+                    android:paddingRight="-1dp"
+                    android:text="-"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="13sp"></TextView>
+
+                <TextView
+                    android:id="@+id/hr_1_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="83dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P1"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_2_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="27dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P2"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_3_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="-28dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P3"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_4_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="-83dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P4"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_5_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginRight="83dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P5"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_6_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginRight="27dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P6"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_7_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginRight="-28dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P7"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+                <TextView
+                    android:id="@+id/hr_8_connector"
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginRight="-83dp"
+                    android:alpha="1"
+                    android:background="@drawable/input_box"
+                    android:gravity="center"
+                    android:text="P8"
+                    android:textColor="@color/colorGrayDark"
+                    android:textSize="10sp"
+                    android:textStyle="bold">
+
+                </TextView>
+
+            </FrameLayout>
+
+
+            <FrameLayout
+                android:id="@+id/oar_container_L1"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="375dp"
+                android:layout_marginRight="75dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="L1"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_L1"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_L2"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="175dp"
+                android:layout_marginRight="75dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="L2"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_L2"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_L3"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="175dp"
+                android:layout_marginRight="575dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="L3"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_L3"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_L4"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="75dp"
+                android:layout_marginRight="575dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="L4"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_L4"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_R1"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="75dp"
+                android:layout_marginTop="275dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="R1"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_R1"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_R2"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="75dp"
+                android:layout_marginTop="75dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="R2"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_R2"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_R3"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="575dp"
+                android:layout_marginTop="75dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="R3"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_R3"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/oar_container_R4"
+
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="575dp"
+                android:layout_marginTop="75dp"
+                android:background="@drawable/gradient_black">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="R4"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_R4"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/gradient_black">
+
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="BOAT"
+                    android:textColor="@color/colorWhite"></TextView>
+
+                <Spinner
+                    android:id="@+id/spinner_Boat"
+                    android:layout_width="60dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_orange"
+                    android:entries="@array/DotsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_1"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="375dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P1"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_1_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_2"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="275dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P2"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_2_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_3"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="175dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P3位"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_3_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_4"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="75dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P4"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_4_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_5"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="225dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="5号位"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_5_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_6"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="175dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="6号位"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_6_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_7"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="125dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="7号位"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_7_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/name_container_8"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="75dp"
+                android:background="@color/colorNearBlack">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="8号位"
+                    android:textColor="@color/colorOrangeDark"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/name_8_spinner"
+                    android:layout_width="64dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_1"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="375dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P1"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_1_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_2"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="275dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P2"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_2_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_3"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="175dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P3"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_3_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_4"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="75dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="P4"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_4_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_5"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="225dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="5号位"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_5_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_6"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="175dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="6号位"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_6_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_7"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="125dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="7号位"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_7_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/hrm_container_8"
+                android:layout_width="70dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="500dp"
+                android:layout_marginTop="75dp"
+                android:background="@drawable/gradient_light">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="8号位"
+                    android:textColor="@color/colorNearBlack"
+                    android:textSize="12sp"></TextView>
+
+                <Spinner
+                    android:id="@+id/hr_8_spinner"
+                    android:layout_width="65dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/gradient_red"
+                    android:entries="@array/BeltsName" />
+
+            </FrameLayout>
+
+
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/name_hr_switch"
+                android:layout_marginTop="120dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:kswBackColor="@color/colorNearBlack"
+                app:kswThumbColor="@color/colorRedDark"
+                app:kswThumbWidth="15dp"
+                app:kswThumbHeight="8dp"
+                app:kswThumbMarginTop="3dp"
+                app:kswThumbMarginBottom="3dp"
+                app:kswThumbMarginRight="5dp"
+                app:kswThumbMarginLeft="5dp"
+                app:kswTextExtra="5dp" />
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="120dp"
+                android:layout_marginRight="50dp"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:textSize="12sp"
+                android:text="HRM">
+
+            </TextView>
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="120dp"
+                android:layout_marginLeft="50dp"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:textSize="12sp"
+                android:text="Athlete">
+
+            </TextView>
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/side_switch"
+                android:layout_marginTop="150dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:kswBackColor="@color/colorNearBlack"
+                app:kswThumbColor="@color/colorGreenDark"
+                app:kswThumbWidth="15dp"
+                app:kswThumbHeight="8dp"
+                app:kswThumbMarginTop="3dp"
+                app:kswThumbMarginBottom="3dp"
+                app:kswThumbMarginRight="5dp"
+                app:kswThumbMarginLeft="5dp"
+                app:kswTextExtra="5dp"
+                android:alpha="1"
+                android:enabled="true"/>
+
+            <TextView
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="170dp"
+                android:layout_marginLeft="0dp"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:textSize="12sp"
+                android:text="Side"
+                android:alpha="1">
+
+            </TextView>
+
+
+        </FrameLayout>
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
