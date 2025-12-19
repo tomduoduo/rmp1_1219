@@ -122,9 +122,7 @@ public class Speedometer extends AppCompatActivity {
     private PopupWindow windowResult = null;
     private PopupWindow windowUploadResult = null;
     private BubbleSeekBar mDistanceSlider;
-    private BubbleSeekBar mSRThreshSlider;
-    private BubbleSeekBar mSRGapSlider;
-    private BubbleSeekBar mSRCacheLengthSlider;
+    
 
     private View popupWindowView;
     private View popupCountdownView;
@@ -190,20 +188,7 @@ public class Speedometer extends AppCompatActivity {
     private int initiateLock = 5;
     private int updateCount = 0;
 
-    private double minStrokeGap = 1400;
-    private double minBoatAccl = 1.3;
-    private double strokeCount = 0;
     private double strokeRateAvg = 0;
-    private double strokeIdleMax = 5000;
-
-    private int acclCacheLength = 30;
-    private double[] acclCacheSamples = new double[acclCacheLength];
-    private int acclCachePointer = 0;
-    private int acclCacheSize = 0;
-    private double acclCacheSum = 0.0;
-
-    double strokeNow;
-    double strokeCache;
 
     private String mDistanceResultTx = "0";
     private String mAvgSPMResultTx = "0";
@@ -225,15 +210,14 @@ public class Speedometer extends AppCompatActivity {
     private String strokeRateTx = "0";
     private double logBeginTime = 0;
 
-    private int SRCacheLength = 2;
-    private double[] SRCacheSamples = new double[SRCacheLength];
-    private int SRCachePointer = 0;
-    private int SRCacheSize = 0;
-    private double SRCacheSum = 0.0;
+
 
     private int uploadStatus = 0;
     private int timeCorrectSec = 0;
     private int timeCorrectMin = 0;
+
+    // ========== StrokeDetector集成 ==========
+    private StrokeDetector strokeDetector;
 
     private HttpURLConnection httpURLConnectionUpdate;
     private Timer timer;
@@ -392,9 +376,6 @@ public class Speedometer extends AppCompatActivity {
         popupUploadResultView = inflater.inflate(R.layout.popup_upload, null, false);
 
         mDistanceSlider = popupWindowView.findViewById(R.id.distance_slider);
-        mSRCacheLengthSlider = popupWindowView.findViewById(R.id.SR_sensitivity_slider);
-        mSRGapSlider = popupWindowView.findViewById(R.id.SR_minGap_slider);
-        mSRThreshSlider = popupWindowView.findViewById(R.id.SR_minSpeed_slider);
 
         mDistanceSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
@@ -417,56 +398,7 @@ public class Speedometer extends AppCompatActivity {
             }
         });
 
-        mSRCacheLengthSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
-            @Override
-            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-                SRCacheLength = progress;
-            }
 
-            @Override
-            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-            }
-
-            @Override
-            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-            }
-        });
-
-        mSRGapSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
-            @Override
-            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-                minStrokeGap = progress * 1000;
-            }
-
-            @Override
-            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-            }
-
-            @Override
-            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-            }
-        });
-
-        mSRThreshSlider.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
-            @Override
-            public void onProgressChanged(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-                minBoatAccl = progress;
-            }
-
-            @Override
-            public void getProgressOnActionUp(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat) {
-            }
-
-            @Override
-            public void getProgressOnFinally(BubbleSeekBar bubbleSeekBar, int progress, float progressFloat,
-                    boolean fromUser) {
-            }
-        });
 
         mSensorListener = new TestSensorListener();
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -520,20 +452,10 @@ public class Speedometer extends AppCompatActivity {
 
                 } else {
 
-                    strokeCache = System.currentTimeMillis();
-                    strokeCount = 0;
-
-                    acclCacheSamples = new double[acclCacheLength];
-                    acclCachePointer = 0;
-                    acclCacheSize = 0;
-                    acclCacheSum = 0.0;
+                    // ========== StrokeDetector集成 - 启动检测器 ==========
+                    strokeDetector.start();
 
                     strokeRateTx = "0";
-
-                    SRCacheSamples = new double[SRCacheLength];
-                    SRCachePointer = 0;
-                    SRCacheSize = 0;
-                    SRCacheSum = 0.0;
 
                     // mBoatYaw.setRotation(0);
                     // timeCorrectSec = 0;
@@ -587,6 +509,9 @@ public class Speedometer extends AppCompatActivity {
 
         // locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 200, 1,
         // locationListener);
+
+        // ========== StrokeDetector初始化 ==========
+        strokeDetector = new StrokeDetector(1400, 1.3, 5000);
 
     }
 
@@ -767,6 +692,9 @@ public class Speedometer extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
                         mStartStatus = 0;
+                        
+                        // ========== StrokeDetector集成 - 停止检测器 ==========
+                        strokeDetector.stop();
 
                         DecimalFormat decimalFormat = new DecimalFormat("0.0");
                         DecimalFormat decimalFormat_1 = new DecimalFormat("0");
@@ -775,7 +703,6 @@ public class Speedometer extends AppCompatActivity {
                         String speedAvgTx = decimalFormat.format(speedAvg);
                         String speedMaxTx = decimalFormat.format(speedMax);
                         strokeRateAvgTx = decimalFormat.format(strokeRateAvg);
-                        String strokeCountTx = decimalFormat_1.format(strokeCount);
 
                         int tempHourResult = 0;
                         int tempMinResult = 0;
@@ -798,7 +725,7 @@ public class Speedometer extends AppCompatActivity {
 
                         mDistanceResultTx = distanceTx;
                         mAvgSPMResultTx = strokeRateAvgTx;
-                        mStrokeCountResultTx = strokeCountTx;
+                        mStrokeCountResultTx = String.valueOf(strokeDetector.getStrokeCount());
                         mAvgBoatSpeedTx = speedAvgTx;
                         mMaxBoatSpeedTx = speedMaxTx;
 
@@ -817,16 +744,11 @@ public class Speedometer extends AppCompatActivity {
                         elapsedHour = 0;
                         hourMarker = 0;
 
-                        acclCachePointer = 0;
-                        acclCacheSize = 0;
-                        acclCacheSum = 0.0;
-
                         traveledDistance = 0;
                         distanceTemp = 0;
                         speed = 0;
                         speedAvg = 0;
                         speedMax = 0;
-                        strokeCount = 0;
 
                         mBoatYaw.setRotation(0);
                         // timeCorrectSec = 0;
@@ -1076,7 +998,6 @@ public class Speedometer extends AppCompatActivity {
 
                     mStrokeRate.setText("0.0");
                     mStrokeCount.setText("0");
-                    strokeCount = 0;
 
                     mStrokeRateAvg.setText("0.0");
                     mBoatYaw.setRotation(0);
@@ -1249,9 +1170,6 @@ public class Speedometer extends AppCompatActivity {
         double boatYawTan = yAcclLinear / boatAcclActualNow;
         float boatYawAngle = 0f;
 
-        double strokeNow = System.currentTimeMillis();
-        double strokeGap = strokeNow - strokeCache;
-
         int tempHourStrokeRateAvg = 0;
         int tempMinStrokeRateAvg = 0;
         int tempSecStrokeRateAvg = 0;
@@ -1277,86 +1195,43 @@ public class Speedometer extends AppCompatActivity {
 
         sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
 
-        if (acclCacheSize < acclCacheLength) {
+        double boatAcclActual = boatAcclActualNow;
 
-            acclCacheSamples[acclCachePointer++] = boatAcclActualNow;
-            acclCacheSize++;
-
-        } else {
-
-            acclCachePointer = acclCachePointer % acclCacheLength;
-            acclCacheSum -= acclCacheSamples[acclCachePointer];
-            acclCacheSamples[acclCachePointer++] = boatAcclActualNow;
-        }
-
-        double boatAcclActual = doubleArrAverage(acclCacheSamples);
-
-        if (strokeGap > strokeIdleMax) {
-            mStrokeRate.setText("0.0");
-            // strokeRateTx = "0.0";
-            double strokeRateActual = 0;
-            DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
-            strokeRateTx = StrokeRateFormatter.format(strokeRateActual);
-            mStrokeRate.setText(strokeRateTx);
-            mBoatYaw.setRotation(0);
-        }
-
-        if (boatAcclActual > minBoatAccl && mStartStatus == 1) {
-
-            strokeNow = System.currentTimeMillis();
-            strokeGap = strokeNow - strokeCache;
-
-            if (strokeGap > minStrokeGap) {
-
-                strokeCache = strokeNow;
-                double strokeRate = 0;
-
-                if (strokeCount < 1) {
-                    strokeRate = 0;
-                } else {
-                    strokeRate = 60000 / strokeGap;
-                }
-
-                if (SRCacheSize < SRCacheLength) {
-
-                    SRCacheSamples[SRCachePointer++] = strokeRate;
-                    SRCacheSize++;
-
-                } else {
-
-                    SRCachePointer = SRCachePointer % SRCacheLength;
-                    SRCacheSum -= SRCacheSamples[SRCachePointer];
-                    SRCacheSamples[SRCachePointer++] = strokeRate;
-                }
-
-                double strokeRateActual = doubleArrAverage(SRCacheSamples);
-                Log.i("sr actual:", String.valueOf(strokeRateActual));
-
+        // ========== StrokeDetector集成 - 替换原有桨频检测逻辑 ==========
+        if (mStartStatus == 1) {
+            StrokeDetector.StrokeResult result = strokeDetector.detectStroke(
+                boatAcclActual, System.currentTimeMillis()
+            );
+            
+            if (result.isNewStroke) {
                 DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
-                strokeRateTx = StrokeRateFormatter.format(strokeRateActual);
+                strokeRateTx = StrokeRateFormatter.format(result.strokeRate);
                 mStrokeRate.setText(strokeRateTx);
-
+                
                 DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
-                String strokeCountTx = StrokeCountFormatter.format(strokeCount);
-
-                strokeCount = strokeCount + 1;
-                mStrokeCount.setText(strokeCountTx);
+                mStrokeCount.setText(StrokeCountFormatter.format(result.strokeCount));
+                
+                // 更新平均桨频
                 double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
-                double strokeCountDouble = strokeCount;
-
-                if (strokeCount < 2) {
+                double strokeCountDouble = result.strokeCount;
+                
+                if (strokeCountDouble < 2) {
                     strokeRateAvg = 0;
                 } else {
                     strokeRateAvg = strokeCountDouble / totalElapsedMin;
                 }
-
+                
                 strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
                 mStrokeRateAvg.setText(strokeRateAvgTx);
-
+                
                 boatYawAngle = (float) (Math.atan(boatYawTan) * 180 / Math.PI);
                 mBoatYaw.setRotation(-boatYawAngle);
-
             }
+        } else {
+            // 当检测器未运行时，显示0.0
+            mStrokeRate.setText("0.0");
+            strokeRateTx = "0.0";
+            mBoatYaw.setRotation(0);
         }
 
         SimpleDateFormat simpleDateFormatCache = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
@@ -1574,14 +1449,6 @@ public class Speedometer extends AppCompatActivity {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = f;
         getWindow().setAttributes(lp);
-    }
-
-    public double doubleArrAverage(double[] arr) {
-        double sum = 0;
-        for (int i = 0; i < arr.length; i++) {
-            sum += arr[i];
-        }
-        return sum / arr.length;
     }
 
     private void resetSpeed(int milliSec) {
