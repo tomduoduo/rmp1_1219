@@ -122,7 +122,6 @@ public class Speedometer extends AppCompatActivity {
     private PopupWindow windowResult = null;
     private PopupWindow windowUploadResult = null;
     private BubbleSeekBar mDistanceSlider;
-    
 
     private View popupWindowView;
     private View popupCountdownView;
@@ -172,21 +171,14 @@ public class Speedometer extends AppCompatActivity {
     private Button mSaveExit;
     private Button mNoSaveExit;
 
+    // ========== LocationTracker集成 ==========
+    private LocationTracker locationTracker;
+
     private double latitude_0;
     private double longitude_0;
-    private double traveledDistance = 0;
-    private double speedLowLimit = 0.5;
-    private double distanceTempHighLimit = 50;
-    private double distanceTempLowLimit = 1;
-    private double speedLastUpdate;
-    private double speedNewUpdate;
-    private double speedIdle;
-    private int speedReset;
-    private double distanceTemp = 0;
     private double speedAvg = 0;
     private double speedMax = 0;
-    private int initiateLock = 5;
-    private int updateCount = 0;
+    private double traveledDistance = 0;
 
     private double strokeRateAvg = 0;
 
@@ -209,8 +201,6 @@ public class Speedometer extends AppCompatActivity {
     private String strBegTime = "";
     private String strokeRateTx = "0";
     private double logBeginTime = 0;
-
-
 
     private int uploadStatus = 0;
     private int timeCorrectSec = 0;
@@ -281,6 +271,46 @@ public class Speedometer extends AppCompatActivity {
         mDistance = findViewById(R.id.boat_travel_distance_actual);
         String serviceName = this.LOCATION_SERVICE;
         locationManager = (LocationManager) getSystemService(serviceName);
+
+        // ========== LocationTracker初始化 ==========
+        locationTracker = new LocationTracker(this, 500, 3);
+        locationTracker.setLocationUpdateListener(new LocationTracker.LocationUpdateListener() {
+            @Override
+            public void onLocationUpdate(LocationTracker.LocationUpdate update) {
+                // 更新UI显示
+                DecimalFormat decimalFormat = new DecimalFormat("0.0");
+                DecimalFormat decimalFormat_1 = new DecimalFormat("0");
+
+                // 更新速度显示
+                speedTx = decimalFormat.format(update.speed);
+                mSpeed.setText(speedTx);
+
+                // 更新最大速度
+                String speedMaxTx = decimalFormat.format(update.maxSpeed);
+                mSpeedMax.setText(speedMaxTx);
+
+                // 更新平均速度
+                String speedAvgTx = decimalFormat.format(update.avgSpeed);
+                mSpeedAvg.setText(speedAvgTx);
+
+                // 更新距离显示
+                String distanceTx = decimalFormat_1.format(update.totalDistance);
+                mDistance.setText(distanceTx);
+
+                // 更新Split Time显示
+                int splitTime = (int) update.splitTime;
+                int splitTimeSec = splitTime % 60;
+                splitTime = splitTime - splitTimeSec;
+                int splitTimeMin = splitTime / 60;
+                String splitTimeTx = splitTimeMin + ":" + splitTimeSec;
+                halfKmElapse.setText(splitTimeTx);
+
+                // 更新内部状态变量
+                speedAvg = update.avgSpeed;
+                speedMax = update.maxSpeed;
+                traveledDistance = update.totalDistance;
+            }
+        });
 
         mSelectDistance = findViewById(R.id.distance_select_speedometer);
         mStart = findViewById(R.id.start_measure_speedometer);
@@ -398,8 +428,6 @@ public class Speedometer extends AppCompatActivity {
             }
         });
 
-
-
         mSensorListener = new TestSensorListener();
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -473,7 +501,7 @@ public class Speedometer extends AppCompatActivity {
                     spinnerTrainSelect.setEnabled(false);
                     mSelectDistance.setEnabled(false);
 
-                    locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 500, 3, locationListener);
+                    locationTracker.startTracking();
 
                     if (mCountDownSwitchStatus == 0) {
 
@@ -515,57 +543,6 @@ public class Speedometer extends AppCompatActivity {
 
     }
 
-    private final LocationListener locationListener = new LocationListener() {
-
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            switch (status) {
-                // GPS状态为可见时
-                case LocationProvider.AVAILABLE:
-                    Log.i(TAG, "当前GPS状态为可见状态");
-                    break;
-                // GPS状态为服务区外时
-                case LocationProvider.OUT_OF_SERVICE:
-                    Log.i(TAG, "当前GPS状态为服务区外状态");
-                    break;
-                // GPS状态为暂停服务时
-                case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    Log.i(TAG, "当前GPS状态为暂停服务状态");
-                    break;
-            }
-        }
-
-        public void onProviderEnabled(String provider) {
-
-            if (ActivityCompat.checkSelfPermission(Speedometer.this,
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(Speedometer.this,
-                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                // ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                // public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                // int[] grantResults)
-                // to handle the case where the user grants the permission. See the
-                // documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            mLocation = locationManager.getLastKnownLocation(provider);
-            latitude_0 = mLocation.getLatitude();
-            longitude_0 = mLocation.getLongitude();
-            speedLastUpdate = System.currentTimeMillis();
-
-        }
-
-        public void onProviderDisabled(String provider) {
-            mLocation = null;
-        }
-
-        public void onLocationChanged(Location location) {
-            updateToNewLocation(location);
-        }
-    };
-
     public double getDistance(double lat1, double lon1,
             double lat2, double lon2) {
         float[] results = new float[1];
@@ -575,110 +552,6 @@ public class Speedometer extends AppCompatActivity {
             e.printStackTrace();
         }
         return results[0];
-    }
-
-    private void updateToNewLocation(Location location) {
-
-        DecimalFormat decimalFormat = new DecimalFormat("0.0");
-        DecimalFormat decimalFormat_1 = new DecimalFormat("0");
-        SimpleDateFormat formatterSplitTime = new SimpleDateFormat("HH:mm:ss");
-
-        speedNewUpdate = System.currentTimeMillis();
-
-        if (location != null) {
-            // double latitude = location.getLatitude();
-            // double longitude = location.getLongitude();
-
-            double latitude = latitude_0_GD;
-            double longitude = longitude_0_GD;
-
-            distanceTemp = 0;
-            speed = 0;
-            updateCount = updateCount + 1;
-
-            int tempMin = 0;
-            int tempSec = 0;
-            int tempHour = 0;
-
-            if (totalElapse.length() <= 5) {
-
-                tempHour = 0;
-                tempMin = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                tempSec = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-
-            } else {
-                tempHour = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                tempMin = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                tempSec = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
-
-            }
-
-            int tempTotalSec = tempHour * 3600 + tempMin * 60 + tempSec;
-
-            mSectionTimeResultTx = elapsedHour + String.valueOf(tempMin + timeCorrectMin) + ":" + tempSec;
-            // System.out.println("total sec: " + tempTotalSec);
-            // System.out.println("update count: " + updateCount);
-
-            if (location.hasSpeed() && location.getSpeed() > speedLowLimit && updateCount > initiateLock) {
-                try {
-                    distanceTemp = getDistance(latitude_0, longitude_0, latitude, longitude);
-                    // boatTravelTarget.setText(String.valueOf(distanceTemp));
-                    if (distanceTemp > distanceTempHighLimit || distanceTemp < distanceTempLowLimit) {
-                        distanceTemp = 0;
-                    }
-
-                    traveledDistance = traveledDistance + distanceTemp;
-                    String distanceTx = decimalFormat_1.format(traveledDistance);
-                    mDistance.setText(distanceTx);
-                    latitude_0 = latitude;
-                    longitude_0 = longitude;
-                    speedLastUpdate = speedNewUpdate;
-
-                } catch (Exception e) {
-                    latitude_0 = latitude;
-                    longitude_0 = longitude;
-                    speed = 0;
-                    distanceTemp = 0;
-
-                }
-
-                if (distanceTemp != 0 && location.getSpeed() > speedLowLimit) {
-                    speed = location.getSpeed();
-
-                    int splitTime = (int) (500 / speed);
-                    int splitTimeSec = splitTime % 60;
-                    splitTime = splitTime - splitTimeSec;
-                    int splitTimeMin = splitTime / 60;
-
-                    String splitTimeTx = splitTimeMin + ":" + splitTimeSec;
-                    halfKmElapse.setText(splitTimeTx);
-
-                    speedAvg = traveledDistance / tempTotalSec;
-                    System.out.println("avg speed:" + speedAvg);
-
-                    String speedAvgTx = decimalFormat.format(speedAvg);
-                    mSpeedAvg.setText(speedAvgTx);
-
-                    if (speed > speedMax) {
-
-                        speedMax = speed;
-                        String speedMaxTx = decimalFormat.format(speedMax);
-                        mSpeedMax.setText(speedMaxTx);
-
-                    }
-                    speedTx = decimalFormat.format(speed);
-                    mSpeed.setText(speedTx);
-                    speed = 0;
-                }
-
-            } else {
-                mSpeed.setText("0.0");
-                latitude_0 = latitude;
-                longitude_0 = longitude;
-
-            }
-        }
-
     }
 
     private void shutdownAlert() {
@@ -692,7 +565,7 @@ public class Speedometer extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
                         mStartStatus = 0;
-                        
+
                         // ========== StrokeDetector集成 - 停止检测器 ==========
                         strokeDetector.stop();
 
@@ -745,10 +618,12 @@ public class Speedometer extends AppCompatActivity {
                         hourMarker = 0;
 
                         traveledDistance = 0;
-                        distanceTemp = 0;
                         speed = 0;
                         speedAvg = 0;
                         speedMax = 0;
+
+                        // 重置LocationTracker状态
+                        locationTracker.reset();
 
                         mBoatYaw.setRotation(0);
                         // timeCorrectSec = 0;
@@ -763,9 +638,7 @@ public class Speedometer extends AppCompatActivity {
                         mStrokeCount.setText("0");
                         mStrokeRateAvg.setText("0.0");
 
-                        updateCount = 0;
-
-                        locationManager.removeUpdates(locationListener);
+                        locationTracker.stopTracking();
 
                         try {
                             writerCustomData.close();
@@ -975,8 +848,10 @@ public class Speedometer extends AppCompatActivity {
                     totalElapse.stop();
 
                     traveledDistance = 0;
-                    distanceTemp = 0;
                     speed = 0;
+
+                    // 重置LocationTracker状态
+                    locationTracker.reset();
 
                     DecimalFormat decimalFormat = new DecimalFormat("0.0");
                     DecimalFormat decimalFormat_1 = new DecimalFormat("0");
@@ -1006,9 +881,7 @@ public class Speedometer extends AppCompatActivity {
                     // timeCorrectSec = 0;
                     // timeCorrectMin = 0;
 
-                    updateCount = 0;
-
-                    locationManager.removeUpdates(locationListener);
+                    locationTracker.stopTracking();
 
                 }
 
@@ -1200,30 +1073,29 @@ public class Speedometer extends AppCompatActivity {
         // ========== StrokeDetector集成 - 替换原有桨频检测逻辑 ==========
         if (mStartStatus == 1) {
             StrokeDetector.StrokeResult result = strokeDetector.detectStroke(
-                boatAcclActual, System.currentTimeMillis()
-            );
-            
+                    boatAcclActual, System.currentTimeMillis());
+
             if (result.isNewStroke) {
                 DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
                 strokeRateTx = StrokeRateFormatter.format(result.strokeRate);
                 mStrokeRate.setText(strokeRateTx);
-                
+
                 DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
                 mStrokeCount.setText(StrokeCountFormatter.format(result.strokeCount));
-                
+
                 // 更新平均桨频
                 double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
                 double strokeCountDouble = result.strokeCount;
-                
+
                 if (strokeCountDouble < 2) {
                     strokeRateAvg = 0;
                 } else {
                     strokeRateAvg = strokeCountDouble / totalElapsedMin;
                 }
-                
+
                 strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
                 mStrokeRateAvg.setText(strokeRateAvgTx);
-                
+
                 boatYawAngle = (float) (Math.atan(boatYawTan) * 180 / Math.PI);
                 mBoatYaw.setRotation(-boatYawAngle);
             }
@@ -1449,13 +1321,6 @@ public class Speedometer extends AppCompatActivity {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = f;
         getWindow().setAttributes(lp);
-    }
-
-    private void resetSpeed(int milliSec) {
-        speedIdle = speedNewUpdate - speedLastUpdate;
-        if (speedIdle >= milliSec) {
-            speed = 0;
-        }
     }
 
     class TestSensorListener implements SensorEventListener {
