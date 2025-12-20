@@ -98,11 +98,7 @@ public class Speedometer extends AppCompatActivity {
     private Sensor mAccelerometerLinear;
     private Sensor mMagnetic;
     private Sensor mAllData;
-    private TestSensorListener mSensorListener;
-
-    private float[] accelerometerValues = new float[3];
-    private float[] magneticFieldValues = new float[3];
-    private float[] accelerometerLinearValues = new float[3];
+    private SensorProcessor sensorProcessor;
 
     private ImageView boatRoll;
     private ImageView boatYaw;
@@ -208,6 +204,7 @@ public class Speedometer extends AppCompatActivity {
 
     // ========== StrokeDetector集成 ==========
     private StrokeDetector strokeDetector;
+    private boolean isStrokeDisplayReset = false; // 桨频显示重置标志
 
     private HttpURLConnection httpURLConnectionUpdate;
     private Timer timer;
@@ -216,6 +213,10 @@ public class Speedometer extends AppCompatActivity {
     private String userName;
     private String mDistanceTx;
     private String mDisplayTimeTx;
+
+    // 时间相关字段（测试用）
+    private long startTime = 0;
+    private long currentTime = 0;
 
     private AMapLocationClient mLocationClientGD = null;
     private AMapLocationListener mLocationListenerGD = null;
@@ -428,7 +429,115 @@ public class Speedometer extends AppCompatActivity {
             }
         });
 
-        mSensorListener = new TestSensorListener();
+        sensorProcessor = new SensorProcessor();
+        sensorProcessor.setListener(new SensorProcessor.SensorDataListener() {
+            @Override
+            public void onSensorDataUpdated(SensorProcessor.SensorData data) {
+                // 更新当前时间（测试用）
+                currentTime = System.currentTimeMillis();
+
+                // 更新船只姿态显示
+                boatRoll.setRotation(-data.roll);
+
+                // 传递给StrokeDetector进行桨频检测
+                if (logCreated == 1 && mStartStatus == 1) {
+                    StrokeDetector.StrokeResult result = strokeDetector.detectStroke(
+                            data.boatAcceleration, System.currentTimeMillis());
+
+                    if (result.isNewStroke) {
+                        DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
+                        strokeRateTx = StrokeRateFormatter.format(result.strokeRate);
+                        mStrokeRate.setText(strokeRateTx);
+
+                        DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
+                        mStrokeCount.setText(StrokeCountFormatter.format(result.strokeCount));
+
+                        // 更新平均桨频
+                        int tempHourStrokeRateAvg = 0;
+                        int tempMinStrokeRateAvg = 0;
+                        int tempSecStrokeRateAvg = 0;
+
+                        if (totalElapse.length() <= 5) {
+                            tempHourStrokeRateAvg = 0;
+                            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                        } else {
+                            tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
+                        }
+
+                        double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
+                                + tempSecStrokeRateAvg;
+                        double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
+                        double strokeCountDouble = result.strokeCount;
+
+                        if (strokeCountDouble < 2) {
+                            strokeRateAvg = 0;
+                        } else {
+                            strokeRateAvg = strokeCountDouble / totalElapsedMin;
+                        }
+
+                        strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
+                        mStrokeRateAvg.setText(strokeRateAvgTx);
+
+                        // 更新偏航角显示
+                        mBoatYaw.setRotation(-data.boatYawAngle);
+                    }
+                } else {
+                    // 当检测器未运行时，仅在首次执行重置
+                    if (!isStrokeDisplayReset) {
+                        mStrokeRate.setText("0.0");
+                        strokeRateTx = "0.0";
+                        mBoatYaw.setRotation(0);
+                        isStrokeDisplayReset = true; // 标记已重置
+                    }
+                }
+
+                // ========== 新增：CSV 数据记录 ==========
+                if (logCreated == 1) {
+                    // 获取当前时间信息
+                    int tempHourStrokeRateAvg = 0;
+                    int tempMinStrokeRateAvg = 0;
+                    int tempSecStrokeRateAvg = 0;
+
+                    if (totalElapse.length() <= 5) {
+                        tempHourStrokeRateAvg = 0;
+                        tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                        tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                    } else {
+                        tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
+                        tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
+                        tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
+                    }
+
+                    // 更新时间相关变量
+                    mDisplayTimeTx = tempHourStrokeRateAvg + ":" + tempMinStrokeRateAvg + ":" + tempSecStrokeRateAvg;
+                    double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
+                            + tempSecStrokeRateAvg;
+                    sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
+
+                    // 写入CSV数据
+                    try {
+                        writerCustomData.writeNext(new String[] {
+                                String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
+                                String.valueOf((double) traveledDistance),
+                                strokeRateTx,
+                                speedTx,
+                                String.valueOf(data.boatAcceleration),
+                                String.valueOf(data.roll),
+                                String.valueOf(data.boatYawAngle)
+                        });
+                    } catch (Exception e) {
+                        writerCustomData.writeNext(new String[] {
+                                String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
+                                "0", "0", "0", "0", "0", "0"
+                        });
+                    }
+                }
+            }
+        });
+
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetic = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -482,6 +591,8 @@ public class Speedometer extends AppCompatActivity {
 
                     // ========== StrokeDetector集成 - 启动检测器 ==========
                     strokeDetector.start();
+
+                    isStrokeDisplayReset = false; // 重置标志，允许下次停止时重置UI
 
                     strokeRateTx = "0";
 
@@ -1000,9 +1111,9 @@ public class Speedometer extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // 注册传感器监听函数
-        mSensorManager.registerListener(mSensorListener, mAccelerometer, 50000);
-        mSensorManager.registerListener(mSensorListener, mMagnetic, 50000);
-        mSensorManager.registerListener(mSensorListener, mAccelerometerLinear, 50000);
+        mSensorManager.registerListener(sensorProcessor, mAccelerometer, 50000);
+        mSensorManager.registerListener(sensorProcessor, mMagnetic, 50000);
+        mSensorManager.registerListener(sensorProcessor, mAccelerometerLinear, 50000);
 
     }
 
@@ -1010,121 +1121,10 @@ public class Speedometer extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // 注销监听函数
-        mSensorManager.unregisterListener(mSensorListener);
+        mSensorManager.unregisterListener(sensorProcessor);
     }
 
-    private void calculateVectorData() {
-
-        float[] values = new float[3];
-        float[] R = new float[9];
-        SensorManager.getRotationMatrix(R, null, accelerometerValues,
-                magneticFieldValues);
-        SensorManager.getOrientation(R, values);
-        values[0] = (float) Math.toDegrees(values[0]);
-        values[1] = (float) Math.toDegrees(values[1]);
-        values[2] = (float) Math.toDegrees(values[2]);
-
-        boatRoll.setRotation(-values[1]);
-
-        float xAcclLinear = accelerometerLinearValues[0];
-        float yAcclLinear = accelerometerLinearValues[1];
-        float zAcclLinear = accelerometerLinearValues[2];
-
-        double tiltAngleX = values[2] * Math.PI / 180;
-        double tiltCosX = Math.cos(tiltAngleX);
-        double tiltAngleZ = (90 - Math.abs(values[2])) * Math.PI / 180;
-        double tiltCosZ = Math.cos(tiltAngleZ);
-
-        double xAcclActual = -xAcclLinear * tiltCosX;
-        double zAcclActual = zAcclLinear * tiltCosZ;
-
-        double boatAcclActualNow = xAcclActual + zAcclActual;
-
-        double boatYawTan = yAcclLinear / boatAcclActualNow;
-        float boatYawAngle = 0f;
-
-        int tempHourStrokeRateAvg = 0;
-        int tempMinStrokeRateAvg = 0;
-        int tempSecStrokeRateAvg = 0;
-
-        if (totalElapse.length() <= 5) {
-            tempHourStrokeRateAvg = 0;
-            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-
-        } else {
-            tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
-        }
-        mDisplayTimeTx = tempHourStrokeRateAvg + ":" + tempMinStrokeRateAvg + ":" + tempSecStrokeRateAvg;
-
-        // System.out.println(tempHourStrokeRateAvg+":"+ tempMinStrokeRateAvg+":" +
-        // tempSecStrokeRateAvg);
-
-        double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
-                + tempSecStrokeRateAvg;
-        // Log.e("totalSec:", tempTotalSecStrokeRateAvg+"");
-
-        sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
-
-        double boatAcclActual = boatAcclActualNow;
-
-        // ========== StrokeDetector集成 - 替换原有桨频检测逻辑 ==========
-        if (mStartStatus == 1) {
-            StrokeDetector.StrokeResult result = strokeDetector.detectStroke(
-                    boatAcclActual, System.currentTimeMillis());
-
-            if (result.isNewStroke) {
-                DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
-                strokeRateTx = StrokeRateFormatter.format(result.strokeRate);
-                mStrokeRate.setText(strokeRateTx);
-
-                DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
-                mStrokeCount.setText(StrokeCountFormatter.format(result.strokeCount));
-
-                // 更新平均桨频
-                double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
-                double strokeCountDouble = result.strokeCount;
-
-                if (strokeCountDouble < 2) {
-                    strokeRateAvg = 0;
-                } else {
-                    strokeRateAvg = strokeCountDouble / totalElapsedMin;
-                }
-
-                strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
-                mStrokeRateAvg.setText(strokeRateAvgTx);
-
-                boatYawAngle = (float) (Math.atan(boatYawTan) * 180 / Math.PI);
-                mBoatYaw.setRotation(-boatYawAngle);
-            }
-        } else {
-            // 当检测器未运行时，显示0.0
-            mStrokeRate.setText("0.0");
-            strokeRateTx = "0.0";
-            mBoatYaw.setRotation(0);
-        }
-
-        SimpleDateFormat simpleDateFormatCache = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-        logBeginTime = System.currentTimeMillis();
-        strBegTime = simpleDateFormatCache.format(logBeginTime);
-        addressRowData = this.getFilesDir() + "/" + strBegTime + ".csv";
-
-        try {
-            writerCustomData
-                    .writeNext(new String[] { String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
-                            String.valueOf((double) traveledDistance),
-                            strokeRateTx, speedTx, String.valueOf((double) boatAcclActual),
-                            String.valueOf((float) values[1]), String.valueOf((float) boatYawAngle) });
-
-        } catch (Exception e) {
-            writerCustomData
-                    .writeNext(new String[] { String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000), "0",
-                            "0", "0", "0",
-                            "0", "0" });
-        }
-    }
+    // calculateVectorData方法已被SensorProcessor替代
 
     public void startConnection() throws Exception {
 
@@ -1323,44 +1323,7 @@ public class Speedometer extends AppCompatActivity {
         getWindow().setAttributes(lp);
     }
 
-    class TestSensorListener implements SensorEventListener {
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            // 读取加速度传感器数值，values数组0,1,2分别对应x,y,z轴的加速度
-
-            // Log.i(TAG, "onSensorChanged: " + event.values[0] + ", " + event.values[1] +
-            // ", " + event.values[2]);
-
-            // TODO Auto-generated method stub
-            if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                accelerometerValues = event.values;
-                // float xAccl = accelerometerValues[0];
-                // float yAccl = accelerometerValues[1];
-                // float zAccl = accelerometerValues[2] + 9.8f;
-            }
-
-            if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                magneticFieldValues = event.values;
-            }
-
-            if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-                accelerometerLinearValues = event.values;
-            }
-
-            if (logCreated == 1) {
-
-                calculateVectorData();
-
-            }
-
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            Log.i(TAG, "onAccuracyChanged");
-        }
-    }
+    // TestSensorListener类已被SensorProcessor替代
 
     // public static class Utils {
     //
@@ -1436,5 +1399,159 @@ public class Speedometer extends AppCompatActivity {
     // }
     // }
     // }
+
+    // ========== 测试辅助方法 ==========
+    /**
+     * 获取CSV写入器（测试用）
+     * 
+     * @return CSV写入器实例
+     */
+    public CSVWriter getCSVWriter() {
+        return writerCustomData;
+    }
+
+    /**
+     * 获取CSV文件路径（测试用）
+     * 
+     * @return CSV文件路径
+     */
+    public String getCSVFilePath() {
+        return addressRowData;
+    }
+
+    /**
+     * 获取开始状态（测试用）
+     * 
+     * @return 开始状态值
+     */
+    public int getStartStatus() {
+        return mStartStatus;
+    }
+
+    /**
+     * 获取日志创建状态（测试用）
+     * 
+     * @return 日志创建状态
+     */
+    public int getLogCreated() {
+        return logCreated;
+    }
+
+    /**
+     * 获取日志开始时间（测试用）
+     * 
+     * @return 日志开始时间
+     */
+    public long getLogBeginTime() {
+        return (long) logBeginTime;
+    }
+
+    /**
+     * 获取UI重置标志（测试用）
+     * 
+     * @return UI重置标志状态
+     */
+    public boolean isStrokeDisplayReset() {
+        return isStrokeDisplayReset;
+    }
+
+    /**
+     * 获取开始按钮（测试用）
+     * 
+     * @return 开始按钮实例
+     */
+    public Button getStartButton() {
+        return mStart;
+    }
+
+    /**
+     * 获取SensorProcessor实例（测试用）
+     * 
+     * @return SensorProcessor实例
+     */
+    public SensorProcessor getSensorProcessor() {
+        return sensorProcessor;
+    }
+
+    /**
+     * 获取StrokeDetector实例（测试用）
+     * 
+     * @return StrokeDetector实例
+     */
+    public StrokeDetector getStrokeDetector() {
+        return strokeDetector;
+    }
+
+    /**
+     * 设置日志创建状态（测试用）
+     * 
+     * @param status 日志创建状态
+     */
+    public void setLogCreated(int status) {
+        logCreated = status;
+    }
+
+    /**
+     * 设置开始状态（测试用）
+     * 
+     * @param status 开始状态
+     */
+    public void setStartStatus(int status) {
+        mStartStatus = status;
+    }
+
+    /**
+     * 获取速度显示TextView（测试用）
+     * 
+     * @return 速度显示TextView实例
+     */
+    public TextView getSpeedTextView() {
+        return mSpeed;
+    }
+
+    /**
+     * 获取距离显示TextView（测试用）
+     * 
+     * @return 距离显示TextView实例
+     */
+    public TextView getDistanceTextView() {
+        return mDistance;
+    }
+
+    /**
+     * 获取桨频显示TextView（测试用）
+     * 
+     * @return 桨频显示TextView实例
+     */
+    public TextView getStrokeRateTextView() {
+        return mStrokeRate;
+    }
+
+    /**
+     * 获取船只横滚角ImageView（测试用）
+     * 
+     * @return 船只横滚角ImageView实例
+     */
+    public ImageView getBoatRollImageView() {
+        return boatRoll;
+    }
+
+    /**
+     * 获取开始时间（测试用）
+     * 
+     * @return 开始时间
+     */
+    public long getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * 获取当前时间（测试用）
+     * 
+     * @return 当前时间
+     */
+    public long getCurrentTime() {
+        return currentTime;
+    }
 
 }

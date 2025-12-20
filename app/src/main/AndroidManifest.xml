@@ -29,28 +29,35 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".HeartRateMonitor">
+            android:name=".HeartRateMonitor"
+            android:exported="false">
         </activity>
         <activity
             android:name=".RowMonitor"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape"
+            android:exported="false"></activity>
         <activity
             android:name=".DataPlayback"
-            android:screenOrientation="landscape" />
-        <activity android:name=".Dashboard" /> <!-- android:screenOrientation="landscape" -->
+            android:screenOrientation="landscape"
+            android:exported="false" />
+        <activity android:name=".Dashboard"
+            android:exported="false" /> <!-- android:screenOrientation="landscape" -->
         <service android:name="com.amap.api.location.APSService" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="" />
+            android:value="dada676497c94f5d7a6019de796793a3" />
 
         <activity
             android:name=".DataSelector"
-            android:screenOrientation="portrait" />
-        <activity android:name=".BleConnector" />
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity android:name=".BleConnector"
+            android:exported="false" />
         <activity
             android:name=".Speedometer"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:exported="false" />
         <activity
             android:name=".ModeSelect"
             android:screenOrientation="portrait"

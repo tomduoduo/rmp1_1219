@@ -13,6 +13,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Android 12兼容性配置
+        manifestPlaceholders = [
+            'appAuthRedirectScheme': 'com.motionrivalry.rowmasterpro'
+        ]
     }
 
     buildTypes {
@@ -20,6 +25,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    
+    // Android 12测试manifest兼容性配置
+    testOptions {
+        unitTests.includeAndroidResources = true
+        animationsDisabled = true
     }
 
     compileOptions {
@@ -59,8 +70,13 @@ dependencies {
 //    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:4.16'
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test:rules:1.4.0'
 
 //    implementation 'com.github.devlight.shadowlayout:library:1.0.2'
     implementation files('libs\\library-1.0.2.aar')
