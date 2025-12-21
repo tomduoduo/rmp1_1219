@@ -320,7 +320,6 @@ public class Speedometer extends AppCompatActivity {
         boatTravelTarget = findViewById(R.id.boat_travel_distance);
 
         totalElapse = (Chronometer) this.findViewById(R.id.boat_travel_total_time);
-        // totalElapse.setFormat("0"+String.valueOf(hour)+":%s");
 
         halfKmElapse = findViewById(R.id.boat_travel_split_time);
 
@@ -354,42 +353,36 @@ public class Speedometer extends AppCompatActivity {
         spinnerTypeSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                     int arg2, long arg3) {
-                // TODO Auto-generated method stub
                 selectedType = arg0.getItemAtPosition(arg2).toString();
                 System.out.println(selectedType);
 
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }
         });
 
         spinnerWeightSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                     int arg2, long arg3) {
-                // TODO Auto-generated method stub
                 selectedWeight = arg0.getItemAtPosition(arg2).toString();
                 System.out.println(selectedWeight);
 
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }
         });
 
         spinnerTrainSelect.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> arg0, View arg1,
                     int arg2, long arg3) {
-                // TODO Auto-generated method stub
                 selectedTrain = arg0.getItemAtPosition(arg2).toString();
                 System.out.println(selectedTrain);
 
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO Auto-generated method stub
             }
         });
 
@@ -442,23 +435,8 @@ public class Speedometer extends AppCompatActivity {
                         uiManager.updateStrokeCount(result.strokeCount);
 
                         // 更新平均桨频
-                        int tempHourStrokeRateAvg = 0;
-                        int tempMinStrokeRateAvg = 0;
-                        int tempSecStrokeRateAvg = 0;
-
-                        if (totalElapse.length() <= 5) {
-                            tempHourStrokeRateAvg = 0;
-                            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                        } else {
-                            tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                            tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                            tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
-                        }
-
-                        double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
-                                + tempSecStrokeRateAvg;
-                        double totalElapsedMin = tempTotalSecStrokeRateAvg / 60;
+                        TimeParser.ElapsedTime elapsed = TimeParser.parseChronometer(totalElapse);
+                        double totalElapsedMin = elapsed.getTotalMinutes();
                         double strokeCountDouble = result.strokeCount;
 
                         if (strokeCountDouble < 2) {
@@ -483,25 +461,9 @@ public class Speedometer extends AppCompatActivity {
                 // ========== 新增：CSV 数据记录 ==========
                 if (logCreated == 1) {
                     // 获取当前时间信息
-                    int tempHourStrokeRateAvg = 0;
-                    int tempMinStrokeRateAvg = 0;
-                    int tempSecStrokeRateAvg = 0;
-
-                    if (totalElapse.length() <= 5) {
-                        tempHourStrokeRateAvg = 0;
-                        tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                        tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                    } else {
-                        tempHourStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                        tempMinStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                        tempSecStrokeRateAvg = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
-                    }
-
-                    // 更新时间相关变量
-                    mDisplayTimeTx = tempHourStrokeRateAvg + ":" + tempMinStrokeRateAvg + ":" + tempSecStrokeRateAvg;
-                    double tempTotalSecStrokeRateAvg = tempHourStrokeRateAvg * 3600 + tempMinStrokeRateAvg * 60
-                            + tempSecStrokeRateAvg;
-                    sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
+                    TimeParser.ElapsedTime elapsed = TimeParser.parseChronometer(totalElapse);
+                    mDisplayTimeTx = elapsed.getDisplayText();
+                    sectionTimeTX = String.valueOf(elapsed.getTotalSeconds());
 
                     // 写入CSV数据
                     dataLogger.logData(new DataLogger.RowingData(
@@ -619,9 +581,6 @@ public class Speedometer extends AppCompatActivity {
             return;
         }
 
-        // locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 200, 1,
-        // locationListener);
-
         // ========== StrokeDetector初始化 ==========
         strokeDetector = new StrokeDetector(1400, 1.3, 5000);
 
@@ -661,24 +620,8 @@ public class Speedometer extends AppCompatActivity {
                         String speedMaxTx = decimalFormat.format(speedMax);
                         strokeRateAvgTx = decimalFormat.format(strokeRateAvg);
 
-                        int tempHourResult = 0;
-                        int tempMinResult = 0;
-                        int tempSecResult = 0;
-
-                        if (totalElapse.length() <= 5) {
-
-                            tempHourResult = 0;
-                            tempMinResult = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                            tempSecResult = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-
-                        } else {
-                            tempHourResult = Integer.parseInt(totalElapse.getText().toString().split(":")[0]);
-                            tempMinResult = Integer.parseInt(totalElapse.getText().toString().split(":")[1]);
-                            tempSecResult = Integer.parseInt(totalElapse.getText().toString().split(":")[2]);
-
-                        }
-
-                        mSectionTimeResultTx = tempHourResult + ":" + tempMinResult + ":" + tempSecResult;
+                        TimeParser.ElapsedTime elapsed = TimeParser.parseChronometer(totalElapse);
+                        mSectionTimeResultTx = elapsed.getDisplayText();
 
                         mDistanceResultTx = distanceTx;
                         mAvgSPMResultTx = strokeRateAvgTx;
@@ -812,6 +755,7 @@ public class Speedometer extends AppCompatActivity {
                 task.cancel();
                 sectionTimeTX = "0.0";
                 windowResult.dismiss();
+                popupManager.setBackgroundAlpha(1f);
             }
         });
     }
@@ -915,14 +859,6 @@ public class Speedometer extends AppCompatActivity {
         CountdownView mCvCountdownView = popupCountdownView.findViewById(R.id.countdown_view);
         mCvCountdownView.start(delayed); // Millisecond
 
-        // mCvCountdownView.setOnCountdownIntervalListener(100, new
-        // CountdownView.OnCountdownIntervalListener() {
-        // @Override
-        // public void onInterval(CountdownView cv, long remainTime) {
-        //
-        // }
-        // });
-
         mCvCountdownView.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
 
             @Override
@@ -1022,115 +958,8 @@ public class Speedometer extends AppCompatActivity {
         });
     }
 
-    // public Call file_submit(String filepath, String url, String filename){
-    // OkHttpClient client = new OkHttpClient();
-    // File file = new File(filepath);
-    // Log.i("text",filepath);
-    // RequestBody fileBody =
-    // RequestBody.create(MediaType.parse("application/octet-stream"), file);
-    // //请求体
-    // RequestBody requestBody = new MultipartBody.Builder()
-    // .setType(MultipartBody.FORM)
-    //// .addPart(Headers.of(
-    //// "Content-Disposition",
-    //// "form-data; name=\"filename\""),
-    //// RequestBody.create(null, "lzr"))//这里是携带上传的其他数据
-    // .addPart(Headers.of(
-    // "Content-Disposition",
-    // "form-data; name=\"mFile\"; filename=\"" + filename + "\""), fileBody)
-    // .build();
-    // //请求的地址
-    // Request request = new Request.Builder()
-    // .url(url)
-    // .post(requestBody)
-    // .build();
-    //
-    // System.out.println(client.newCall(request));
-    // return client.newCall(request);
-    // }
-
-    private void backgroundAlpha(float f) {
-        WindowManager.LayoutParams lp = getWindow().getAttributes();
-        lp.alpha = f;
-        getWindow().setAttributes(lp);
-    }
-
     // TestSensorListener类已被SensorProcessor替代
-
-    // public static class Utils {
     //
-    // public static boolean isBluetoothAdapterEnabled(Context context) {
-    // BluetoothManager bluetoothManager = (BluetoothManager)
-    // context.getSystemService(Context.BLUETOOTH_SERVICE);
-    //
-    // if (bluetoothManager != null) {
-    // BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-    //
-    // if (bluetoothAdapter != null) {
-    // return bluetoothAdapter.isEnabled();
-    // }
-    // }
-    //
-    // return false;
-    // }
-    //
-    // }
-    //
-    //
-    // private boolean hasLocationPermission() {
-    // return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
-    // PackageManager.PERMISSION_GRANTED;
-    // }
-    //
-    // private void requestLocationPermission() {
-    // requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-    // REQUEST_PERMISSION_LOCATION);
-    // }
-    //
-    // private void requestEnableBluetooth() {
-    // Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-    // startActivityForResult(intent, REQUEST_ENABLE_BLUETOOTH);
-    // }
-    //
-    // private void checkBluetoothPermissions() {
-    // boolean isBluetoothAdapterEnabled = Utils.isBluetoothAdapterEnabled(this);
-    // boolean hasLocationPermission = hasLocationPermission();
-    //
-    // if (isBluetoothAdapterEnabled) {
-    // if (!hasLocationPermission) {
-    // requestLocationPermission();
-    // }
-    // } else {
-    // requestEnableBluetooth();
-    // }
-    //
-    // Log.d(TAG, "isBluetoothAdapterEnabled " + isBluetoothAdapterEnabled + ",
-    // hasLocationPermission " + hasLocationPermission);
-    //
-    // }
-    //
-    // @Override
-    // public void onRequestPermissionsResult(int requestCode, @NonNull String[]
-    // permissions, @NonNull int[] grantResults) {
-    // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    //
-    // Log.d(TAG, "onRequestPermissionsResult() - requestCode = " + requestCode);
-    //
-    // if (requestCode == REQUEST_PERMISSION_LOCATION) {
-    //
-    // for (int i = 0; i < grantResults.length; i++) {
-    //
-    // if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-    // if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-    // checkBluetoothPermissions();
-    // } else {
-    // Toast.makeText(this, "Please allow location permission to use your
-    // trackers.", Toast.LENGTH_LONG).show();
-    // }
-    // }
-    // }
-    // }
-    // }
 
     // ========== 测试辅助方法 ==========
     /**
