@@ -73,8 +73,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import cn.iwgang.countdownview.CountdownView;
 import okhttp3.Call;
@@ -209,10 +207,10 @@ public class Speedometer extends AppCompatActivity {
     private boolean isStrokeDisplayReset = false; // 桨频显示重置标志
 
     private HttpURLConnection httpURLConnectionUpdate;
-    private Timer timer;
-    private TimerTask task;
     private NetworkManager networkManager; // 网络请求管理器
     private PopupManager popupManager; // PopupWindow管理器，统一管理所有弹窗
+    private ThreadManager threadManager; // 线程管理器，统一管理后台任务和UI更新
+    private String updateTaskId; // 定期更新任务ID，用于独立取消任务
     private String sectionTimeTX = "0.0";
     private String userName;
     private String mDistanceTx;
@@ -278,6 +276,9 @@ public class Speedometer extends AppCompatActivity {
         mDistance = findViewById(R.id.boat_travel_distance_actual);
         String serviceName = this.LOCATION_SERVICE;
         locationManager = (LocationManager) getSystemService(serviceName);
+
+        // ========== ThreadManager初始化 ==========
+        threadManager = new ThreadManager();
 
         // ========== LocationTracker初始化 ==========
         locationTracker = new LocationTracker(
@@ -618,6 +619,12 @@ public class Speedometer extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {// 确定按钮的响应事件
                         mStartStatus = 0;
 
+                        // 新增：取消定期更新任务
+                        if (updateTaskId != null) {
+                            threadManager.cancelTask(updateTaskId);
+                            updateTaskId = null;
+                        }
+
                         // ========== StrokeDetector集成 - 停止检测器 ==========
                         strokeDetector.stop();
 
@@ -738,8 +745,6 @@ public class Speedometer extends AppCompatActivity {
                     }
                 }, mSaveExit, mNoSaveExit);
 
-                timer.cancel();
-                task.cancel();
                 sectionTimeTX = "0.0";
 
                 new Thread(new Runnable() {
@@ -760,8 +765,6 @@ public class Speedometer extends AppCompatActivity {
         mNoSaveExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timer.cancel();
-                task.cancel();
                 sectionTimeTX = "0.0";
                 windowResult.dismiss();
                 popupManager.setBackgroundAlpha(1f);
@@ -843,26 +846,23 @@ public class Speedometer extends AppCompatActivity {
             Toast.makeText(Speedometer.this, "文件创建失败", Toast.LENGTH_SHORT).show();
         }
 
-        task = new TimerTask() {
-            public void run() {
-                NetworkManager.UpdateData d = new NetworkManager.UpdateData();
-                d.userName = userName;
-                d.sectionTime = sectionTimeTX;
-                d.displayTime = mDisplayTimeTx;
-                d.spm = mStrokeRate.getText().toString();
-                d.boatSpeed = mSpeed.getText().toString();
-                d.actualDistance = mDistance.getText().toString();
-                d.latitude = BigDecimal.valueOf(latitude_0_GD);
-                d.longitude = BigDecimal.valueOf(longitude_0_GD);
-                d.sectionType = selectedTrain;
-                d.playerType = selectedWeight;
-                d.boatType = selectedType;
-                d.targetDistance = String.valueOf(selectedDistance);
-                networkManager.sendUpdate(d);
-            }
-        };
-        timer = new Timer();
-        timer.schedule(task, UIConfig.DATA_UPDATE_INITIAL_DELAY_MS, UIConfig.DATA_UPDATE_INTERVAL_MS);
+        // 使用ThreadManager替代TimerTask进行定期数据更新
+        updateTaskId = threadManager.scheduleRepeating(() -> {
+            NetworkManager.UpdateData d = new NetworkManager.UpdateData();
+            d.userName = userName;
+            d.sectionTime = sectionTimeTX;
+            d.displayTime = mDisplayTimeTx;
+            d.spm = mStrokeRate.getText().toString();
+            d.boatSpeed = mSpeed.getText().toString();
+            d.actualDistance = mDistance.getText().toString();
+            d.latitude = BigDecimal.valueOf(latitude_0_GD);
+            d.longitude = BigDecimal.valueOf(longitude_0_GD);
+            d.sectionType = selectedTrain;
+            d.playerType = selectedWeight;
+            d.boatType = selectedType;
+            d.targetDistance = String.valueOf(selectedDistance);
+            networkManager.sendUpdate(d);
+        }, UIConfig.DATA_UPDATE_INTERVAL_MS);
 
         mStartTerminate = 1;
         CountdownView mCvCountdownView = popupCountdownView.findViewById(R.id.countdown_view);
@@ -935,27 +935,32 @@ public class Speedometer extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 注册传感器监听函数
-        mSensorManager.registerListener(
-                sensorProcessor,
-                mAccelerometer,
-                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
-        mSensorManager.registerListener(
-                sensorProcessor,
-                mMagnetic,
-                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
-        mSensorManager.registerListener(
-                sensorProcessor,
-                mAccelerometerLinear,
-                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+        // 重新注册传感器
+        if (sensorProcessor != null && mSensorManager != null) {
+            mSensorManager.registerListener(sensorProcessor, mAccelerometer,
+                    SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+            mSensorManager.registerListener(sensorProcessor, mMagnetic, SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+            mSensorManager.registerListener(sensorProcessor, mAccelerometerLinear,
+                    SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+        }
+        // 重新启动GPS追踪
+        if (locationTracker != null && mStartStatus == 1) {
+            locationTracker.startTracking();
+        }
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // 注销监听函数
-        mSensorManager.unregisterListener(sensorProcessor);
+        // 注销传感器
+        if (sensorProcessor != null && mSensorManager != null) {
+            mSensorManager.unregisterListener(sensorProcessor);
+        }
+        // 暂停GPS追踪
+        if (locationTracker != null) {
+            locationTracker.stopTracking();
+        }
     }
 
     // calculateVectorData方法已被SensorProcessor替代
@@ -1140,6 +1145,33 @@ public class Speedometer extends AppCompatActivity {
      */
     public long getCurrentTime() {
         return currentTime;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 关闭所有管理器
+        if (threadManager != null) {
+            threadManager.shutdown();
+        }
+        if (locationTracker != null) {
+            locationTracker.stopTracking();
+        }
+        if (dataLogger != null && dataLogger.isOpen()) {
+            try {
+                dataLogger.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (networkManager != null) {
+            // 取消网络请求（如果有取消方法）
+        }
+        // 关闭高德定位
+        if (mLocationClientGD != null) {
+            mLocationClientGD.stopLocation();
+            mLocationClientGD.onDestroy();
+        }
     }
 
 }
