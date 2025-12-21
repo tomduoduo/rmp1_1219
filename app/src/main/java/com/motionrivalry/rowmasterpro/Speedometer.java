@@ -208,7 +208,8 @@ public class Speedometer extends AppCompatActivity {
     private HttpURLConnection httpURLConnectionUpdate;
     private Timer timer;
     private TimerTask task;
-    private NetworkManager networkManager;
+    private NetworkManager networkManager; // 网络请求管理器
+    private PopupManager popupManager; // PopupWindow管理器，统一管理所有弹窗
     private String sectionTimeTX = "0.0";
     private String userName;
     private String mDistanceTx;
@@ -330,6 +331,9 @@ public class Speedometer extends AppCompatActivity {
 
         // 初始化NetworkManager
         networkManager = new NetworkManager(uploadPATH, updatePATH);
+
+        // 初始化PopupManager，用于统一管理所有PopupWindow
+        popupManager = new PopupManager(this);
 
         spinnerTypeSelect = findViewById(R.id.spinner_type_select);
         spinnerWeightSelect = findViewById(R.id.spinner_weight_select);
@@ -538,7 +542,7 @@ public class Speedometer extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showWindowDistance();
-                backgroundAlpha(0.2f);
+                popupManager.setBackgroundAlpha(0.2f);
 
             }
 
@@ -591,7 +595,7 @@ public class Speedometer extends AppCompatActivity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        backgroundAlpha(0.3f);
+                        popupManager.setBackgroundAlpha(0.3f);
 
                     } else {
 
@@ -737,28 +741,18 @@ public class Speedometer extends AppCompatActivity {
 
     }
 
+    /**
+     * 显示训练结果弹窗
+     * 使用PopupManager创建并显示训练结果弹窗，全屏显示
+     * 弹窗关闭时恢复背景透明度
+     */
     private void showResult() {
+        popupManager.setBackgroundAlpha(0.2f);
+        windowResult = popupManager.showPopup(popupResultView, 0, 0, true, () -> {
+            popupManager.setBackgroundAlpha(1f);
+        });
 
-        backgroundAlpha(0.2f);
-        WindowManager manager = this.getWindowManager();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-        int width = outMetrics.widthPixels;
-        int height = outMetrics.heightPixels;
-
-        // windowResult = new
-        // PopupWindow(popupResultView,width*65/100,height*85/100,true);
-        windowResult = new PopupWindow(popupResultView, WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT, true);
-
-        // windowResult.update();
-
-        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
-        windowResult.showAtLocation(parentView, Gravity.CENTER, 0, 0);
-        // windowResult.setBackgroundDrawable(new ColorDrawable(0x00000000));
-        // windowResult.setFocusable(false);
-        // windowResult.setOutsideTouchable(false);
-
+        // 保留所有findViewById和业务逻辑
         mDateResult = popupResultView.findViewById(R.id.log_time);
         mDistanceResult = popupResultView.findViewById(R.id.result_distance_actual);
         mAvgSPMResult = popupResultView.findViewById(R.id.result_SPM_average);
@@ -783,16 +777,12 @@ public class Speedometer extends AppCompatActivity {
         mUserName.setText(userName);
 
         mSaveExit.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 Instacapture.INSTANCE.capture(Speedometer.this, new SimpleScreenCapturingListener() {
                     @Override
                     public void onCaptureComplete(Bitmap bitmap) {
-
                         saveImageToGallery(bitmap, Speedometer.this);
-
                     }
                 }, mSaveExit, mNoSaveExit);
 
@@ -803,145 +793,81 @@ public class Speedometer extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //
                         try {
                             upload();
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                     }
-
                 }).start();
 
                 windowResult.dismiss();
             }
-
         });
 
         mNoSaveExit.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 timer.cancel();
                 task.cancel();
                 sectionTimeTX = "0.0";
                 windowResult.dismiss();
-                backgroundAlpha(1f);
-
             }
-
         });
-
-        windowResult.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            @Override
-            public void onDismiss() {
-
-                backgroundAlpha(1f);
-
-            }
-
-        });
-
     }
 
+    /**
+     * 显示上传结果弹窗
+     * 使用PopupManager创建并显示上传结果弹窗，宽度和高度均为屏幕的20%
+     */
     private void showWindowUploadResult() {
-        WindowManager manager = this.getWindowManager();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-        int width = outMetrics.widthPixels;
-
-        windowUploadResult = new PopupWindow(popupUploadResultView, width * 20 / 100, width * 20 / 100, false);
-        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
-        windowUploadResult.showAtLocation(parentView, Gravity.CENTER, 0, 0);
-        windowUploadResult.setFocusable(false);
-
+        windowUploadResult = popupManager.showPopup(popupUploadResultView, 20, 20, false, null);
     }
 
+    /**
+     * 显示距离选择弹窗
+     * 使用PopupManager创建并显示距离选择弹窗，宽度为屏幕的75%，高度为屏幕的85%
+     * 弹窗关闭时恢复背景透明度为1.0
+     */
     private void showWindowDistance() {
-
-        WindowManager manager = this.getWindowManager();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-        int width = outMetrics.widthPixels;
-        int height = outMetrics.heightPixels;
-
-        windowDistance = new PopupWindow(popupWindowView, width * 75 / 100, height * 85 / 100, true);
-        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
-        windowDistance.showAtLocation(parentView, Gravity.CENTER, 0, 0);
-        windowDistance.setFocusable(true);
-
-        windowDistance.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            @Override
-            public void onDismiss() {
-
-                backgroundAlpha(1f);
-
-            }
-
+        windowDistance = popupManager.showPopup(popupWindowView, 75, 85, true, () -> {
+            // 弹窗关闭时恢复背景透明度
+            popupManager.setBackgroundAlpha(1f);
         });
     }
 
+    /**
+     * 显示倒计时弹窗
+     * 使用PopupManager创建并显示倒计时弹窗，宽度和高度均为屏幕的30%
+     * 弹窗关闭时执行相应的业务逻辑并恢复背景透明度
+     */
     private void showCountdown() {
+        windowCountdown = popupManager.showPopup(popupCountdownView, 30, 30, true, () -> {
+            if (mStartTerminate == 1) {
+                mStartStatus = 0;
+                mStart.setBackgroundResource(R.drawable.button_4);
+                mStart.setText("开始");
+                mStart.setTextColor(android.graphics.Color.parseColor("#6C6C6C"));
 
-        WindowManager manager = this.getWindowManager();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-        int width = outMetrics.widthPixels;
-        int height = outMetrics.heightPixels;
+                spinnerTypeSelect.setEnabled(true);
+                spinnerWeightSelect.setEnabled(true);
+                spinnerTrainSelect.setEnabled(true);
+                mSelectDistance.setEnabled(true);
 
-        windowCountdown = new PopupWindow(popupCountdownView, width * 30 / 100, width * 30 / 100, true);
-        View parentView = LayoutInflater.from(Speedometer.this).inflate(R.layout.activity_speedometer, null);
-        windowCountdown.showAtLocation(parentView, Gravity.CENTER, 0, 0);
-        windowCountdown.setFocusable(true);
+                totalElapse.setBase(android.os.SystemClock.elapsedRealtime());
+                totalElapse.stop();
 
-        windowCountdown.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
-            @SuppressLint("MissingPermission")
-            @Override
-            public void onDismiss() {
-
-                if (mStartTerminate == 1) {
-
-                    mStartStatus = 0;
-                    mStart.setBackgroundResource(R.drawable.button_4);
-                    mStart.setText("开始");
-                    mStart.setTextColor(Color.parseColor("#6C6C6C"));
-
-                    spinnerTypeSelect.setEnabled(true);
-                    spinnerWeightSelect.setEnabled(true);
-                    spinnerTrainSelect.setEnabled(true);
-                    mSelectDistance.setEnabled(true);
-
-                    totalElapse.setBase(SystemClock.elapsedRealtime());
-                    totalElapse.stop();
-
-                    traveledDistance = 0;
-                    speed = 0;
-                    speedAvg = 0;
-                    speedMax = 0;
-
-                    // 重置LocationTracker状态
-                    locationTracker.reset();
-
-                    // 使用UIManager统一重置所有UI显示
-                    uiManager.resetAllDisplays();
-                    speedTx = "0.0";
-
-                    locationTracker.stopTracking();
-
-                }
-
-                backgroundAlpha(1f);
-
+                traveledDistance = 0;
+                speed = 0;
+                speedAvg = 0;
+                speedMax = 0;
+                locationTracker.reset();
+                uiManager.resetAllDisplays();
+                speedTx = "0.0";
+                locationTracker.stopTracking();
             }
-
+            popupManager.setBackgroundAlpha(1f);
         });
-
     }
 
     private void startTimer(long delayed) throws Exception {
