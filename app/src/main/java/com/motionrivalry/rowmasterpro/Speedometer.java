@@ -87,6 +87,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.motionrivalry.rowmasterpro.config.SensorConfig;
+import com.motionrivalry.rowmasterpro.config.UIConfig;
+
 public class Speedometer extends AppCompatActivity {
 
     private static final String TAG = "SensorTest";
@@ -277,7 +280,10 @@ public class Speedometer extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(serviceName);
 
         // ========== LocationTracker初始化 ==========
-        locationTracker = new LocationTracker(this, 500, 3);
+        locationTracker = new LocationTracker(
+                this,
+                SensorConfig.GPS_UPDATE_INTERVAL_MS,
+                SensorConfig.GPS_MIN_DISTANCE_M);
         locationTracker.setLocationUpdateListener(new LocationTracker.LocationUpdateListener() {
             @Override
             public void onLocationUpdate(LocationTracker.LocationUpdate update) {
@@ -496,7 +502,7 @@ public class Speedometer extends AppCompatActivity {
         AMapLocationClientOption option = new AMapLocationClientOption();
         option.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.Sport);
         mLocationOptionGD.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        mLocationOptionGD.setInterval(2000);
+        mLocationOptionGD.setInterval(SensorConfig.AMAP_LOCATION_INTERVAL_MS);
         mLocationClientGD.startLocation();
 
         mSelectDistance.setOnClickListener(new View.OnClickListener() {
@@ -582,7 +588,10 @@ public class Speedometer extends AppCompatActivity {
         }
 
         // ========== StrokeDetector初始化 ==========
-        strokeDetector = new StrokeDetector(1400, 1.3, 5000);
+        strokeDetector = new StrokeDetector(
+                SensorConfig.STROKE_MIN_GAP_SPEEDOMETER_MS,
+                SensorConfig.STROKE_MIN_ACCEL_STRICT,
+                SensorConfig.STROKE_IDLE_TIMEOUT_SPEEDOMETER_MS);
 
     }
 
@@ -853,7 +862,7 @@ public class Speedometer extends AppCompatActivity {
             }
         };
         timer = new Timer();
-        timer.schedule(task, 5000, 2000);
+        timer.schedule(task, UIConfig.DATA_UPDATE_INITIAL_DELAY_MS, UIConfig.DATA_UPDATE_INTERVAL_MS);
 
         mStartTerminate = 1;
         CountdownView mCvCountdownView = popupCountdownView.findViewById(R.id.countdown_view);
@@ -927,9 +936,18 @@ public class Speedometer extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // 注册传感器监听函数
-        mSensorManager.registerListener(sensorProcessor, mAccelerometer, 50000);
-        mSensorManager.registerListener(sensorProcessor, mMagnetic, 50000);
-        mSensorManager.registerListener(sensorProcessor, mAccelerometerLinear, 50000);
+        mSensorManager.registerListener(
+                sensorProcessor,
+                mAccelerometer,
+                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+        mSensorManager.registerListener(
+                sensorProcessor,
+                mMagnetic,
+                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
+        mSensorManager.registerListener(
+                sensorProcessor,
+                mAccelerometerLinear,
+                SensorConfig.PHONE_SENSOR_SAMPLING_INTERVAL_US);
 
     }
 
