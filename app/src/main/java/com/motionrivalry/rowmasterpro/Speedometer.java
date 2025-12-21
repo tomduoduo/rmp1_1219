@@ -187,9 +187,8 @@ public class Speedometer extends AppCompatActivity {
 
     private String addressRowData = null;
     private String addressRowDataLive = null;
-    private FileWriter customData;
+    private DataLogger dataLogger = new DataLogger();
     private FileWriter customDataLive;
-    private CSVWriter writerCustomData;
     private CSVWriter writerCustomDataLive;
     private int logCreated = 0;
     private String uploadPATH = "";
@@ -209,6 +208,7 @@ public class Speedometer extends AppCompatActivity {
     private HttpURLConnection httpURLConnectionUpdate;
     private Timer timer;
     private TimerTask task;
+    private NetworkManager networkManager;
     private String sectionTimeTX = "0.0";
     private String userName;
     private String mDistanceTx;
@@ -217,6 +217,8 @@ public class Speedometer extends AppCompatActivity {
     // 时间相关字段（测试用）
     private long startTime = 0;
     private long currentTime = 0;
+
+    private UIManager uiManager;
 
     private AMapLocationClient mLocationClientGD = null;
     private AMapLocationListener mLocationListenerGD = null;
@@ -279,32 +281,11 @@ public class Speedometer extends AppCompatActivity {
             @Override
             public void onLocationUpdate(LocationTracker.LocationUpdate update) {
                 // 更新UI显示
-                DecimalFormat decimalFormat = new DecimalFormat("0.0");
-                DecimalFormat decimalFormat_1 = new DecimalFormat("0");
-
-                // 更新速度显示
-                speedTx = decimalFormat.format(update.speed);
-                mSpeed.setText(speedTx);
-
-                // 更新最大速度
-                String speedMaxTx = decimalFormat.format(update.maxSpeed);
-                mSpeedMax.setText(speedMaxTx);
-
-                // 更新平均速度
-                String speedAvgTx = decimalFormat.format(update.avgSpeed);
-                mSpeedAvg.setText(speedAvgTx);
-
-                // 更新距离显示
-                String distanceTx = decimalFormat_1.format(update.totalDistance);
-                mDistance.setText(distanceTx);
-
-                // 更新Split Time显示
-                int splitTime = (int) update.splitTime;
-                int splitTimeSec = splitTime % 60;
-                splitTime = splitTime - splitTimeSec;
-                int splitTimeMin = splitTime / 60;
-                String splitTimeTx = splitTimeMin + ":" + splitTimeSec;
-                halfKmElapse.setText(splitTimeTx);
+                speedTx = uiManager.updateSpeed(update.speed);
+                uiManager.updateMaxSpeed(update.maxSpeed);
+                uiManager.updateAvgSpeed(update.avgSpeed);
+                uiManager.updateDistance(update.totalDistance);
+                uiManager.updateSplitTime(update.splitTime);
 
                 // 更新内部状态变量
                 speedAvg = update.avgSpeed;
@@ -341,6 +322,14 @@ public class Speedometer extends AppCompatActivity {
         // totalElapse.setFormat("0"+String.valueOf(hour)+":%s");
 
         halfKmElapse = findViewById(R.id.boat_travel_split_time);
+
+        // 初始化UIManager
+        uiManager = new UIManager(mSpeed, mSpeedAvg, mSpeedMax, mDistance,
+                mStrokeRate, mStrokeCount, mStrokeRateAvg, halfKmElapse,
+                boatRoll, mBoatYaw);
+
+        // 初始化NetworkManager
+        networkManager = new NetworkManager(uploadPATH, updatePATH);
 
         spinnerTypeSelect = findViewById(R.id.spinner_type_select);
         spinnerWeightSelect = findViewById(R.id.spinner_weight_select);
@@ -437,7 +426,7 @@ public class Speedometer extends AppCompatActivity {
                 currentTime = System.currentTimeMillis();
 
                 // 更新船只姿态显示
-                boatRoll.setRotation(-data.roll);
+                uiManager.updateBoatRoll(data.roll);
 
                 // 传递给StrokeDetector进行桨频检测
                 if (logCreated == 1 && mStartStatus == 1) {
@@ -445,12 +434,8 @@ public class Speedometer extends AppCompatActivity {
                             data.boatAcceleration, System.currentTimeMillis());
 
                     if (result.isNewStroke) {
-                        DecimalFormat StrokeRateFormatter = new DecimalFormat("0.0");
-                        strokeRateTx = StrokeRateFormatter.format(result.strokeRate);
-                        mStrokeRate.setText(strokeRateTx);
-
-                        DecimalFormat StrokeCountFormatter = new DecimalFormat("0");
-                        mStrokeCount.setText(StrokeCountFormatter.format(result.strokeCount));
+                        strokeRateTx = uiManager.updateStrokeRate(result.strokeRate);
+                        uiManager.updateStrokeCount(result.strokeCount);
 
                         // 更新平均桨频
                         int tempHourStrokeRateAvg = 0;
@@ -478,11 +463,8 @@ public class Speedometer extends AppCompatActivity {
                             strokeRateAvg = strokeCountDouble / totalElapsedMin;
                         }
 
-                        strokeRateAvgTx = StrokeRateFormatter.format(strokeRateAvg);
-                        mStrokeRateAvg.setText(strokeRateAvgTx);
-
-                        // 更新偏航角显示
-                        mBoatYaw.setRotation(-data.boatYawAngle);
+                        uiManager.updateAvgStrokeRate(strokeRateAvg);
+                        uiManager.updateBoatYaw(data.boatYawAngle);
                     }
                 } else {
                     // 当检测器未运行时，仅在首次执行重置
@@ -518,22 +500,9 @@ public class Speedometer extends AppCompatActivity {
                     sectionTimeTX = String.valueOf(tempTotalSecStrokeRateAvg);
 
                     // 写入CSV数据
-                    try {
-                        writerCustomData.writeNext(new String[] {
-                                String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
-                                String.valueOf((double) traveledDistance),
-                                strokeRateTx,
-                                speedTx,
-                                String.valueOf(data.boatAcceleration),
-                                String.valueOf(data.roll),
-                                String.valueOf(data.boatYawAngle)
-                        });
-                    } catch (Exception e) {
-                        writerCustomData.writeNext(new String[] {
-                                String.valueOf((System.currentTimeMillis() - logBeginTime) / 1000),
-                                "0", "0", "0", "0", "0", "0"
-                        });
-                    }
+                    dataLogger.logData(new DataLogger.RowingData(
+                            traveledDistance, strokeRateTx, speedTx,
+                            data.boatAcceleration, data.roll, data.boatYawAngle));
                 }
             }
         });
@@ -740,24 +709,17 @@ public class Speedometer extends AppCompatActivity {
                         // timeCorrectSec = 0;
                         // timeCorrectMin = 0;
 
-                        mDistance.setText("0");
-                        mSpeed.setText("0.0");
-                        mSpeedMax.setText("0.0");
-                        mSpeedAvg.setText("0.0");
-                        halfKmElapse.setText("00:00");
-                        mStrokeRate.setText("0.0");
-                        mStrokeCount.setText("0");
-                        mStrokeRateAvg.setText("0.0");
+                        uiManager.resetAllDisplays();
 
                         locationTracker.stopTracking();
 
                         try {
-                            writerCustomData.close();
+                            dataLogger.close();
                             logCreated = 0;
 
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Toast.makeText(Speedometer.this, "Close Writer Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Speedometer.this, "关闭日志失败", Toast.LENGTH_SHORT).show();
                         }
                         showResult();
 
@@ -845,7 +807,7 @@ public class Speedometer extends AppCompatActivity {
                         try {
                             upload();
 
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -960,37 +922,15 @@ public class Speedometer extends AppCompatActivity {
 
                     traveledDistance = 0;
                     speed = 0;
+                    speedAvg = 0;
+                    speedMax = 0;
 
                     // 重置LocationTracker状态
                     locationTracker.reset();
 
-                    DecimalFormat decimalFormat = new DecimalFormat("0.0");
-                    DecimalFormat decimalFormat_1 = new DecimalFormat("0");
-                    String distanceTx = decimalFormat_1.format(traveledDistance);
-                    mDistance.setText(distanceTx);
-                    speedTx = decimalFormat.format(speed);
-                    mSpeed.setText(speedTx);
-
-                    speedMax = 0;
-                    String speedMaxTx = decimalFormat.format(speedMax);
-                    mSpeedMax.setText(speedMaxTx);
-
-                    speedAvg = 0;
-                    String speedAvgTx = decimalFormat.format(speedAvg);
-                    mSpeedAvg.setText(speedAvgTx);
-
-                    String splitTimeTx = "00:00";
-                    halfKmElapse.setText(splitTimeTx);
-
-                    mStrokeRate.setText("0.0");
-                    mStrokeCount.setText("0");
-
-                    mStrokeRateAvg.setText("0.0");
-                    mBoatYaw.setRotation(0);
-
-                    // mBoatYaw.setRotation(0);
-                    // timeCorrectSec = 0;
-                    // timeCorrectMin = 0;
+                    // 使用UIManager统一重置所有UI显示
+                    uiManager.resetAllDisplays();
+                    speedTx = "0.0";
 
                     locationTracker.stopTracking();
 
@@ -1012,24 +952,38 @@ public class Speedometer extends AppCompatActivity {
         addressRowData = this.getFilesDir() + "/" + strBegTime + ".csv";
         addressRowDataLive = this.getFilesDir() + "/rowDataLive.csv";
 
-        startConnection();
-        startUpdate();
+        networkManager.initConnection();
 
         try {
-            customData = new FileWriter(addressRowData);
-            writerCustomData = new CSVWriter(customData);
-
-            writerCustomData.writeNext(new String[] { "time", "distance",
-                    "Stroke_Rate", "Boat_Speed", "Boat_Acceleration",
-                    "Boat_Roll", "Boat_Yaw" });
-
+            dataLogger.createLog(addressRowData);
             logCreated = 1;
 
         } catch (Exception e) {
 
             e.printStackTrace();
-            Toast.makeText(Speedometer.this, "file creation failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Speedometer.this, "文件创建失败", Toast.LENGTH_SHORT).show();
         }
+
+        task = new TimerTask() {
+            public void run() {
+                NetworkManager.UpdateData d = new NetworkManager.UpdateData();
+                d.userName = userName;
+                d.sectionTime = sectionTimeTX;
+                d.displayTime = mDisplayTimeTx;
+                d.spm = mStrokeRate.getText().toString();
+                d.boatSpeed = mSpeed.getText().toString();
+                d.actualDistance = mDistance.getText().toString();
+                d.latitude = BigDecimal.valueOf(latitude_0_GD);
+                d.longitude = BigDecimal.valueOf(longitude_0_GD);
+                d.sectionType = selectedTrain;
+                d.playerType = selectedWeight;
+                d.boatType = selectedType;
+                d.targetDistance = String.valueOf(selectedDistance);
+                networkManager.sendUpdate(d);
+            }
+        };
+        timer = new Timer();
+        timer.schedule(task, 5000, 2000);
 
         mStartTerminate = 1;
         CountdownView mCvCountdownView = popupCountdownView.findViewById(R.id.countdown_view);
@@ -1126,168 +1080,20 @@ public class Speedometer extends AppCompatActivity {
 
     // calculateVectorData方法已被SensorProcessor替代
 
-    public void startConnection() throws Exception {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-
-                    URL updateUrl = new URL(updatePATH);
-                    // System.out.println(updateUrl);
-                    httpURLConnectionUpdate = (HttpURLConnection) updateUrl.openConnection();
-                    httpURLConnectionUpdate.setRequestMethod("POST");
-                    httpURLConnectionUpdate.setConnectTimeout(3000);
-                    httpURLConnectionUpdate.setDoOutput(true);
-                    httpURLConnectionUpdate.setDoInput(true);
-                    httpURLConnectionUpdate.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    httpURLConnectionUpdate.setRequestProperty("accept", "application/json");
-
-                    Map<String, Object> Data = new HashMap<>();
-                    Data.put("FieldName", "CacheData");
-                    Data.put("Type", "1");
-                    Data.put("userName", 0);
-                    Data.put("sectionTime", 0);
-                    Data.put("SPM", 0);
-                    Data.put("boatSpeed", 0);
-                    Data.put("actualDistance", 0);
-                    Data.put("latitude", 0);
-                    Data.put("longitude", 0);
-                    Data.put("sectionType", 0);
-                    Data.put("playerType", 0);
-                    Data.put("boatType", 0);
-                    Data.put("targetDistance", 0);
-
-                    String paramsJson = JSON.toJSONString(Data);
-                    httpURLConnectionUpdate.setRequestProperty("Content-Length", String.valueOf(paramsJson.length()));
-
-                    OutputStream outputStream = httpURLConnectionUpdate.getOutputStream();
-                    outputStream.write(paramsJson.getBytes());
-
-                    InputStream inputStream = httpURLConnectionUpdate.getInputStream();
-                    final Map<String, Object> inputStreamMap = JSON.parseObject(inputStream, Map.class);
-                    int responseCode = httpURLConnectionUpdate.getResponseCode();
-                    // System.out.println("response code HTTP: " + responseCode);
-                    // System.out.println("response code API:" + inputStreamMap.get("code"));
-                    // System.out.println("response success:" + inputStreamMap.get("success"));
-                    // System.out.println("response data:" + inputStreamMap.get("data"));
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    public void startUpdate() throws Exception {
-
-        task = new TimerTask() {
-
-            @Override
-            public void run() {
-
-                try {
-
-                    URL updateUrl = new URL(updatePATH);
-                    // System.out.println(updateUrl);
-                    httpURLConnectionUpdate = (HttpURLConnection) updateUrl.openConnection();
-                    httpURLConnectionUpdate.setRequestMethod("POST");
-                    httpURLConnectionUpdate.setConnectTimeout(3000);
-                    httpURLConnectionUpdate.setDoOutput(true);
-                    httpURLConnectionUpdate.setDoInput(true);
-                    httpURLConnectionUpdate.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    httpURLConnectionUpdate.setRequestProperty("accept", "application/json");
-
-                    Map<String, Object> Data = new HashMap<>();
-                    Data.put("FieldName", "CacheData");
-                    Data.put("Type", "1");
-                    Data.put("userName", userName);
-                    Data.put("sectionTime", sectionTimeTX);
-                    Data.put("displayTime", mDisplayTimeTx);
-                    Data.put("SPM", mStrokeRate.getText());
-                    Data.put("boatSpeed", mSpeed.getText());
-                    Data.put("actualDistance", mDistance.getText());
-                    Data.put("latitude", BigDecimal.valueOf(latitude_0_GD));
-                    Data.put("longitude", BigDecimal.valueOf(longitude_0_GD));
-                    Data.put("sectionType", selectedTrain);
-                    Data.put("playerType", selectedWeight);
-                    Data.put("boatType", selectedType);
-                    Data.put("targetDistance", String.valueOf(selectedDistance));
-
-                    String paramsJson = JSON.toJSONString(Data);
-
-                    // System.out.println("sectionTime：" + sectionTimeTX);
-                    // System.out.println("displayTime："+ mDisplayTimeTx);
-
-                    int lengthLocal = paramsJson.getBytes().length;
-                    httpURLConnectionUpdate.setRequestProperty("Content-Length", String.valueOf(lengthLocal));
-                    OutputStream outputStream = httpURLConnectionUpdate.getOutputStream();
-                    outputStream.write(paramsJson.getBytes());
-
-                    InputStream inputStream = httpURLConnectionUpdate.getInputStream();
-                    final Map<String, Object> inputStreamMap = JSON.parseObject(inputStream, Map.class);
-                    int responseCode = httpURLConnectionUpdate.getResponseCode();
-                    // System.out.println("response code HTTP: " + responseCode);
-                    // System.out.println("response code API:" + inputStreamMap.get("code"));
-                    // System.out.println("response success:" + inputStreamMap.get("success"));
-                    System.out.println("response data:" + inputStreamMap.get("data"));
-
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                }
-
-            }
-        };
-
-        timer = new Timer();
-        timer.schedule(task, 5000, 2000);
-
-    }
-
-    public void upload() throws IOException {
-
-        OkHttpClient okHttpClient = new OkHttpClient();
-        File file = new File(addressRowData);
-        String filename = strBegTime + ".csv";
-        RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addPart(Headers.of(
-                        "Content-Disposition",
-                        "form-data; name=\"originalData\"; filename=\"" + filename + "\""), fileBody)
-                .build();
-        Request request = new Request.Builder()
-                .url(uploadPATH)
-                .post(requestBody)
-                .build();
-
-        Call call = okHttpClient.newCall(request);
-
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("text", "failure upload!");
-                uploadStatus = 2;
-                Looper.prepare();
-                Toast.makeText(Speedometer.this, "上传失败", Toast.LENGTH_SHORT).show();
-                Looper.loop();
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.i("text", "success upload!");
-                String json = response.body().string();
-                Log.i("success........", "成功" + json);
-                uploadStatus = 1;
-                Looper.prepare();
+    public void upload() {
+        networkManager.uploadFile(addressRowData, strBegTime + ".csv", new NetworkManager.UploadCallback() {
+            public void onSuccess() {
+                android.os.Looper.prepare();
                 Toast.makeText(Speedometer.this, "上传成功", Toast.LENGTH_SHORT).show();
-                Looper.loop();
+                android.os.Looper.loop();
+            }
 
+            public void onFailure(Exception e) {
+                android.os.Looper.prepare();
+                Toast.makeText(Speedometer.this, "上传失败", Toast.LENGTH_SHORT).show();
+                android.os.Looper.loop();
             }
         });
-
     }
 
     // public Call file_submit(String filepath, String url, String filename){
@@ -1407,7 +1213,7 @@ public class Speedometer extends AppCompatActivity {
      * @return CSV写入器实例
      */
     public CSVWriter getCSVWriter() {
-        return writerCustomData;
+        return null; // 保持接口兼容，实际使用DataLogger
     }
 
     /**
@@ -1416,7 +1222,16 @@ public class Speedometer extends AppCompatActivity {
      * @return CSV文件路径
      */
     public String getCSVFilePath() {
-        return addressRowData;
+        return dataLogger.getFilePath();
+    }
+
+    /**
+     * 获取数据记录器（测试用）
+     * 
+     * @return DataLogger实例
+     */
+    public DataLogger getDataLogger() {
+        return dataLogger;
     }
 
     /**
