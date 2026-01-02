@@ -69,7 +69,7 @@ public class StrokeDetector {
 
         // 初始化缓存数组
         this.acclCacheSamples = new double[30]; // 原长度30
-        this.SRCacheSamples = new double[3]; // 原长度2（暂不改为6）
+        this.SRCacheSamples = new double[2]; // 原长度2（暂不改为6）
 
         // 初始化状态
         reset();

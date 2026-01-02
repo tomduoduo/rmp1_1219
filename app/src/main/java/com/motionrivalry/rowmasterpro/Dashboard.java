@@ -53,6 +53,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.motionrivalry.rowmasterpro.UtilsBle.BleConnect;
+import com.motionrivalry.rowmasterpro.utils.TimerManager;
 import com.opencsv.CSVWriter;
 import com.xsens.dot.android.sdk.XsensDotSdk;
 import com.xsens.dot.android.sdk.events.XsensDotData;
@@ -370,7 +371,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
 
     private HttpURLConnection httpURLConnectionUpdate;
     private TimerTask updateTask;
-    private Timer updateTimer;
     private String sectionTimeTX = "0.0";
     private String fileLoc = null;
 
@@ -541,11 +541,9 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
     private double connectionTimeout = 10000;
 
     private TimerTask connectionEnhance;
-    private Timer connectionEnhanceTimer;
     private int connectionMode;
 
     private TimerTask updateSecondaryDataTask;
-    private Timer updateSecondaryTimer;
 
     private String BeltName1;
     private String BeltName2;
@@ -572,7 +570,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
     private double packetCounterPhoneCache = 0;
 
     private TimerTask watchmanTask;
-    private Timer watchmanTimer;
 
     private int reconnectLoop = 3;
     private int reconnectNumber = 0;
@@ -622,8 +619,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
     private double heartRateZone_3 = 152;
 
     private double sectionCount = 0;
-
-    private TimerTask updateResult;
     private String Lang = "";
 
     @Override
@@ -1063,13 +1058,11 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                     threadConnectDots.interrupt();
                     activateDots(0);
                     connectionEnhance.cancel();
-                    connectionEnhanceTimer.cancel();
 
                     connectionGuard();
                     mountPolar(0);
 
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
+                    TimerManager.getInstance().schedule("disconnectDots", new Runnable() {
                         @Override
                         public void run() {
                             Looper.prepare();
@@ -1078,8 +1071,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                         }
                     }, 200);
 
-                    Timer timer2 = new Timer();
-                    timer2.schedule(new TimerTask() {
+                    TimerManager.getInstance().schedule("connectDots", new Runnable() {
                         @Override
                         public void run() {
                             Looper.prepare();
@@ -1107,7 +1099,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
 
                 try {
                     connectionEnhance.cancel();
-                    connectionEnhanceTimer.cancel();
                     threadConnectDots.interrupt();
                 } catch (Exception e) {
 
@@ -1204,7 +1195,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 heartRateClassifier_8 = new int[] { 0, 0, 0, 0, 0 };
 
                 try {
-                    updateTimer.cancel();
                     updateTask.cancel();
 
                     if (httpURLConnectionUpdate != null) {
@@ -1256,8 +1246,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 mButtonStatus[0] = false;
                 mButtonStatus[1] = true;
 
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
+                TimerManager.getInstance().schedule("startAnimation", new Runnable() {
                     @Override
                     public void run() {
                         Looper.prepare();
@@ -1280,11 +1269,8 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 mLocationClientGD.stopLocation();
 
                 try {
-                    updateTimer.cancel();
                     updateTask.cancel();
-
                     connectionEnhance.cancel();
-                    connectionEnhanceTimer.cancel();
 
                     if (httpURLConnectionUpdate != null) {
                         httpURLConnectionUpdate.disconnect();
@@ -1329,8 +1315,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 mButtonStatus[0] = true;
                 mButtonStatus[1] = false;
 
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
+                TimerManager.getInstance().schedule("stopAnimation", new Runnable() {
                     @Override
                     public void run() {
                         Looper.prepare();
@@ -1398,8 +1383,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             activateDots(0);
             connectionGuard();
 
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            TimerManager.getInstance().schedule("disconnectDots_500", new Runnable() {
                 @Override
                 public void run() {
                     Looper.prepare();
@@ -1408,8 +1392,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 }
             }, 500);
 
-            Timer timer2 = new Timer();
-            timer2.schedule(new TimerTask() {
+            TimerManager.getInstance().schedule("connectDots_2000", new Runnable() {
                 @Override
                 public void run() {
                     Looper.prepare();
@@ -1815,92 +1798,88 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
     }
 
     private void updateUI(int code) {
-
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        updateUI_sub(UI_params_L1, mDegreeL1fwd, mDegreeL1bwd, mDegreeL1, mOarL1, mOarL1_roll,
-                                mOarL1_pitch, mFrame_L1_roll, "left");
-                        updateUI_sub(UI_params_L2, mDegreeL2fwd, mDegreeL2bwd, mDegreeL2, mOarL2, mOarL2_roll,
-                                mOarL2_pitch, mFrame_L2_roll, "left");
-                        updateUI_sub(UI_params_L3, mDegreeL3fwd, mDegreeL3bwd, mDegreeL3, mOarL3, mOarL3_roll,
-                                mOarL3_pitch, mFrame_L3_roll, "left");
-                        updateUI_sub(UI_params_L4, mDegreeL4fwd, mDegreeL4bwd, mDegreeL4, mOarL4, mOarL4_roll,
-                                mOarL4_pitch, mFrame_L4_roll, "left");
-
-                        updateUI_sub(UI_params_R1, mDegreeR1fwd, mDegreeR1bwd, mDegreeR1, mOarR1, mOarR1_roll,
-                                mOarR1_pitch, mFrame_R1_roll, "right");
-                        updateUI_sub(UI_params_R2, mDegreeR2fwd, mDegreeR2bwd, mDegreeR2, mOarR2, mOarR2_roll,
-                                mOarR2_pitch, mFrame_R2_roll, "right");
-                        updateUI_sub(UI_params_R3, mDegreeR3fwd, mDegreeR3bwd, mDegreeR3, mOarR3, mOarR3_roll,
-                                mOarR3_pitch, mFrame_R3_roll, "right");
-                        updateUI_sub(UI_params_R4, mDegreeR4fwd, mDegreeR4bwd, mDegreeR4, mOarR4, mOarR4_roll,
-                                mOarR4_pitch, mFrame_R4_roll, "right");
-                        updateUI_secondary_sub(UI_params_Secondary_float, UI_params_Secondary_str);
-                        updateUI_sub_HR();
-
-                        // Log.e("status","OK");
-
-                        if (mStartStatus == 1 && lastLoginTime != 0) {
-
-                            timeFromLastAutoConnect = System.currentTimeMillis() - lastLoginTime;
-
-                            if (timeFromLastAutoConnect > 200000) {
-
-                                autoPostStart();
-                                lastLoginTime = System.currentTimeMillis();
-                            }
-
-                        }
-
-                        double mSectionElapsed;
-
-                        if (mStartStatus == 0) {
-
-                            mSectionElapsed = 0;
-
-                        } else {
-
-                            double mCurrentLoggerTaskTime = System.currentTimeMillis();
-                            mSectionElapsed = mCurrentLoggerTaskTime - mLoggerStartTime;
-                            // System.out.println("Elapsed:" + mSectionElapsed);
-                        }
-
-                        if (READY_TO_LOG_NEW == 1 && mStartStatus == 1) {
-                            try {
-                                loggerStart();
-                                // phoneLoggerStandalone(1);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            READY_TO_LOG_NEW = 0;
-                            mLoggerStartTime = System.currentTimeMillis();
-                        }
-
-                        // loggerUpdate();
-
-                        if (mSectionElapsed > mLoggerLengthCap && mStartStatus == 1) {
-                            READY_TO_LOG_NEW = 1;
-                            // phoneLoggerStandalone(0);
-                            loggerStop();
-
-                        }
-
-                    }
-                });
-            }
-        };
         if (code == 1) {
             System.out.println("value is:" + Math.round(1000 / samplingRate));
-            timer.schedule(task, 0, Math.round(1000 / samplingRate));
+            TimerManager.getInstance().scheduleAtFixedRate("updateUI_main", new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI_sub(UI_params_L1, mDegreeL1fwd, mDegreeL1bwd, mDegreeL1, mOarL1, mOarL1_roll,
+                                    mOarL1_pitch, mFrame_L1_roll, "left");
+                            updateUI_sub(UI_params_L2, mDegreeL2fwd, mDegreeL2bwd, mDegreeL2, mOarL2, mOarL2_roll,
+                                    mOarL2_pitch, mFrame_L2_roll, "left");
+                            updateUI_sub(UI_params_L3, mDegreeL3fwd, mDegreeL3bwd, mDegreeL3, mOarL3, mOarL3_roll,
+                                    mOarL3_pitch, mFrame_L3_roll, "left");
+                            updateUI_sub(UI_params_L4, mDegreeL4fwd, mDegreeL4bwd, mDegreeL4, mOarL4, mOarL4_roll,
+                                    mOarL4_pitch, mFrame_L4_roll, "left");
+
+                            updateUI_sub(UI_params_R1, mDegreeR1fwd, mDegreeR1bwd, mDegreeR1, mOarR1, mOarR1_roll,
+                                    mOarR1_pitch, mFrame_R1_roll, "right");
+                            updateUI_sub(UI_params_R2, mDegreeR2fwd, mDegreeR2bwd, mDegreeR2, mOarR2, mOarR2_roll,
+                                    mOarR2_pitch, mFrame_R2_roll, "right");
+                            updateUI_sub(UI_params_R3, mDegreeR3fwd, mDegreeR3bwd, mDegreeR3, mOarR3, mOarR3_roll,
+                                    mOarR3_pitch, mFrame_R3_roll, "right");
+                            updateUI_sub(UI_params_R4, mDegreeR4fwd, mDegreeR4bwd, mDegreeR4, mOarR4, mOarR4_roll,
+                                    mOarR4_pitch, mFrame_R4_roll, "right");
+                            updateUI_secondary_sub(UI_params_Secondary_float, UI_params_Secondary_str);
+
+                            updateUI_sub_HR();
+
+                            // Log.e("status","OK");
+
+                            if (mStartStatus == 1 && lastLoginTime != 0) {
+
+                                timeFromLastAutoConnect = System.currentTimeMillis() - lastLoginTime;
+
+                                if (timeFromLastAutoConnect > 200000) {
+
+                                    autoPostStart();
+                                    lastLoginTime = System.currentTimeMillis();
+                                }
+
+                            }
+
+                            double mSectionElapsed;
+
+                            if (mStartStatus == 0) {
+
+                                mSectionElapsed = 0;
+
+                            } else {
+
+                                double mCurrentLoggerTaskTime = System.currentTimeMillis();
+                                mSectionElapsed = mCurrentLoggerTaskTime - mLoggerStartTime;
+                                // System.out.println("Elapsed:" + mSectionElapsed);
+                            }
+
+                            if (READY_TO_LOG_NEW == 1 && mStartStatus == 1) {
+                                try {
+                                    loggerStart();
+                                    // phoneLoggerStandalone(1);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                READY_TO_LOG_NEW = 0;
+                                mLoggerStartTime = System.currentTimeMillis();
+                            }
+
+                            // loggerUpdate();
+
+                            if (mSectionElapsed > mLoggerLengthCap && mStartStatus == 1) {
+                                READY_TO_LOG_NEW = 1;
+                                // phoneLoggerStandalone(0);
+                                loggerStop();
+
+                            }
+                        }
+                    });
+                }
+            }, 0, Math.round(1000 / samplingRate));
 
         } else {
-            task.cancel();
+            TimerManager.getInstance().cancelTask("updateUI_main");
         }
 
     }
@@ -2952,8 +2931,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             mButtonStatus[0] = true;
             mButtonStatus[2] = true;
 
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            TimerManager.getInstance().schedule("activateUI", new Runnable() {
                 @Override
                 public void run() {
                     Looper.prepare();
@@ -3014,8 +2992,8 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             mButtonStatus[0] = false;
             mButtonStatus[2] = false;
 
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            TimerManager.getInstance().schedule("deactivateUI", new Runnable() {
+
                 @Override
                 public void run() {
                     Looper.prepare();
@@ -3034,6 +3012,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
 
                     Looper.loop();
                 }
+
             }, 10);
 
         }
@@ -3052,8 +3031,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             }
         };
 
-        updateSecondaryTimer = new Timer();
-        updateSecondaryTimer.schedule(connectionEnhance, 0, 20);
+        TimerManager.getInstance().scheduleAtFixedRate("updateSecondary", connectionEnhance, 0, 20);
     }
 
     private void connectionGuard() {
@@ -3177,8 +3155,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             }
         };
 
-        connectionEnhanceTimer = new Timer();
-        connectionEnhanceTimer.schedule(connectionEnhance, 1000, 2000);
+        TimerManager.getInstance().scheduleAtFixedRate("connectionEnhance", connectionEnhance, 1000, 2000);
 
     }
 
@@ -4040,8 +4017,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
             }
         };
 
-        updateTimer = new Timer();
-        updateTimer.schedule(updateTask, 3000, 2000);
+        TimerManager.getInstance().scheduleAtFixedRate("updateTimer", updateTask, 3000, 2000);
 
     }
 
@@ -4590,13 +4566,12 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                 double startTime = System.currentTimeMillis();
                 dotsLastUpdateTime = new double[] { startTime, startTime, startTime, startTime, startTime, startTime,
                         startTime, startTime, startTime };
-                watchmanTimer = new Timer();
-                watchmanTimer.schedule(watchmanTask, 1000, 3000);
+                TimerManager.getInstance().scheduleAtFixedRate("watchman", watchmanTask, 1000, 3000);
 
-            } else if (watchmanTimer != null && watchmanTask != null) {
+            } else if (watchmanTask != null) {
 
-                watchmanTimer.cancel();
                 watchmanTask.cancel();
+                TimerManager.getInstance().cancelTask("watchman");
             }
 
         }
@@ -4749,6 +4724,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                         });
                     }
                 }
+
             });
         }
     }
@@ -4782,12 +4758,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             disconnectDots();
-
-                            if (updateTimer != null) {
-
-                                updateTimer.cancel();
-
-                            }
 
                             if (updateTask != null) {
                                 updateTask.cancel();
@@ -4864,12 +4834,6 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (updateTimer != null) {
-
-            updateTimer.cancel();
-
-        }
 
         if (updateTask != null) {
             updateTask.cancel();
@@ -5337,6 +5301,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                             } else if (String.valueOf(inputStreamMap.get("code")).equals("u411")) {
 
                                 runOnUiThread(new Runnable() {
+
                                     @Override
                                     public void run() {
                                         // Toast.makeText(MainActivity.this, "Code:" +
@@ -5374,6 +5339,7 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                                 });
 
                             } else {
+
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -5388,7 +5354,9 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
                             System.out.println("responseCode = " + responseCode);
 
                         }
-                    } catch (Exception e) {
+                    } catch (
+
+                    Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -5400,25 +5368,21 @@ public class Dashboard extends AppCompatActivity implements XsensDotDeviceCallba
 
         if (activationStatus == 0) {
 
-            updateResult.cancel();
+            TimerManager.getInstance().cancelTask("updateResult");
 
         } else {
 
-            Timer timer = new Timer();
-            updateResult = new TimerTask() {
+            TimerManager.getInstance().scheduleAtFixedRate("updateResult", new Runnable() {
                 @Override
                 public void run() {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             updateResultParams();
-
                         }
                     });
                 }
-            };
-            timer.schedule(updateResult, 0, 1000);
+            }, 0, 1000);
         }
     }
 

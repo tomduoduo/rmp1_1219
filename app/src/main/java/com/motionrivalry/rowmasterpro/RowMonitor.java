@@ -73,14 +73,25 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.motionrivalry.rowmasterpro.UtilsBle.BleConnect;
 import com.motionrivalry.rowmasterpro.UtilsBle.BleScanner;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvException;
+// CSV操作已被TrainingSessionManager中的DataRecorder替代
 import com.polar.sdk.api.PolarBleApi;
 import com.polar.sdk.api.PolarBleApiDefaultImpl;
 import com.tarek360.instacapture.Instacapture;
 import com.tarek360.instacapture.listener.SimpleScreenCapturingListener;
 import com.xw.repo.BubbleSeekBar;
+import com.motionrivalry.rowmasterpro.utils.TimerManager;
+import com.motionrivalry.rowmasterpro.permission.PermissionManager;
+import com.motionrivalry.rowmasterpro.ui.RowMonitorViewModel;
+import com.motionrivalry.rowmasterpro.training.TrainingSessionManager;
+import com.motionrivalry.rowmasterpro.training.TrainingProgress;
+import com.motionrivalry.rowmasterpro.training.TrainingSessionData;
+import com.motionrivalry.rowmasterpro.sensor.RowingState;
+import com.motionrivalry.rowmasterpro.bluetooth.BluetoothDeviceManager;
+import androidx.lifecycle.ViewModelProvider;
+import com.motionrivalry.rowmasterpro.sensor.SensorData;
+import com.motionrivalry.rowmasterpro.sensor.ProcessedData;
+import com.motionrivalry.rowmasterpro.sensor.RowingState;
+import com.motionrivalry.rowmasterpro.training.TrainingProgress;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -107,6 +118,16 @@ import io.reactivex.rxjava3.disposables.Disposable;
 
 public class RowMonitor extends AppCompatActivity {
 
+    // ViewModel
+    private RowMonitorViewModel viewModel;
+
+    // 训练会话管理器
+    private TrainingSessionManager trainingSessionManager;
+
+    // 蓝牙设备管理器
+    private BluetoothDeviceManager bluetoothDeviceManager;
+
+    // UI组件
     private ImageView mBoatRoll;
     private ImageView mBoatYaw;
     private ImageView mBoatOrientation;
@@ -217,7 +238,6 @@ public class RowMonitor extends AppCompatActivity {
     private int satelliteCount = 0;
 
     private int START_BUTTON_CASE = 0;
-    private TimerTask updateUI_main;
     private int targetSPM = 30;
     private int targetSplit = 140;
     private int targetMin = 2;
@@ -321,12 +341,11 @@ public class RowMonitor extends AppCompatActivity {
             "1", "2", "3", "4", "5",
     };
 
-    private FileWriter loggerPhone_0 = null;
-    private CSVWriter loggerPhone = null;
-    private TimerTask loggerPhoneTask;
-    private Timer loggerPhoneTimer;
+    // CSV记录已被TrainingSessionManager中的DataRecorder替代
+    // private FileWriter loggerPhone_0 = null;
+    // private CSVWriter loggerPhone = null;
     private double sectionTotalSec = 0;
-    private String fileLocPhone = "";
+    // private String fileLocPhone = "";
 
     private String resultDistance = "";
     private String resultSectionTime = "";
@@ -336,7 +355,7 @@ public class RowMonitor extends AppCompatActivity {
     private TextView mTxResultSectionTime;
     private TextView mTxResultStrokeCount;
 
-    private List<String[]> resultLog;
+    // 数据记录已由TrainingSessionManager自动处理，无需手动管理resultLog
 
     private Button mResultClose;
     private Button mResultSave;
@@ -352,7 +371,6 @@ public class RowMonitor extends AppCompatActivity {
     private String updatePATH = "";
     private HttpURLConnection httpURLConnectionUpdate;
     private TimerTask updateToDataV;
-    private Timer updateToDataVTimer;
     private String userName;
 
     private TextView mSplitAlert;
@@ -389,8 +407,6 @@ public class RowMonitor extends AppCompatActivity {
 
     private double sectionCount = 0;
 
-    private TimerTask updateResult;
-
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
@@ -402,22 +418,26 @@ public class RowMonitor extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        String[] PermissionString = {
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS,
-                Manifest.permission.INTERNET,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.CHANGE_WIFI_STATE };
+        PermissionManager.getInstance().checkDefaultPermissions(this, new PermissionManager.PermissionCallback() {
+            @Override
+            public void onAllPermissionsGranted() {
+                Log.e("Permission_Status", "all access granted");
+                // 权限已授予，继续初始化
+                initializeAfterPermissions();
+            }
 
-        checkPermission(PermissionString);
+            @Override
+            public void onPermissionsDenied(List<String> deniedPermissions) {
+                Log.e("Permission_Status", "partial access not granted, please grant access: " + deniedPermissions);
+                // 处理被拒绝的权限
+                handleDeniedPermissions(deniedPermissions);
+            }
+        });
 
-        api = PolarBleApiDefaultImpl.defaultImplementation(this, PolarBleApi.ALL_FEATURES);
-        api.setPolarFilter(false);
+        // 延迟初始化需要权限的组件
+        // api = PolarBleApiDefaultImpl.defaultImplementation(this,
+        // PolarBleApi.ALL_FEATURES);
+        // api.setPolarFilter(false);
 
         // int REQUEST_EXTERNAL_STORAGE = 1;
         // String[] PERMISSIONS_STORAGE = {
@@ -738,9 +758,10 @@ public class RowMonitor extends AppCompatActivity {
                 if (checkBluetoothValid() == 1) {
 
                     if (!mIsScanning) {
+                        // 使用BluetoothDeviceManager开始扫描
+                        bluetoothDeviceManager.startScan(10000); // 扫描10秒
 
-                        initPolar();
-                        mountPolar(0);
+                        // 重置UI状态
                         resetList();
 
                         mBeltCount.setText("0");
@@ -754,24 +775,15 @@ public class RowMonitor extends AppCompatActivity {
                         mListBeltsName.add("-");
                         mListBeltsName.add("-");
 
-                        // connectDeviceHR(0);
                         mTxScanning.setAlpha(1f);
-                        // scannerHR.Start();
-                        mIsScanning = true;
-
                         mConnectHRM.setEnabled(false);
                         mConnectHRM.setAlpha(0);
 
                     } else {
-                        // scannerHR.Stop();
+                        // 停止扫描
+                        bluetoothDeviceManager.stopScan();
                         mTxScanning.setAlpha(0f);
-                        mIsScanning = false;
-                        initPolar();
-
                     }
-
-                    mScanHRM.setText(mIsScanning ? "停止" : "扫描");
-
                 }
 
             }
@@ -795,16 +807,13 @@ public class RowMonitor extends AppCompatActivity {
                     Toast.makeText(RowMonitor.this, "Select at Least 1 HRM to Connect", Toast.LENGTH_SHORT).show();
 
                 } else {
+                    // 使用BluetoothDeviceManager连接选中的设备
+                    connectSelectedHeartRateDevices();
 
                     mConnectHRM.setEnabled(false);
-                    // mConnectHRM.setTextSize(9);
                     mConnectHRM.setText("已连接");
-                    // scannerHR.Stop();
                     mTxScanning.setAlpha(0f);
                     mIsScanning = false;
-                    // connectDeviceHR(1);
-                    mountPolar(1);
-
                 }
 
             }
@@ -1087,6 +1096,7 @@ public class RowMonitor extends AppCompatActivity {
 
         switch (status) {
             case 0:
+                // 准备状态 - 使用TrainingSessionManager开始会话
                 mStart.setBackgroundResource(R.drawable.gradient_orange);
                 mMasterBg.setBackgroundResource(R.drawable.gradient_orange);
                 mStart.setTextColor(Color.BLACK);
@@ -1105,6 +1115,7 @@ public class RowMonitor extends AppCompatActivity {
                 break;
 
             case 1:
+                // 取消准备状态
                 mMasterBg.setBackgroundResource(R.drawable.gradient_green);
                 mStart.setBackgroundResource(R.drawable.gradient_green);
                 mStart.setTextColor(Color.WHITE);
@@ -1115,19 +1126,33 @@ public class RowMonitor extends AppCompatActivity {
                 break;
 
             case 2:
-
+                // 开始训练 - 使用TrainingSessionManager
                 sectionCount = 0;
                 boatSpeedClassifier = new int[] { 0, 0, 0, 0, 0 };
                 strokeRateClassifier = new int[] { 0, 0, 0, 0, 0 };
                 heartRateClassifier = new int[] { 0, 0, 0, 0, 0 };
 
                 try {
-                    loggerInit();
-                    phoneLoggerStandalone();
-                    // startConnection();
-                    startUpdate();
+                    // 使用TrainingSessionManager开始训练会话
+                    String sessionName = "训练_" + System.currentTimeMillis();
+                    if (trainingSessionManager.startSession(sessionName)) {
+                        // 设置训练目标
+                        trainingSessionManager.setTargetStrokeRate(targetSPM);
+                        trainingSessionManager.setTargetDuration(targetMin * 60 + targetSec);
+
+                        // 开始传感器处理
+                        viewModel.startSensorProcessing();
+
+                        // 重置计时器
+                        mTotalElapse.setBase(SystemClock.elapsedRealtime());
+                        mTotalElapse.start();
+                    } else {
+                        Log.e("TrainingSession", "开始训练会话失败");
+                        return;
+                    }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e("TrainingSession", "开始训练会话异常", e);
+                    return;
                 }
 
                 mBanner.setBackgroundResource(R.drawable.gradient_green);
@@ -1136,14 +1161,6 @@ public class RowMonitor extends AppCompatActivity {
                 mBannerTextMid.setText("开始");
                 mBannerTextRight.setText("开始");
                 mBanner.setAlpha(1f);
-
-                // mSpeedMin.setSecondTrackColor(Color.DKGRAY);
-                // mGapMin.setSecondTrackColor(Color.DKGRAY);
-                // mAvgStrokeRateLength.setSecondTrackColor(Color.DKGRAY);
-
-                // mSpeedMin.setThumbColor(Color.DKGRAY);
-                // mGapMin.setThumbColor(Color.DKGRAY);
-                // mAvgStrokeRateLength.setThumbColor(Color.DKGRAY);
 
                 mSpeedMin.setEnabled(false);
                 mGapMin.setEnabled(false);
@@ -1175,8 +1192,9 @@ public class RowMonitor extends AppCompatActivity {
 
                 updateUI(0);
 
-                updateToDataVTimer.cancel();
                 updateToDataV.cancel();
+                TimerManager.getInstance().cancelTask("updateToDataV");
+                TimerManager.getInstance().cancelTask("updateToDataV");
 
                 mBanner.setBackgroundResource(R.drawable.gradient_red);
                 mMasterBg.setBackgroundResource(R.drawable.gradient_black_2);
@@ -1235,21 +1253,13 @@ public class RowMonitor extends AppCompatActivity {
                 mStart.setText("准备");
                 mStart.setTextColor(Color.WHITE);
 
-                resultDistance = (String) mDistance.getText();
-                resultSectionTime = (String) mTotalElapse.getText();
-                resultStrokeCount = String.valueOf((int) strokeCount);
+                // 训练结果将通过TrainingSessionManager的回调自动处理
+                // 无需手动设置result变量，结果会在onSessionCompleted中显示
 
-                // resultDistance = "2021";
-                // resultSectionTime = "06:10.19";
-                // resultStrokeCount = "191";
-
-                // demo pic
-
-                mTxResultDistance.setText(resultDistance);
-                mTxResultSectionTime.setText(resultSectionTime);
-                mTxResultStrokeCount.setText(resultStrokeCount);
-                SimpleDateFormat formatterSplitTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                mResultSaveTime.setText(formatterSplitTime.format(System.currentTimeMillis()));
+                // 使用TrainingSessionManager完成训练会话
+                if (trainingSessionManager != null && trainingSessionManager.isSessionActive()) {
+                    trainingSessionManager.completeSession();
+                }
 
                 mTotalElapse.stop();
                 mTotalElapse.setBase(SystemClock.elapsedRealtime());
@@ -1257,15 +1267,6 @@ public class RowMonitor extends AppCompatActivity {
                 resetUI();
 
                 START_BUTTON_CASE = 0;
-
-                try {
-                    loggerPhone.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                loggerPhoneTask.cancel();
-                fileSaveNotification();
 
                 break;
 
@@ -1277,23 +1278,22 @@ public class RowMonitor extends AppCompatActivity {
 
         if (activationStatus == 0) {
 
-            updateResult.cancel();
+            TimerManager.getInstance().cancelTask("updateResult");
 
         } else {
 
-            Timer timer = new Timer();
-            updateResult = new TimerTask() {
+            TimerManager.getInstance().scheduleAtFixedRate("updateResult", new Runnable() {
                 @Override
                 public void run() {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
+                            // 原updateResult任务内容
                         }
                     });
                 }
-            };
-            timer.schedule(updateResult, 0, 1000);
+            }, 0, 1000);
+
         }
 
     }
@@ -1310,27 +1310,23 @@ public class RowMonitor extends AppCompatActivity {
 
         if (activationStatus == 0) {
 
-            updateUI_main.cancel();
+            TimerManager.getInstance().cancelTask("updateUI_main");
 
         } else {
-            Timer timer = new Timer();
-            updateUI_main = new TimerTask() {
+            TimerManager.getInstance().scheduleAtFixedRate("updateUI_main", new Runnable() {
                 @Override
                 public void run() {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             updateUI_main(UI_params_float, UI_params_string, UI_params_double);
                             myRefreshRunnable refreshChart;
                             refreshChart = new myRefreshRunnable(chartSPM, Integer.parseInt(UI_params_string[0]));
                             refreshChart.run();
-
                         }
                     });
                 }
-            };
-            timer.schedule(updateUI_main, 0, 32);
+            }, 0, 32);
         }
     }
 
@@ -1457,40 +1453,73 @@ public class RowMonitor extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(mSensorListener, mAccelerometer, 50000);
-        mSensorManager.registerListener(mSensorListener, mMagnetic, 50000);
-        mSensorManager.registerListener(mSensorListener, mAccelerometerLinear, 50000);
-        locationManager.registerGnssStatusCallback(mGnssStatusCallback);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 500, 3, locationListener);
 
+        // 使用新的架构管理传感器
+        if (viewModel != null) {
+            viewModel.startSensorProcessing();
+        }
+
+        // 注册GPS监听器（如果已初始化）
+        if (locationManager != null && locationListener != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 3, locationListener);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mGnssStatusCallback != null) {
+                locationManager.registerGnssStatusCallback(mGnssStatusCallback);
+            }
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // mSensorManager.unregisterListener(mSensorListener);
-        // locationManager.unregisterGnssStatusCallback(mGnssStatusCallback);
-        // locationManager.removeUpdates(locationListener);
+
+        // 暂停传感器处理
+        if (viewModel != null) {
+            viewModel.stopSensorProcessing();
+        }
+
+        // 移除GPS监听器
+        if (locationManager != null && locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mGnssStatusCallback != null) {
+                locationManager.unregisterGnssStatusCallback(mGnssStatusCallback);
+            }
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSensorManager.unregisterListener(mSensorListener);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+
+        // 清理ViewModel资源
+        if (viewModel != null) {
+            viewModel.cleanup();
+        }
+
+        // 清理训练会话管理器
+        if (trainingSessionManager != null && trainingSessionManager.isSessionActive()) {
+            trainingSessionManager.cancelSession();
+        }
+
+        // 清理GPS资源
+        if (locationManager != null && locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mGnssStatusCallback != null) {
             locationManager.unregisterGnssStatusCallback(mGnssStatusCallback);
         }
 
+        // 清理其他资源
         try {
-
-            locationManager.removeUpdates(locationListener);
-            updateToDataV.cancel();
-            httpURLConnectionUpdate.disconnect();
-
+            if (updateToDataV != null) {
+                updateToDataV.cancel();
+            }
+            if (httpURLConnectionUpdate != null) {
+                httpURLConnectionUpdate.disconnect();
+            }
         } catch (Exception e) {
-
+            Log.e("RowMonitor", "清理资源时出错: " + e.getMessage());
         }
-
     }
 
     public void checkPermission(String[] PermissionString) {
@@ -1539,20 +1568,847 @@ public class RowMonitor extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            boolean isAllGranted = true;
-            for (int grant : grantResults) {
-                if (grant != PackageManager.PERMISSION_GRANTED) {
-                    isAllGranted = false;
+        // 委托给PermissionManager处理
+        PermissionManager.getInstance().onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    /**
+     * 权限授予后的初始化方法
+     */
+    private void initializeAfterPermissions() {
+        // 初始化Polar API
+        api = PolarBleApiDefaultImpl.defaultImplementation(this, PolarBleApi.ALL_FEATURES);
+        api.setPolarFilter(false);
+
+        // 继续其他初始化工作
+        initializeComponents();
+
+        Log.e("Permission_Status", "Application initialized after permissions granted");
+    }
+
+    /**
+     * 处理被拒绝的权限
+     * 
+     * @param deniedPermissions 被拒绝的权限列表
+     */
+    private void handleDeniedPermissions(List<String> deniedPermissions) {
+        Log.e("Permission_Status", "Handling denied permissions: " + deniedPermissions);
+
+        // 显示权限被拒绝的提示
+        if (!deniedPermissions.isEmpty()) {
+            // 可以在这里显示对话框提示用户权限的重要性
+            // 或者跳转到应用设置页面
+
+            // 对于关键权限，可能需要终止应用或限制功能
+            boolean hasCriticalPermissionDenied = false;
+            for (String permission : deniedPermissions) {
+                if (permission.equals(Manifest.permission.ACCESS_FINE_LOCATION) ||
+                        permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    hasCriticalPermissionDenied = true;
                     break;
                 }
             }
-            if (isAllGranted) {
-                Log.e("Permission_Status", "all access granted");
-            } else {
 
-                Log.e("Permission_Status", "partial access not granted, please grand access");
+            if (hasCriticalPermissionDenied) {
+                // 显示关键权限被拒绝的警告
+                showPermissionDeniedWarning(deniedPermissions);
+            }
+        }
+    }
 
+    /**
+     * 显示权限被拒绝的警告
+     * 
+     * @param deniedPermissions 被拒绝的权限列表
+     */
+    private void showPermissionDeniedWarning(List<String> deniedPermissions) {
+        // 这里可以实现显示对话框的逻辑
+        // 提示用户这些权限对应用功能的重要性
+        Log.e("Permission_Status", "Critical permissions denied: " + deniedPermissions);
+    }
+
+    /**
+     * 初始化组件（在权限检查之后）
+     */
+    private void initializeComponents() {
+        // 初始化ViewModel
+        viewModel = new ViewModelProvider(this).get(RowMonitorViewModel.class);
+        viewModel.initialize(this);
+
+        // 初始化训练会话管理器
+        trainingSessionManager = new TrainingSessionManager(this, viewModel.getSensorDataProcessor());
+
+        // 初始化蓝牙设备管理器
+        bluetoothDeviceManager = new BluetoothDeviceManager(this);
+
+        // 设置蓝牙设备回调
+        bluetoothDeviceManager.addCallback(new BluetoothDeviceManager.BluetoothDeviceCallback() {
+            @Override
+            public void onDeviceDiscovered(BluetoothDeviceManager.DeviceInfo device) {
+                Log.i("BluetoothDevice", "发现设备: " + device.deviceName + " (" + device.deviceAddress + ")");
+
+                // 更新UI显示发现的设备
+                if (device.deviceType == BluetoothDeviceManager.DeviceType.HEART_RATE_MONITOR) {
+                    // 可以在这里更新心率设备列表
+                    updateHeartRateDeviceList(device);
+                }
+            }
+
+            @Override
+            public void onDeviceConnected(BluetoothDeviceManager.DeviceInfo device) {
+                Log.i("BluetoothDevice", "设备已连接: " + device.deviceName);
+
+                // 更新连接状态UI
+                updateHeartRateConnectionStatus(device.deviceAddress, true);
+            }
+
+            @Override
+            public void onDeviceDisconnected(BluetoothDeviceManager.DeviceInfo device) {
+                Log.i("BluetoothDevice", "设备已断开: " + device.deviceName);
+
+                // 更新连接状态UI
+                updateHeartRateConnectionStatus(device.deviceAddress, false);
+            }
+
+            @Override
+            public void onDeviceConnectionFailed(BluetoothDeviceManager.DeviceInfo device, String error) {
+                Log.e("BluetoothDevice", "设备连接失败: " + device.deviceName + ", 错误: " + error);
+
+                // 显示连接失败提示
+                showErrorMessage("心率设备连接失败: " + error);
+            }
+
+            @Override
+            public void onHeartRateDataReceived(String deviceId, int heartRate) {
+                Log.d("BluetoothDevice", "心率数据: " + heartRate + " bpm from " + deviceId);
+
+                // 处理心率数据
+                viewModel.processHeartRateData(deviceId, heartRate);
+            }
+
+            @Override
+            public void onBatteryLevelReceived(String deviceId, int batteryLevel) {
+                Log.d("BluetoothDevice", "电池电量: " + batteryLevel + "% from " + deviceId);
+
+                // 可以显示电池电量
+                updateHeartRateBatteryLevel(deviceId, batteryLevel);
+            }
+
+            @Override
+            public void onSensorDataReceived(String deviceId, String sensorType, Object data) {
+                Log.d("BluetoothDevice", "传感器数据: " + sensorType + " from " + deviceId);
+            }
+
+            @Override
+            public void onScanStarted() {
+                Log.i("BluetoothDevice", "蓝牙扫描开始");
+                mIsScanning = true;
+                mScanHRM.setText("停止");
+            }
+
+            @Override
+            public void onScanStopped() {
+                Log.i("BluetoothDevice", "蓝牙扫描停止");
+                mIsScanning = false;
+                mScanHRM.setText("扫描");
+            }
+
+            @Override
+            public void onScanFailed(String error) {
+                Log.e("BluetoothDevice", "扫描失败: " + error);
+                showErrorMessage("蓝牙扫描失败: " + error);
+                mIsScanning = false;
+                mScanHRM.setText("扫描");
+            }
+
+            @Override
+            public void onBluetoothStateChanged(boolean enabled) {
+                Log.i("BluetoothDevice", "蓝牙状态改变: " + (enabled ? "启用" : "禁用"));
+
+                if (!enabled) {
+                    showErrorMessage("蓝牙已禁用，请启用蓝牙");
+                }
+            }
+        });
+
+        // 设置训练会话回调
+        trainingSessionManager.setCallback(new TrainingSessionManager.TrainingSessionCallback() {
+            @Override
+            public void onSessionStarted(String sessionId) {
+                Log.i("TrainingSession", "训练会话已开始: " + sessionId);
+                // 可以在这里添加训练开始后的UI更新
+            }
+
+            @Override
+            public void onSessionPaused() {
+                Log.i("TrainingSession", "训练会话已暂停");
+                // 更新UI显示暂停状态
+            }
+
+            @Override
+            public void onSessionResumed() {
+                Log.i("TrainingSession", "训练会话已恢复");
+                // 更新UI显示恢复状态
+            }
+
+            @Override
+            public void onSessionCompleted(TrainingSessionData data) {
+                Log.i("TrainingSession", "训练会话已完成");
+                // 显示训练结果
+                showTrainingResults(data);
+            }
+
+            @Override
+            public void onSessionCancelled() {
+                Log.i("TrainingSession", "训练会话已取消");
+                // 重置UI状态
+                resetTrainingUI();
+            }
+
+            @Override
+            public void onProgressUpdate(TrainingProgress progress) {
+                // 更新训练进度到ViewModel
+                viewModel.updateTrainingProgress(progress);
+            }
+
+            @Override
+            public void onTargetReached(String targetType) {
+                Log.i("TrainingSession", "目标已达成: " + targetType);
+                // 可以显示目标达成的提示
+                showTargetReachedMessage(targetType);
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e("TrainingSession", "训练会话错误: " + error);
+                showErrorMessage(error);
+            }
+        });
+
+        // 设置UI观察者
+        setupLiveDataObservers();
+
+        // 初始化传感器
+        initializeSensors();
+
+        // 初始化UI组件
+        initializeUIComponents();
+
+        Log.e("Permission_Status", "Initializing components after permissions check");
+    }
+
+    /**
+     * 设置LiveData观察者
+     */
+    private void setupLiveDataObservers() {
+        // 观察传感器数据
+        viewModel.getSensorData().observe(this, sensorData -> {
+            // 更新UI显示
+            updateSensorDataUI(sensorData);
+        });
+
+        // 观察处理后的数据
+        viewModel.getProcessedData().observe(this, processedData -> {
+            // 更新图表和统计数据
+            updateProcessedDataUI(processedData);
+        });
+
+        // 观察训练进度
+        viewModel.getTrainingProgress().observe(this, trainingProgress -> {
+            // 更新训练相关UI
+            updateTrainingProgressUI(trainingProgress);
+        });
+
+        // 观察划船状态
+        viewModel.getRowingState().observe(this, rowingState -> {
+            // 更新状态指示器
+            updateRowingStateUI(rowingState);
+        });
+
+        // 观察错误消息
+        viewModel.getErrorMessage().observe(this, errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                // 显示错误提示
+                showErrorMessage(errorMessage);
+            }
+        });
+    }
+
+    /**
+     * 更新传感器数据UI
+     * 
+     * @param sensorData 传感器数据
+     */
+    private void updateSensorDataUI(SensorData sensorData) {
+        // 更新原始传感器数据显示
+        // 这里可以添加调试用的传感器数据显示
+        if (sensorData != null) {
+            // 更新加速度计数据
+            if (sensorData.accelerometerRaw != null) {
+                // 可以在这里显示原始加速度数据
+            }
+
+            // 更新磁力计数据
+            if (sensorData.magnetometer != null) {
+                // 可以在这里显示磁力计数据
+            }
+
+            // 更新线性加速度数据
+            if (sensorData.linearAcceleration != null) {
+                // 可以在这里显示线性加速度数据
+            }
+        }
+    }
+
+    /**
+     * 更新处理后数据UI
+     * 
+     * @param processedData 处理后的数据
+     */
+    private void updateProcessedDataUI(ProcessedData processedData) {
+        // 更新处理后的传感器数据显示
+        if (processedData != null) {
+            // 更新桨频显示
+            if (processedData.processedStrokeRate >= 0) {
+                mStrokeRate.setText(String.format("%.0f", processedData.processedStrokeRate));
+            }
+
+            // 更新船体姿态
+            if (processedData.processedBoatYaw != 0) {
+                mBoatYaw.setRotation((float) processedData.processedBoatYaw);
+            }
+
+            // 更新速度显示
+            if (processedData.processedBoatSpeed >= 0) {
+                mSpeed.setText(String.format("%.1f", processedData.processedBoatSpeed));
+            }
+
+            // 更新图表数据
+            if (processedData.processedStrokeRate >= 0) {
+                updateChartData(processedData.processedStrokeRate);
+            }
+        }
+    }
+
+    /**
+     * 更新图表数据
+     * 
+     * @param strokeRate 桨频数据
+     */
+    private void updateChartData(double strokeRate) {
+        // 这里实现图表数据更新逻辑
+        // 可以调用现有的addEntryChart方法
+        if (chartSPM != null) {
+            addEntryChart(chartSPM, (float) strokeRate);
+        }
+    }
+
+    /**
+     * 更新训练进度UI
+     * 
+     * @param trainingProgress 训练进度
+     */
+    private void updateTrainingProgressUI(TrainingProgress trainingProgress) {
+        // 更新训练进度显示
+        if (trainingProgress != null) {
+            // 更新总时间
+            if (trainingProgress.elapsedTime > 0) {
+                long hours = trainingProgress.elapsedTime / 3600000;
+                long minutes = (trainingProgress.elapsedTime % 3600000) / 60000;
+                long seconds = ((trainingProgress.elapsedTime % 3600000) % 60000) / 1000;
+
+                if (hours > 0) {
+                    mTotalElapse.setText(String.format("%d:%02d:%02d", hours, minutes, seconds));
+                } else {
+                    mTotalElapse.setText(String.format("%02d:%02d", minutes, seconds));
+                }
+            }
+
+            // 更新总距离
+            if (trainingProgress.totalDistance >= 0) {
+                mDistance.setText(String.format("%.1f", trainingProgress.totalDistance));
+            }
+
+            // 更新平均速度
+            if (trainingProgress.averageSpeed >= 0) {
+                // 可以显示平均速度
+            }
+
+            // 更新平均桨频
+            if (trainingProgress.averageStrokeRate >= 0) {
+                // 可以显示平均桨频
+            }
+
+            // 更新进度条或目标指示器
+            if (trainingProgress.hasTargetTime || trainingProgress.hasTargetDistance) {
+                // 更新目标进度显示
+            }
+        }
+    }
+
+    /**
+     * 更新划船状态UI
+     * 
+     * @param rowingState 划船状态
+     */
+    private void updateRowingStateUI(RowingState rowingState) {
+        // 更新划船状态显示
+        if (rowingState != null) {
+            switch (rowingState) {
+                case IDLE:
+                    // 空闲状态
+                    mStartNotification.setText("准备开始划船");
+                    break;
+                case ROWING:
+                    // 划船中
+                    mStartNotification.setText("正在划船");
+                    break;
+                case PAUSED:
+                    // 暂停状态
+                    mStartNotification.setText("训练已暂停");
+                    break;
+                case COMPLETED:
+                    // 完成状态
+                    mStartNotification.setText("训练已完成");
+                    break;
+                case ERROR:
+                    // 错误状态
+                    mStartNotification.setText("传感器错误");
+                    break;
+            }
+
+            // 可以更新状态指示器的颜色或图标
+            updateStateIndicator(rowingState);
+        }
+    }
+
+    /**
+     * 更新状态指示器
+     * 
+     * @param state 划船状态
+     */
+    private void updateStateIndicator(RowingState state) {
+        // 根据状态更新UI指示器
+        // 例如改变背景色、图标等
+        if (state != null) {
+            switch (state) {
+                case IDLE:
+                    // 绿色背景表示准备就绪
+                    break;
+                case ROWING:
+                    // 蓝色背景表示活跃状态
+                    break;
+                case PAUSED:
+                    // 黄色背景表示暂停
+                    break;
+                case COMPLETED:
+                    // 紫色背景表示完成
+                    break;
+                case ERROR:
+                    // 红色背景表示错误
+                    break;
+            }
+        }
+    }
+
+    /**
+     * 显示错误消息
+     * 
+     * @param errorMessage 错误消息
+     */
+    private void showErrorMessage(String errorMessage) {
+        // 这里实现错误消息显示逻辑
+        // 例如显示Toast或对话框
+        Log.e("RowMonitor", "Error: " + errorMessage);
+    }
+
+    /**
+     * 初始化传感器
+     */
+    private void initializeSensors() {
+        // 使用ViewModel的传感器处理器
+        viewModel.startSensorProcessing();
+
+        // 初始化GPS
+        initializeGPS();
+
+        // 初始化蓝牙心率监测
+        initializeBluetoothHeartRate();
+    }
+
+    /**
+     * 初始化GPS
+     */
+    @SuppressLint("MissingPermission")
+    private void initializeGPS() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // 请求位置更新（使用现有的监听器）
+        if (locationManager != null && locationListener != null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 3, locationListener);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mGnssStatusCallback != null) {
+                locationManager.registerGnssStatusCallback(mGnssStatusCallback);
+            }
+        }
+    }
+
+    /**
+     * 初始化蓝牙心率监测
+     */
+    private void initializeBluetoothHeartRate() {
+        // 初始化Polar API
+        api = PolarBleApiDefaultImpl.defaultImplementation(this, PolarBleApi.ALL_FEATURES);
+        api.setPolarFilter(false);
+
+        // 初始化心率设备列表
+        mNameListBelt = new ArrayList<>();
+        mNameListBelt.add("None");
+
+        // 初始化心率监听器
+        initPolar();
+    }
+
+    /**
+     * 初始化UI组件
+     */
+    private void initializeUIComponents() {
+        // 这里实现UI组件初始化逻辑
+        // 可以逐步迁移现有的UI初始化代码
+    }
+
+    /**
+     * 显示训练结果
+     * 
+     * @param data 训练会话数据
+     */
+    private void showTrainingResults(TrainingSessionData data) {
+        if (data != null) {
+            // 显示训练结果弹窗
+            showPopup(mWindowResult);
+            backgroundAlpha(0.2f);
+
+            // 更新结果数据
+            mTxResultDistance.setText(String.format("%.1f", data.totalDistance / 1000.0)); // 转换为公里
+            mTxResultSectionTime.setText(formatDuration(data.totalDuration));
+            mTxResultStrokeCount.setText(String.valueOf(data.strokeCount));
+
+            // 可以添加更多统计信息的显示
+        }
+    }
+
+    /**
+     * 重置训练UI
+     */
+    private void resetTrainingUI() {
+        // 重置UI状态到初始状态
+        START_BUTTON_CASE = 0;
+        mStart.setText("准备");
+        mStart.setBackgroundResource(R.drawable.gradient_orange);
+        mStart.setTextColor(Color.BLACK);
+        mMasterBg.setBackgroundResource(R.drawable.gradient_black_2);
+        mBanner.setVisibility(View.GONE);
+
+        // 重置计时器
+        mTotalElapse.setBase(SystemClock.elapsedRealtime());
+
+        // 清空图表
+        if (chartSPM != null) {
+            chartSPM.clear();
+            chartSPM.invalidate();
+        }
+    }
+
+    /**
+     * 显示目标达成消息
+     * 
+     * @param targetType 目标类型
+     */
+    private void showTargetReachedMessage(String targetType) {
+        String message = "";
+        switch (targetType) {
+            case "duration":
+                message = "目标时间已达成！";
+                break;
+            case "distance":
+                message = "目标距离已达成！";
+                break;
+            case "strokeRate":
+                message = "目标桨频已达成！";
+                break;
+            default:
+                message = "目标已达成！";
+                break;
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * 格式化持续时间
+     * 
+     * @param duration 持续时间（毫秒）
+     * @return 格式化的时间字符串
+     */
+    private String formatDuration(long duration) {
+        long hours = duration / 3600000;
+        long minutes = (duration % 3600000) / 60000;
+        long seconds = ((duration % 3600000) % 60000) / 1000;
+
+        if (hours > 0) {
+            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
+    }
+
+    /**
+     * 更新心率设备列表
+     * 
+     * @param device 蓝牙设备信息
+     */
+    private void updateHeartRateDeviceList(BluetoothDeviceManager.DeviceInfo device) {
+        // 这里可以实现更新心率设备列表的逻辑
+        // 可以更新Spinner或其他UI组件
+        Log.d("HeartRateDevice", "发现心率设备: " + device.deviceName);
+    }
+
+    /**
+     * 更新心率设备连接状态
+     * 
+     * @param deviceAddress 设备地址
+     * @param isConnected   是否已连接
+     */
+    private void updateHeartRateConnectionStatus(String deviceAddress, boolean isConnected) {
+        // 这里可以实现更新连接状态UI的逻辑
+        Log.d("HeartRateDevice", "设备连接状态改变: " + deviceAddress + " - " + (isConnected ? "已连接" : "已断开"));
+    }
+
+    /**
+     * 更新心率设备电池电量
+     * 
+     * @param deviceId     设备ID
+     * @param batteryLevel 电池电量
+     */
+    private void updateHeartRateBatteryLevel(String deviceId, int batteryLevel) {
+        // 这里可以实现显示电池电量的逻辑
+        Log.d("HeartRateDevice", "设备电池电量: " + deviceId + " - " + batteryLevel + "%");
+    }
+
+    /**
+     * 连接选中的心率设备
+     * 使用BluetoothDeviceManager连接用户选中的心率设备
+     */
+    private void connectSelectedHeartRateDevices() {
+        Log.i("BluetoothDevice", "开始连接选中的心率设备");
+
+        // 重置连接状态
+        mSuccessConnection = 0;
+        mIntentConnection = 0;
+        mListBeltsConnect = new ArrayList<>();
+
+        // 首先计算需要连接的设备数量
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            if (mSelectedBeltList.get(i) != null) {
+                mIntentConnection++;
+            }
+        }
+
+        if (mIntentConnection == 0) {
+            Log.w("BluetoothDevice", "没有选中任何心率设备");
+            return;
+        }
+
+        // 设置BluetoothDeviceManager回调
+        bluetoothDeviceManager.addCallback(new BluetoothDeviceManager.BluetoothDeviceCallback() {
+            @Override
+            public void onDeviceDiscovered(BluetoothDeviceManager.DeviceInfo device) {
+                // 扫描发现设备时调用，这里不需要处理
+            }
+
+            @Override
+            public void onDeviceConnected(BluetoothDeviceManager.DeviceInfo device) {
+                Log.i("BluetoothDevice", "设备已连接: " + device.deviceName + " (" + device.deviceAddress + ")");
+
+                // 更新UI状态
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateConnectedDeviceUI(device);
+                    }
+                });
+            }
+
+            @Override
+            public void onDeviceDisconnected(BluetoothDeviceManager.DeviceInfo device) {
+                Log.i("BluetoothDevice", "设备已断开: " + device.deviceName + " (" + device.deviceAddress + ")");
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateDisconnectedDeviceUI(device);
+                    }
+                });
+            }
+
+            @Override
+            public void onDeviceConnectionFailed(BluetoothDeviceManager.DeviceInfo device, String error) {
+                Log.e("BluetoothDevice", "设备连接失败: " + device.deviceName + " (" + device.deviceAddress + ") - " + error);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateConnectionFailedUI(device);
+                    }
+                });
+            }
+
+            @Override
+            public void onHeartRateDataReceived(String deviceId, int heartRate) {
+                Log.d("BluetoothDevice", "收到心率数据 - 设备: " + deviceId + ", 心率: " + heartRate);
+
+                // 更新心率数据到UI_params_double数组
+                updateHeartRateData(deviceId, heartRate);
+            }
+
+            @Override
+            public void onBatteryLevelReceived(String deviceId, int batteryLevel) {
+                Log.d("BluetoothDevice", "收到电池电量 - 设备: " + deviceId + ", 电量: " + batteryLevel);
+            }
+
+            @Override
+            public void onSensorDataReceived(String deviceId, String sensorType, Object data) {
+                // 其他传感器数据，这里不需要处理
+            }
+
+            @Override
+            public void onScanStarted() {
+                // 扫描开始，这里不需要处理
+            }
+
+            @Override
+            public void onScanStopped() {
+                // 扫描停止，这里不需要处理
+            }
+
+            @Override
+            public void onScanFailed(String error) {
+                Log.e("BluetoothDevice", "扫描失败: " + error);
+            }
+
+            @Override
+            public void onBluetoothStateChanged(boolean enabled) {
+                Log.i("BluetoothDevice", "蓝牙状态改变: " + (enabled ? "启用" : "禁用"));
+            }
+        });
+
+        // 连接选中的设备
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            BluetoothDevice device = mSelectedBeltList.get(i);
+            if (device != null) {
+                Log.i("BluetoothDevice",
+                        "连接设备 " + (i + 1) + ": " + device.getName() + " (" + device.getAddress() + ")");
+                bluetoothDeviceManager.connectToDevice(device.getAddress());
+            }
+        }
+    }
+
+    /**
+     * 更新心率数据
+     * 将接收到的心率数据更新到UI_params_double数组中
+     */
+    private void updateHeartRateData(String deviceAddress, int heartRate) {
+        // 根据设备地址找到对应的索引
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            if (mSelectedBeltList.get(i) != null &&
+                    mSelectedBeltList.get(i).getAddress().equals(deviceAddress)) {
+                UI_params_double[i] = heartRate;
+                Log.d("BluetoothDevice", "更新心率数据 - 设备索引: " + i + ", 心率: " + heartRate);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 更新已连接设备的UI状态
+     */
+    private void updateConnectedDeviceUI(BluetoothDeviceManager.DeviceInfo device) {
+        // 根据设备地址找到对应的索引
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            if (mSelectedBeltList.get(i) != null &&
+                    mSelectedBeltList.get(i).getAddress().equals(device.deviceAddress)) {
+
+                // 更新状态指示器
+                mListStatusHRM.get(i).setBackgroundResource(R.drawable.gradient_green);
+                mSuccessConnection++;
+
+                // 禁用对应的下拉选择器
+                switch (i) {
+                    case 0:
+                        mSpinnerHRM1.setEnabled(false);
+                        break;
+                    case 1:
+                        mSpinnerHRM2.setEnabled(false);
+                        break;
+                    case 2:
+                        mSpinnerHRM3.setEnabled(false);
+                        break;
+                    case 3:
+                        mSpinnerHRM4.setEnabled(false);
+                        break;
+                }
+
+                // 如果所有设备都已连接，更新连接按钮状态
+                if (mSuccessConnection == mIntentConnection) {
+                    mConnectHRM.setBackgroundResource(R.drawable.input_box_6);
+                    mConnectHRM.setTextColor(Color.DKGRAY);
+                    mConnectHRM.setText("COMPLETE");
+                    mConnectHRM.setTextSize(10);
+                    mScanHRM.setEnabled(false);
+                    mScanHRM.setAlpha(0f);
+                    mSpinnerHRM1.setEnabled(false);
+                    mSpinnerHRM2.setEnabled(false);
+                    mSpinnerHRM3.setEnabled(false);
+                    mSpinnerHRM4.setEnabled(false);
+                    mConnectHRM.setEnabled(false);
+                }
+
+                Log.i("BluetoothDevice", "设备 " + (i + 1) + " 连接成功，当前成功连接数: " + mSuccessConnection);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 更新断开连接设备的UI状态
+     */
+    private void updateDisconnectedDeviceUI(BluetoothDeviceManager.DeviceInfo device) {
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            if (mSelectedBeltList.get(i) != null &&
+                    mSelectedBeltList.get(i).getAddress().equals(device.deviceAddress)) {
+
+                // 更新状态指示器为灰色
+                mListStatusHRM.get(i).setBackgroundResource(R.color.colorGrayLight);
+
+                Log.i("BluetoothDevice", "设备 " + (i + 1) + " 已断开连接");
+                break;
+            }
+        }
+    }
+
+    /**
+     * 更新连接失败的UI状态
+     */
+    private void updateConnectionFailedUI(BluetoothDeviceManager.DeviceInfo device) {
+        for (int i = 0; i < mSelectedBeltList.size(); i++) {
+            if (mSelectedBeltList.get(i) != null &&
+                    mSelectedBeltList.get(i).getAddress().equals(device.deviceAddress)) {
+
+                // 更新状态指示器为橙色（表示连接失败）
+                mListStatusHRM.get(i).setBackgroundResource(R.drawable.gradient_orange);
+
+                Log.i("BluetoothDevice", "设备 " + (i + 1) + " 连接失败");
+                break;
             }
         }
     }
@@ -1647,6 +2503,11 @@ public class RowMonitor extends AppCompatActivity {
         }
 
         public void onLocationChanged(Location location) {
+            // 通过ViewModel处理位置数据
+            if (viewModel != null) {
+                viewModel.processLocationData(location);
+            }
+            // 保留现有的位置处理逻辑
             updateToNewLocation(location);
         }
     };
@@ -1988,6 +2849,10 @@ public class RowMonitor extends AppCompatActivity {
     }
 
     private void polarDataRefresh(String id, int hr) {
+        // 通过ViewModel处理心率数据
+        if (viewModel != null) {
+            viewModel.processHeartRateData(id, hr);
+        }
 
         for (int i = 0; i < mListBeltsName.size(); i++) {
             if (id.equals(mListBeltsName.get(i))) {
@@ -2195,7 +3060,8 @@ public class RowMonitor extends AppCompatActivity {
                 break;
 
             case 1:
-
+                // 简化图表初始化，移除CSV数据依赖
+                // 后续可通过TrainingSessionManager获取历史数据进行图表展示
                 lineChart.getDescription().setEnabled(false);
                 lineChart.setTouchEnabled(false);
                 lineChart.setDragEnabled(false);
@@ -2237,33 +3103,14 @@ public class RowMonitor extends AppCompatActivity {
                 yl_1.setGridColor(Color.DKGRAY);
                 yl_1.setDrawLabels(true);
 
-                List<Entry> list_SPM_time = new ArrayList<>();
-
-                for (int i = 0; i < resultLog.size(); i++) {
-
-                    list_SPM_time.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[2])));
-
-                }
-
-                LineDataSet lineDataSet_SPM_time = new LineDataSet(list_SPM_time, "SPM");
-                lineDataSet_SPM_time.setFillColor(colors[1]);
-                lineDataSet_SPM_time.setDrawFilled(true);
-                lineDataSet_SPM_time.setFillAlpha(90);
-                lineDataSet_SPM_time.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_SPM_time.setLineWidth(2f);
-                lineDataSet_SPM_time.setValueTextColor(Color.WHITE);
-                lineDataSet_SPM_time.setDrawCircles(false);
-                lineDataSet_SPM_time.setColor(colors[1]);
-                lineDataSet_SPM_time.setDrawValues(false);
-                LineData lineData_SPM_time = new LineData(lineDataSet_SPM_time);
-
-                lineChart.setData(lineData_SPM_time);
+                // 暂时使用空数据，后续从TrainingSessionManager获取历史数据
+                LineData data_empty_spm = new LineData();
+                lineChart.setData(data_empty_spm);
 
                 break;
 
             case 2:
-
+                // 简化图表初始化，移除CSV数据依赖
                 lineChart.getDescription().setEnabled(false);
                 lineChart.setTouchEnabled(false);
                 lineChart.setDragEnabled(false);
@@ -2305,32 +3152,14 @@ public class RowMonitor extends AppCompatActivity {
                 yl_2.setDrawGridLines(true);
                 yl_2.setDrawLabels(true);
 
-                List<Entry> list_speed_time = new ArrayList<>();
-
-                for (int i = 0; i < resultLog.size(); i++) {
-
-                    list_speed_time.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[3])));
-
-                }
-
-                LineDataSet lineDataSet_speed_time = new LineDataSet(list_speed_time, "SPEED");
-                lineDataSet_speed_time.setFillColor(colors[0]);
-                lineDataSet_speed_time.setDrawFilled(true);
-                lineDataSet_speed_time.setFillAlpha(95);
-                lineDataSet_speed_time.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_speed_time.setLineWidth(2f);
-                lineDataSet_speed_time.setValueTextColor(Color.WHITE);
-                lineDataSet_speed_time.setDrawCircles(false);
-                lineDataSet_speed_time.setColor(colors[0]);
-                lineDataSet_speed_time.setDrawValues(false);
-                LineData lineData_speed_time = new LineData(lineDataSet_speed_time);
-                lineChart.setData(lineData_speed_time);
+                // 暂时使用空数据，后续从TrainingSessionManager获取历史数据
+                LineData data_empty_speed = new LineData();
+                lineChart.setData(data_empty_speed);
 
                 break;
 
             case 3:
-
+                // 简化图表初始化，移除CSV数据依赖
                 lineChart.getDescription().setEnabled(false);
                 lineChart.setTouchEnabled(false);
                 lineChart.setDragEnabled(false);
@@ -2372,71 +3201,9 @@ public class RowMonitor extends AppCompatActivity {
                 yl_3.setDrawGridLines(true);
                 yl_3.setDrawLabels(true);
 
-                List<Entry> list_HR_time_1 = new ArrayList<>();
-                List<Entry> list_HR_time_2 = new ArrayList<>();
-                List<Entry> list_HR_time_3 = new ArrayList<>();
-                List<Entry> list_HR_time_4 = new ArrayList<>();
-
-                for (int i = 0; i < resultLog.size(); i++) {
-
-                    list_HR_time_1.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[6])));
-                    list_HR_time_2.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[7])));
-                    list_HR_time_3.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[8])));
-                    list_HR_time_4.add(
-                            new Entry(Float.parseFloat(resultLog.get(i)[0]), Float.parseFloat(resultLog.get(i)[9])));
-
-                }
-
-                LineDataSet lineDataSet_HR_time_1 = new LineDataSet(list_HR_time_1, "HR1");
-                lineDataSet_HR_time_1.setFillColor(colors_hr[0]);
-                lineDataSet_HR_time_1.setDrawFilled(true);
-                lineDataSet_HR_time_1.setFillAlpha(95);
-                lineDataSet_HR_time_1.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_HR_time_1.setLineWidth(2f);
-                lineDataSet_HR_time_1.setValueTextColor(Color.WHITE);
-                lineDataSet_HR_time_1.setDrawCircles(false);
-                lineDataSet_HR_time_1.setColor(colors_hr[0]);
-                lineDataSet_HR_time_1.setDrawValues(false);
-
-                LineDataSet lineDataSet_HR_time_2 = new LineDataSet(list_HR_time_2, "HR2");
-                lineDataSet_HR_time_2.setFillColor(colors_hr[1]);
-                lineDataSet_HR_time_2.setDrawFilled(true);
-                lineDataSet_HR_time_2.setFillAlpha(95);
-                lineDataSet_HR_time_2.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_HR_time_2.setLineWidth(2f);
-                lineDataSet_HR_time_2.setValueTextColor(Color.WHITE);
-                lineDataSet_HR_time_2.setDrawCircles(false);
-                lineDataSet_HR_time_2.setColor(colors_hr[1]);
-                lineDataSet_HR_time_2.setDrawValues(false);
-
-                LineDataSet lineDataSet_HR_time_3 = new LineDataSet(list_HR_time_3, "HR3");
-                lineDataSet_HR_time_3.setFillColor(colors_hr[2]);
-                lineDataSet_HR_time_3.setDrawFilled(true);
-                lineDataSet_HR_time_3.setFillAlpha(95);
-                lineDataSet_HR_time_3.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_HR_time_3.setLineWidth(2f);
-                lineDataSet_HR_time_3.setValueTextColor(Color.WHITE);
-                lineDataSet_HR_time_3.setDrawCircles(false);
-                lineDataSet_HR_time_3.setColor(colors_hr[2]);
-                lineDataSet_HR_time_3.setDrawValues(false);
-
-                LineDataSet lineDataSet_HR_time_4 = new LineDataSet(list_HR_time_4, "HR4");
-                lineDataSet_HR_time_4.setFillColor(colors_hr[3]);
-                lineDataSet_HR_time_4.setDrawFilled(true);
-                lineDataSet_HR_time_4.setFillAlpha(95);
-                lineDataSet_HR_time_4.setAxisDependency(YAxis.AxisDependency.LEFT);
-                lineDataSet_HR_time_4.setLineWidth(2f);
-                lineDataSet_HR_time_4.setValueTextColor(Color.WHITE);
-                lineDataSet_HR_time_4.setDrawCircles(false);
-                lineDataSet_HR_time_4.setColor(colors_hr[3]);
-                lineDataSet_HR_time_4.setDrawValues(false);
-
-                LineData lineData_HR_time = new LineData(lineDataSet_HR_time_1, lineDataSet_HR_time_2,
-                        lineDataSet_HR_time_3, lineDataSet_HR_time_4);
-                lineChart.setData(lineData_HR_time);
+                // 暂时使用空数据，后续从TrainingSessionManager获取历史数据
+                LineData data_empty_hr = new LineData();
+                lineChart.setData(data_empty_hr);
 
                 break;
 
@@ -2845,13 +3612,10 @@ public class RowMonitor extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             // connectDeviceHR(0);
 
-                            if (updateToDataVTimer != null) {
-                                updateToDataVTimer.cancel();
-                            }
-
                             if (updateToDataV != null) {
                                 updateToDataV.cancel();
                             }
+                            TimerManager.getInstance().cancelTask("updateToDataV");
 
                             try {
 
@@ -2882,85 +3646,8 @@ public class RowMonitor extends AppCompatActivity {
         return false;
     }
 
-    private void loggerInit() throws IOException {
-
-        String fileLoc = this.getFilesDir() + "/log_RM/";
-        createPath(fileLoc);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        double logBegTime = System.currentTimeMillis();
-        String refTime = simpleDateFormat.format(logBegTime);
-        fileLocPhone = fileLoc + refTime + "_RM.csv";
-
-        loggerPhone_0 = new FileWriter(fileLocPhone);
-        loggerPhone = new CSVWriter(loggerPhone_0,
-                CSVWriter.DEFAULT_SEPARATOR,
-                CSVWriter.NO_QUOTE_CHARACTER,
-                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
-                CSVWriter.RFC4180_LINE_END);
-
-        loggerPhone.writeNext(new String[] {
-                "SectionTime", "Distance", "StrokeRate", "BoatSpeed",
-                "BoatYaw", "BoatRoll",
-                "HR1", "HR2", "HR3", "HR4"
-        });
-    }
-
-    public void phoneLoggerStandalone() {
-
-        // "SectionTime", "Distance", "StrokeRate", "BoatSpeed",
-        // "BoatYaw", "BoatRoll",
-        // "HR1", "HR2", "HR3", "HR4"
-
-        // private float[] UI_params_float = new float[]{0f, 0f};
-        // [0]boat_yaw, [1]boat_roll
-        // private String[] UI_params_string = new String[]{"0", "0:00", "0.0", "0",
-        // "0"};
-        // [0]SPM, [1]Split, [2]speed, [3]hours, [4]distance
-
-        loggerPhoneTimer = new Timer();
-        loggerPhoneTask = new TimerTask() {
-            @Override
-            public void run() {
-
-                if (loggerPhone != null) {
-
-                    try {
-                        loggerPhone.writeNext(new String[] {
-                                String.valueOf(sectionTotalSec),
-                                (String) mDistance.getText(),
-                                (String) mStrokeRate.getText(),
-                                (String) mSpeed.getText(),
-                                String.valueOf(UI_params_float[0]),
-                                String.valueOf(UI_params_float[1]),
-                                String.valueOf(UI_params_double[0]),
-                                String.valueOf(UI_params_double[1]),
-                                String.valueOf(UI_params_double[2]),
-                                String.valueOf(UI_params_double[3])
-                        });
-
-                    } catch (Exception e) {
-                        loggerPhone.writeNext(new String[] {
-                                String.valueOf(sectionTotalSec),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0),
-                                String.valueOf(0)
-                        });
-                    }
-
-                }
-            }
-
-        };
-
-        loggerPhoneTimer.schedule(loggerPhoneTask, 0, 3000);
-
-    }
+    // CSV数据记录已被TrainingSessionManager中的DataRecorder替代
+    // 所有传感器数据将自动记录，无需手动管理CSV文件
 
     public static void createPath(String path) {
         File file = new File(path);
@@ -2969,88 +3656,20 @@ public class RowMonitor extends AppCompatActivity {
         }
     }
 
+    // 数据保存通知已被TrainingSessionManager替代
+    // TrainingSessionManager会自动处理数据记录和保存
     private void fileSaveNotification() {
+        // 直接显示训练结果，无需手动处理CSV文件
+        showPopup(mWindowResult);
+        backgroundAlpha(0.2f);
 
-        new androidx.appcompat.app.AlertDialog.Builder(RowMonitor.this).setTitle("你希望保存这次训练的数据吗?")
-                .setMessage("未被保存的数据将被删除。")
-                .setPositiveButton("保存", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        showPopup(mWindowResult);
-
-                        try {
-                            resultLog = dataExtraction();
-                            chartTimeSPM.clear();
-                            chartTimeSpeed.clear();
-                            chartTimeHR.clear();
-                            chartInit(chartTimeSPM, 1);
-                            chartInit(chartTimeSpeed, 2);
-                            chartInit(chartTimeHR, 3);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (CsvException e) {
-                            e.printStackTrace();
-                        }
-                        backgroundAlpha(0.2f);
-
-                        return;
-                    }
-                }).setNegativeButton("不保存", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        // showPopup(mWindowResult);
-                        // backgroundAlpha(0.2f);
-
-                        // try {
-                        // resultLog = dataExtraction();
-                        // SimpleDateFormat formatterSplitTime = new SimpleDateFormat("yyyy-MM-dd
-                        // HH:mm:ss");
-                        // mResultSaveTime.setText(formatterSplitTime.format(System.currentTimeMillis()));
-                        // chartTimeSPM.clear();
-                        // chartTimeSpeed.clear();
-                        // chartTimeHR.clear();
-                        // chartInit(chartTimeSPM,1);
-                        // chartInit(chartTimeSpeed,2);
-                        // chartInit(chartTimeHR,3);
-                        //
-                        // } catch (IOException e) {
-                        // e.printStackTrace();
-                        // } catch (CsvException e) {
-                        // e.printStackTrace();
-                        // }
-
-                        deleteLog(fileLocPhone);
-                    }
-                }).show();
-    }
-
-    private void deleteLog(String fileLocation) {
-
-        File file = new File(fileLocation);
-        if (file.isFile() && file.exists()) {
-            file.delete();
-        }
-    }
-
-    private List<String[]> dataExtraction() throws IOException, CsvException {
-
-        List<String[]> logRM;
-        CSVReader reader;
-        reader = new CSVReader(new FileReader(fileLocPhone));
-        // reader = new CSVReader(new FileReader(this.getFilesDir() + "/log_RM/" +
-        // "2021-07-12 11_59_59" + "_RM.csv"));
-
-        // demo pic
-
-        logRM = reader.readAll();
-        logRM.remove(0);
-        // System.out.println("logRM: ______________" + logRM.get(2)[0]);
-
-        return logRM;
-
+        // 初始化结果图表
+        chartTimeSPM.clear();
+        chartTimeSpeed.clear();
+        chartTimeHR.clear();
+        chartInit(chartTimeSPM, 1);
+        chartInit(chartTimeSpeed, 2);
+        chartInit(chartTimeHR, 3);
     }
 
     private static void saveImageToGallery(Bitmap bmp, Activity context) {
@@ -3227,8 +3846,7 @@ public class RowMonitor extends AppCompatActivity {
             }
         };
 
-        updateToDataVTimer = new Timer();
-        updateToDataVTimer.schedule(updateToDataV, 5000, 2000);
+        TimerManager.getInstance().scheduleAtFixedRate("updateToDataV", updateToDataV, 5000, 2000);
 
     }
 

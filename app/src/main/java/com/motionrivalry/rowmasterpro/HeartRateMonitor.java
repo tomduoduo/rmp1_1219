@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
+import com.motionrivalry.rowmasterpro.utils.TimerManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -309,7 +310,6 @@ public class HeartRateMonitor extends AppCompatActivity {
     private ArrayList<String> athleteFileList = null;
     private ArrayList<List<String[]>> athletePolarIDListList = new ArrayList<>();
 
-
     private View popupViewPresetList;
     private PopupWindow mWindowPresetList = null;
 
@@ -342,7 +342,8 @@ public class HeartRateMonitor extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
@@ -369,7 +370,6 @@ public class HeartRateMonitor extends AppCompatActivity {
         Intent intent = getIntent();
         teamSelected = intent.getStringExtra("teamSelected");
 
-
         System.out.println(teamSelected);
 
         if (tabMode == 1) {
@@ -381,7 +381,8 @@ public class HeartRateMonitor extends AppCompatActivity {
 
         }
 
-        mWindowPresetList = new PopupWindow(popupViewPresetList, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, true);
+        mWindowPresetList = new PopupWindow(popupViewPresetList, WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT, true);
 
         mPlayerListHRM = popupViewPresetList.findViewById(R.id.hrm_player_list_lv);
         mPlanListHRM = popupViewPresetList.findViewById(R.id.hrm_plan_lv);
@@ -391,7 +392,7 @@ public class HeartRateMonitor extends AppCompatActivity {
         mPopupConfirm = popupViewPresetList.findViewById(R.id.confirm_plan_HRM);
         mPopupReset = popupViewPresetList.findViewById(R.id.clear_plan_HRM);
 
-        planFileLoc = this.getFilesDir() + "/hrm_plan_list/" + teamSelected + "/" ;
+        planFileLoc = this.getFilesDir() + "/hrm_plan_list/" + teamSelected + "/";
         System.out.println(planFileLoc);
         planFileNameList = getFileNameList(planFileLoc, "csv");
         planFileList = getFileList(planFileLoc, "csv");
@@ -640,13 +641,11 @@ public class HeartRateMonitor extends AppCompatActivity {
             adapter_belt = new ArrayAdapter(this, R.layout.my_spinner_box_tab, mBeltList);
             adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2_tab);
 
-
         } else {
 
             adapter_belt = new ArrayAdapter(this, R.layout.my_spinner_box, mBeltList);
             adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2);
         }
-
 
         for (int i = 0; i < mSpinnerBeltList.size(); i++) {
             mBeltList_selected.add("-");
@@ -655,7 +654,6 @@ public class HeartRateMonitor extends AppCompatActivity {
         for (int i = 0; i < mSpinnerNameList.size(); i++) {
             mNameList_selected.add("-");
         }
-
 
         for (int i = 0; i < mSpinnerBeltList.size(); i++) {
             mSpinnerBeltList.get(i).setAdapter(adapter_belt);
@@ -672,7 +670,6 @@ public class HeartRateMonitor extends AppCompatActivity {
             adapter_name = new MyAdapter2(this, R.layout.my_spinner_box_tab, mNameList_available);
             adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2_tab);
 
-
         } else {
 
             adapter_name = new MyAdapter2(this, R.layout.my_spinner_box, mNameList_available);
@@ -683,19 +680,17 @@ public class HeartRateMonitor extends AppCompatActivity {
             mSpinnerNameList.get(i).setAdapter(adapter_name);
         }
 
-
         for (int i = 0; i < iterMax; i++) {
             selectedAthleteList.add("");
         }
 
         ArrayList<String> targetNameList = getFileNameList(athleteFileLoc, "csv");
 
-
         for (int i = 0; i < athleteFileList.size(); i++) {
             Log.e("athleteFileList", targetNameList.get(i));
             Log.e("teamSelected_______", teamSelected);
 
-            if (targetNameList.get(i).equals(teamSelected)){
+            if (targetNameList.get(i).equals(teamSelected)) {
                 try {
                     System.out.println("reading target file at:" + athleteFileLoc + athleteFileList.get(i));
                     CSVReader reader = new CSVReader(new FileReader(athleteFileLoc + athleteFileList.get(i)));
@@ -712,19 +707,19 @@ public class HeartRateMonitor extends AppCompatActivity {
 
         }
 
-
         List<PlayerHRM> initialListPlayerPolarID;
 
-        if (teamSelected.equals("专用")){
+        if (teamSelected.equals("专用")) {
 
             initialListPlayerPolarID = createList(athletePolarIDListList.get(0), 2, 2);
 
-        }else {
+        } else {
             initialListPlayerPolarID = createList(athletePolarIDListList.get(0), 2, 1);
 
         }
 
-        PlayerPolarAdapter adapter = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry, initialListPlayerPolarID);
+        PlayerPolarAdapter adapter = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,
+                initialListPlayerPolarID);
         mPlayerListHRM.setAdapter(adapter);
 
         mPlayerListHRM.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -792,7 +787,7 @@ public class HeartRateMonitor extends AppCompatActivity {
                     }
                 }
 
-                planList.add(i, new String[]{planFileNameList.get(i), "人数:" + String.valueOf(size)});
+                planList.add(i, new String[] { planFileNameList.get(i), "人数:" + String.valueOf(size) });
                 Log.e("plan has been added:", String.valueOf(size));
 
             } catch (IOException | CsvException e) {
@@ -801,7 +796,8 @@ public class HeartRateMonitor extends AppCompatActivity {
         }
 
         List<PlayerHRM> initialListPlan = createList(planList, 2, 1);
-        PlayerPolarAdapter adapterPlan = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry, initialListPlan);
+        PlayerPolarAdapter adapterPlan = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,
+                initialListPlan);
         mPlanListHRM.setAdapter(adapterPlan);
 
         mPlanListHRM.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -822,7 +818,8 @@ public class HeartRateMonitor extends AppCompatActivity {
                     item.setSelected(true);
                 }
 
-                PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry, initialListPlan_inner);
+                PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this,
+                        R.layout.player_hrm_entry, initialListPlan_inner);
                 mPlanListHRM.setAdapter(adapterPlan_inner);
                 adapterPlan.notifyDataSetInvalidated();
 
@@ -851,9 +848,12 @@ public class HeartRateMonitor extends AppCompatActivity {
                     if (!planData.get(i)[0].equals("")) {
 
                         for (int k = 0; k < initialListPlayerPolarID.size(); k++) {
-//                            System.out.println("testing:" + planData.get(i)[0] + "vs" + initialListPlayerPolarID.get(k).getName()+ "///" + planData.get(i)[0].equals(initialListPlayerPolarID.get(k).getName()));
+                            // System.out.println("testing:" + planData.get(i)[0] + "vs" +
+                            // initialListPlayerPolarID.get(k).getName()+ "///" +
+                            // planData.get(i)[0].equals(initialListPlayerPolarID.get(k).getName()));
 
-                            if (StringUtils.equals(planData.get(i)[0].replaceAll("\\p{C}", ""), initialListPlayerPolarID.get(k).getName())) {
+                            if (StringUtils.equals(planData.get(i)[0].replaceAll("\\p{C}", ""),
+                                    initialListPlayerPolarID.get(k).getName())) {
                                 initialListPlayerPolarID.get(k).setSelected(true);
 
                             }
@@ -891,7 +891,8 @@ public class HeartRateMonitor extends AppCompatActivity {
                 adapter.notifyDataSetInvalidated();
 
                 List<PlayerHRM> initialListPlan_inner = createList(planList, 2, 1);
-                PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry, initialListPlan_inner);
+                PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this,
+                        R.layout.player_hrm_entry, initialListPlan_inner);
                 mPlanListHRM.setAdapter(adapterPlan_inner);
 
                 for (int i = 0; i < initialListPlan_inner.size(); i++) {
@@ -906,26 +907,24 @@ public class HeartRateMonitor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                if (teamSelected.equals("专用")) {
 
-                if (teamSelected.equals("专用")){
+                    // mBeltList = getResources().getStringArray(R.array.polarID_GD_Male);
 
-//                    mBeltList = getResources().getStringArray(R.array.polarID_GD_Male);
-
-                    mBeltList = new String[athletePolarIDListList.get(0).size()+1];
+                    mBeltList = new String[athletePolarIDListList.get(0).size() + 1];
                     mBeltList[0] = "-";
 
+                    for (int i = 0; i < athletePolarIDListList.get(0).size() - 1; i++) {
+                        System.out.println(athletePolarIDListList.get(0).get(i + 1)[2]);
 
-                    for (int i = 0; i < athletePolarIDListList.get(0).size()-1; i ++){
-                        System.out.println(athletePolarIDListList.get(0).get(i+1)[2]);
-
-                        mBeltList[i+1] = athletePolarIDListList.get(0).get(i+1)[2];
+                        mBeltList[i + 1] = athletePolarIDListList.get(0).get(i + 1)[2];
 
                     }
                 }
 
                 mBeltList_available.clear();
 
-                for (int i = 0; i < mBeltList.length-1; i++) {
+                for (int i = 0; i < mBeltList.length - 1; i++) {
 
                     mBeltList_available.add(mBeltList[i]);
 
@@ -934,9 +933,9 @@ public class HeartRateMonitor extends AppCompatActivity {
                 MyAdapter adapter_belt;
 
                 if (tabMode == 1) {
-                    adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box_tab, mBeltList_available);
+                    adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box_tab,
+                            mBeltList_available);
                     adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2_tab);
-
 
                 } else {
 
@@ -946,17 +945,16 @@ public class HeartRateMonitor extends AppCompatActivity {
 
                 if (teamSelected.equals("专用")) {
 
-//                    mNameList = getResources().getStringArray(R.array.AthleteName_GD_Male);
+                    // mNameList = getResources().getStringArray(R.array.AthleteName_GD_Male);
 
-                    mNameList = new String[athletePolarIDListList.get(0).size()+1];
+                    mNameList = new String[athletePolarIDListList.get(0).size() + 1];
                     mNameList[0] = "-";
 
-                    for (int i = 0; i < athletePolarIDListList.get(0).size()-1; i ++){
+                    for (int i = 0; i < athletePolarIDListList.get(0).size() - 1; i++) {
 
-                        mNameList[i+1] = athletePolarIDListList.get(0).get(i+1)[1];
+                        mNameList[i + 1] = athletePolarIDListList.get(0).get(i + 1)[1];
                     }
                 }
-
 
                 mNameList_available.clear();
 
@@ -966,9 +964,9 @@ public class HeartRateMonitor extends AppCompatActivity {
 
                 MyAdapter2 adapter_name;
                 if (tabMode == 1) {
-                    adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box_tab, mNameList_available);
+                    adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box_tab,
+                            mNameList_available);
                     adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2_tab);
-
 
                 } else {
 
@@ -976,14 +974,12 @@ public class HeartRateMonitor extends AppCompatActivity {
                     adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2);
                 }
 
-
                 mNameList_passed = new ArrayList<>();
                 for (int i = 0; i < mPopupNameList.size(); i++) {
                     mNameList_passed.add((String) mPopupNameList.get(i).getText());
                     System.out.println((String) mPopupNameList.get(i).getText());
 
                 }
-
 
                 System.out.println("still alive");
 
@@ -994,7 +990,9 @@ public class HeartRateMonitor extends AppCompatActivity {
 
                     for (int j = 0; j < mNameList_available.size(); j++) {
 
-//                        System.out.println("testing:" + mNameList_passed.get(i) + "vs" + mNameList_available.get(j) + "///" + mNameList_passed.get(i).equals(mNameList_available.get(j)));
+                        // System.out.println("testing:" + mNameList_passed.get(i) + "vs" +
+                        // mNameList_available.get(j) + "///" +
+                        // mNameList_passed.get(i).equals(mNameList_available.get(j)));
 
                         if (mNameList_passed.get(i).replaceAll("\\p{C}", "").equals(mNameList_available.get(j))) {
 
@@ -1018,12 +1016,11 @@ public class HeartRateMonitor extends AppCompatActivity {
             }
         });
 
-
-//        ArrayAdapter<String> adapter_name;
-//        adapter_name = new ArrayAdapter(this, R.layout.my_spinner_box,mNameList);
-//        adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2);
-//        mSpinnerName_1.setAdapter(adapter_name);
-//        mSpinnerBelt_1.setAdapter(adapter_belt);
+        // ArrayAdapter<String> adapter_name;
+        // adapter_name = new ArrayAdapter(this, R.layout.my_spinner_box,mNameList);
+        // adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2);
+        // mSpinnerName_1.setAdapter(adapter_name);
+        // mSpinnerBelt_1.setAdapter(adapter_belt);
 
         mLoadPreset.setOnClickListener(new View.OnClickListener() {
 
@@ -1066,16 +1063,13 @@ public class HeartRateMonitor extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 new androidx.appcompat.app.AlertDialog.Builder(HeartRateMonitor.this).setTitle("系统提示")
                         .setMessage("确认要删除当前名单组合吗？")
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-
                                 deleteListPlan(adapterPlan, lastCheckedPlanNumber);
-
 
                             }
                         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -1088,7 +1082,6 @@ public class HeartRateMonitor extends AppCompatActivity {
 
             }
         });
-
 
         mResetSpinner.setOnClickListener(new View.OnClickListener() {
 
@@ -1155,7 +1148,6 @@ public class HeartRateMonitor extends AppCompatActivity {
                     mResetSpinner.setEnabled(true);
                     mScan.setEnabled(true);
 
-
                 }
 
                 return true;
@@ -1171,8 +1163,8 @@ public class HeartRateMonitor extends AppCompatActivity {
 
                     if (!mIsScanning) {
                         mIsScanning = true;
-//                        mBeltList_available.clear();
-//                        mBeltList_available.add("-");
+                        // mBeltList_available.clear();
+                        // mBeltList_available.add("-");
                         initPolar();
                     } else {
                         mIsScanning = false;
@@ -1202,7 +1194,7 @@ public class HeartRateMonitor extends AppCompatActivity {
             int finalI = i;
             mSpinnerBeltList.get(i).setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                           int arg2, long arg3) {
+                        int arg2, long arg3) {
                     // TODO Auto-generated method stub
                     if (mBeltList_available.size() >= 1 && arg2 > 0) {
                         String name = String.valueOf(mSpinnerBeltList.get(finalI).getSelectedItem());
@@ -1228,7 +1220,7 @@ public class HeartRateMonitor extends AppCompatActivity {
             int finalI = i;
             mSpinnerNameList.get(i).setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                           int arg2, long arg3) {
+                        int arg2, long arg3) {
                     // TODO Auto-generated method stub
                     if (mSpinnerNameList.size() >= 1 && arg2 > 0) {
                         String name = String.valueOf(mSpinnerNameList.get(finalI).getSelectedItem());
@@ -1253,24 +1245,21 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     private void updateUI(int activationStatus) {
 
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        updateUI_sub_HR();
-                    }
-                });
-            }
-        };
         if (activationStatus == 1) {
-            timer.schedule(task, 0, 2000);
+            TimerManager.getInstance().scheduleAtFixedRate("updateUI_HR", new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI_sub_HR();
+                        }
+                    });
+                }
+            }, 0, 2000);
 
         } else {
-            task.cancel();
+            TimerManager.getInstance().cancelTask("updateUI_HR");
         }
 
     }
@@ -1314,7 +1303,6 @@ public class HeartRateMonitor extends AppCompatActivity {
 
                     mHeartRateNowList.get(i).setBackgroundResource(R.color.colorRedDark);
 
-
                 }
 
             }
@@ -1327,18 +1315,14 @@ public class HeartRateMonitor extends AppCompatActivity {
 
         mBeltList_available.add("-");
 
-
         if (scanDisposable == null) {
 
             scanDisposable = api.searchForDevice()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            polarDeviceInfo
-                                    -> addHRtoList(polarDeviceInfo.getDeviceId()),
-                            throwable
-                                    -> Log.d(TAG, "" + throwable.getLocalizedMessage()),
-                            ()
-                                    -> Log.d(TAG, "complete"));
+                            polarDeviceInfo -> addHRtoList(polarDeviceInfo.getDeviceId()),
+                            throwable -> Log.d(TAG, "" + throwable.getLocalizedMessage()),
+                            () -> Log.d(TAG, "complete"));
 
         } else {
             scanDisposable.dispose();
@@ -1352,17 +1336,16 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     private void addHRtoList(String id) {
 
-
         if (!mBeltList_available.contains(id) && id != "") {
 
             System.out.println(id);
 
-
             mBeltList_available.add(id);
-//            ArrayAdapter<String> adapter_belt;
-//
-//            adapter_belt = new ArrayAdapter(getApplicationContext(), R.layout.my_spinner_box, mBeltList_available);
-//            adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2);
+            // ArrayAdapter<String> adapter_belt;
+            //
+            // adapter_belt = new ArrayAdapter(getApplicationContext(),
+            // R.layout.my_spinner_box, mBeltList_available);
+            // adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2);
 
             MyAdapter adapter_belt;
 
@@ -1379,7 +1362,6 @@ public class HeartRateMonitor extends AppCompatActivity {
             }
 
             System.out.println("totalSize:" + mSpinnerBeltList.size());
-
 
             for (int i = 0; i < mSpinnerBeltList.size(); i++) {
 
@@ -1399,11 +1381,10 @@ public class HeartRateMonitor extends AppCompatActivity {
 
             if (broadcastDisposable == null) {
                 broadcastDisposable = api.startListenForPolarHrBroadcasts(null)
-                        .subscribe(polarBroadcastData ->
-                                        polarDataRefresh(polarBroadcastData.getPolarDeviceInfo().getDeviceId(), polarBroadcastData.getHr()),
+                        .subscribe(polarBroadcastData -> polarDataRefresh(
+                                polarBroadcastData.getPolarDeviceInfo().getDeviceId(), polarBroadcastData.getHr()),
                                 error -> Log.e(TAG, "Broadcast listener failed. Reason " + error),
-                                () -> Log.d(TAG, "complete")
-                        );
+                                () -> Log.d(TAG, "complete"));
             }
 
         } else if (code == 0) {
@@ -1427,7 +1408,8 @@ public class HeartRateMonitor extends AppCompatActivity {
         }
     }
 
-    private void deleteDuplicate(int pos, String selected, ArrayList<Spinner> spinnerList, ArrayList<String> targetList, int mode) {
+    private void deleteDuplicate(int pos, String selected, ArrayList<Spinner> spinnerList, ArrayList<String> targetList,
+            int mode) {
 
         for (int i = 0; i < iterMax; i++) {
 
@@ -1459,13 +1441,15 @@ public class HeartRateMonitor extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface arg0, int arg1) {
                             Intent mIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                            if (ActivityCompat.checkSelfPermission(HeartRateMonitor.this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                            if (ActivityCompat.checkSelfPermission(HeartRateMonitor.this,
+                                    android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                                 // TODO: Consider calling
-                                //    ActivityCompat#requestPermissions
+                                // ActivityCompat#requestPermissions
                                 // here to request the missing permissions, and then overriding
-                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                //                                          int[] grantResults)
-                                // to handle the case where the user grants the permission. See the documentation
+                                // public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                // int[] grantResults)
+                                // to handle the case where the user grants the permission. See the
+                                // documentation
                                 // for ActivityCompat#requestPermissions for more details.
                                 return;
                             }
@@ -1478,7 +1462,7 @@ public class HeartRateMonitor extends AppCompatActivity {
             bluetoothStatus = 0;
         }
 
-        if(adapter.isEnabled()) {
+        if (adapter.isEnabled()) {
             bluetoothStatus = 1;
         }
 
@@ -1487,7 +1471,7 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     private void resetList() {
 
-        for (int i=0; i<mHeartRateNowList.size();i++){
+        for (int i = 0; i < mHeartRateNowList.size(); i++) {
 
             mHeartRateNowList.get(i).setText("-");
             mHeartRateNowList.get(i).setBackgroundResource(R.drawable.input_box_6);
@@ -1497,40 +1481,39 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     }
 
-    public class MyAdapter extends ArrayAdapter<ArrayList[]>{
+    public class MyAdapter extends ArrayAdapter<ArrayList[]> {
 
         public MyAdapter(Context context, int textViewResourceId,
-                         ArrayList objects) {
+                ArrayList objects) {
             super(context, textViewResourceId, objects);
             // TODO Auto-generated constructor stub
         }
 
         @Override
-        public View getDropDownView(int position, View cnvtView, ViewGroup prnt){
+        public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
             LayoutInflater inflater = getLayoutInflater();
 
             View spinnerItem;
             TextView myText;
 
-            if (tabMode == 1){
-                spinnerItem = inflater.inflate(R.layout.my_drop_down_red_2_tab, null,false);
-                myText= spinnerItem.findViewById(R.id.tv_drop_down_red_2_tab);
+            if (tabMode == 1) {
+                spinnerItem = inflater.inflate(R.layout.my_drop_down_red_2_tab, null, false);
+                myText = spinnerItem.findViewById(R.id.tv_drop_down_red_2_tab);
                 myText.setHeight(75);
                 myText.setTextSize(15f);
 
-            }else{
-                spinnerItem = inflater.inflate(R.layout.my_drop_down_red_2, null,false);
-                myText= spinnerItem.findViewById(R.id.tv_drop_down_red_2);
+            } else {
+                spinnerItem = inflater.inflate(R.layout.my_drop_down_red_2, null, false);
+                myText = spinnerItem.findViewById(R.id.tv_drop_down_red_2);
                 myText.setHeight(75);
                 myText.setTextSize(12f);
             }
 
             myText.setText(mBeltList_available.get(position));
 
-
-            for (int i = 0; i< mSpinnerBeltList.size();i++) {
+            for (int i = 0; i < mSpinnerBeltList.size(); i++) {
                 int selected = mSpinnerBeltList.get(i).getSelectedItemPosition();
-                if(position == selected && position != 0){
+                if (position == selected && position != 0) {
                     spinnerItem.setBackgroundResource(R.drawable.gradient_orange);
                     myText.setTextColor(Color.DKGRAY);
                 }
@@ -1543,40 +1526,39 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     }
 
-    public class MyAdapter2 extends ArrayAdapter<ArrayList[]>{
+    public class MyAdapter2 extends ArrayAdapter<ArrayList[]> {
 
         public MyAdapter2(Context context, int textViewResourceId,
-                         ArrayList objects) {
+                ArrayList objects) {
             super(context, textViewResourceId, objects);
             // TODO Auto-generated constructor stub
         }
 
         @Override
-        public View getDropDownView(int position, View cnvtView, ViewGroup prnt){
+        public View getDropDownView(int position, View cnvtView, ViewGroup prnt) {
             LayoutInflater inflater = getLayoutInflater();
 
             View spinnerItem;
             TextView myText;
 
-            if (tabMode == 1){
-                spinnerItem = inflater.inflate(R.layout.my_drop_down_gray_2_tab, null,false);
-                myText= spinnerItem.findViewById(R.id.tv_drop_down_gray_2_tab);
+            if (tabMode == 1) {
+                spinnerItem = inflater.inflate(R.layout.my_drop_down_gray_2_tab, null, false);
+                myText = spinnerItem.findViewById(R.id.tv_drop_down_gray_2_tab);
                 myText.setHeight(75);
                 myText.setTextSize(15f);
 
-            }else{
-                spinnerItem = inflater.inflate(R.layout.my_drop_down_gray, null,false);
-                myText= spinnerItem.findViewById(R.id.tv_drop_down_gray);
+            } else {
+                spinnerItem = inflater.inflate(R.layout.my_drop_down_gray, null, false);
+                myText = spinnerItem.findViewById(R.id.tv_drop_down_gray);
                 myText.setHeight(75);
                 myText.setTextSize(12f);
             }
 
             myText.setText(mNameList_available.get(position));
 
-
-            for (int i = 0; i< mSpinnerNameList.size();i++) {
+            for (int i = 0; i < mSpinnerNameList.size(); i++) {
                 int selected = mSpinnerNameList.get(i).getSelectedItemPosition();
-                if(position == selected && position != 0){
+                if (position == selected && position != 0) {
                     spinnerItem.setBackgroundResource(R.drawable.gradient_orange);
                     myText.setTextColor(Color.DKGRAY);
                 }
@@ -1590,7 +1572,7 @@ public class HeartRateMonitor extends AppCompatActivity {
     }
 
     private ArrayList<String> getFileList(String fileAbsolutePath, String type) {
-        ArrayList<String>  result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<String>();
         File file = new File(fileAbsolutePath);
         File[] files = file.listFiles();
         for (int i = 0; i < files.length; ++i) {
@@ -1605,7 +1587,7 @@ public class HeartRateMonitor extends AppCompatActivity {
     }
 
     private ArrayList<String> getFileNameList(String fileAbsolutePath, String type) {
-        ArrayList<String>  result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<String>();
         File file = new File(fileAbsolutePath);
         File[] files = file.listFiles();
         for (int i = 0; i < files.length; ++i) {
@@ -1613,14 +1595,14 @@ public class HeartRateMonitor extends AppCompatActivity {
                 String fileName = files[i].getName();
                 if (fileName.trim().toLowerCase().endsWith(type)) {
                     int dot = fileName.lastIndexOf('.');
-                    result.add(fileName.substring(0,dot));
+                    result.add(fileName.substring(0, dot));
                 }
             }
         }
         return result;
     }
 
-    private void resetSpinner (){
+    private void resetSpinner() {
 
         mBeltList_available.clear();
         mNameList_available.clear();
@@ -1628,11 +1610,11 @@ public class HeartRateMonitor extends AppCompatActivity {
         mBeltList = getResources().getStringArray(R.array.polarID_empty);
         mNameList = getResources().getStringArray(R.array.guest_list);
 
-        for (int i=0; i< mNameList.length; i++ ){
+        for (int i = 0; i < mNameList.length; i++) {
             mNameList_available.add(mNameList[i]);
         }
 
-        for (int i=0; i< mBeltList.length; i++ ){
+        for (int i = 0; i < mBeltList.length; i++) {
             mBeltList_available.add(mBeltList[i]);
 
         }
@@ -1640,27 +1622,25 @@ public class HeartRateMonitor extends AppCompatActivity {
         MyAdapter adapter_belt;
         MyAdapter2 adapter_name;
 
+        if (tabMode == 1) {
 
-        if (tabMode == 1){
-
-            adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box_tab,mBeltList_available);
+            adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box_tab, mBeltList_available);
             adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2_tab);
 
-            adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box_tab,mNameList_available);
+            adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box_tab, mNameList_available);
             adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2_tab);
 
-        }else{
+        } else {
 
-            adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box,mBeltList_available);
+            adapter_belt = new MyAdapter(HeartRateMonitor.this, R.layout.my_spinner_box, mBeltList_available);
             adapter_belt.setDropDownViewResource(R.layout.my_drop_down_red_2);
 
-            adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box,mNameList_available);
+            adapter_name = new MyAdapter2(HeartRateMonitor.this, R.layout.my_spinner_box, mNameList_available);
             adapter_name.setDropDownViewResource(R.layout.my_drop_down_gray_2);
 
         }
 
-
-        for (int i=0; i<mSpinnerNameList.size(); i++) {
+        for (int i = 0; i < mSpinnerNameList.size(); i++) {
 
             mSpinnerBeltList.get(i).setAdapter(adapter_belt);
             mSpinnerNameList.get(i).setAdapter(adapter_name);
@@ -1674,8 +1654,8 @@ public class HeartRateMonitor extends AppCompatActivity {
         DisplayMetrics outMetrics = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(outMetrics);
 
-        View parentView = LayoutInflater.from(HeartRateMonitor.this).inflate(R.layout.activity_row_monitor,null);
-        popupWindow.showAtLocation(parentView, Gravity.CENTER,0,0);
+        View parentView = LayoutInflater.from(HeartRateMonitor.this).inflate(R.layout.activity_row_monitor, null);
+        popupWindow.showAtLocation(parentView, Gravity.CENTER, 0, 0);
         popupWindow.setFocusable(true);
         popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
 
@@ -1689,44 +1669,42 @@ public class HeartRateMonitor extends AppCompatActivity {
         });
     }
 
-
     private void backgroundAlpha(float f) {
-        WindowManager.LayoutParams lp =getWindow().getAttributes();
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = f;
         getWindow().setAttributes(lp);
     }
 
-
-    private List<PlayerHRM> createList (List<String[]> data, int colNum, int mode){
+    private List<PlayerHRM> createList(List<String[]> data, int colNum, int mode) {
 
         List<PlayerHRM> targetList = new ArrayList<>();
 
-        if (mode == 1){
-            for (int i = 0; i <data.size() ; i++) {
+        if (mode == 1) {
+            for (int i = 0; i < data.size(); i++) {
 
-                if (colNum == 2){
-                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0],data.get(i)[1],false);
+                if (colNum == 2) {
+                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0], data.get(i)[1], false);
                     targetList.add(entry);
 
-                } else{
+                } else {
 
-                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0],"",false);
+                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0], "", false);
                     targetList.add(entry);
 
                 }
 
             }
 
-        }else if (mode == 2){
+        } else if (mode == 2) {
 
-            for (int i = 1; i <data.size() ; i++) {
+            for (int i = 1; i < data.size(); i++) {
 
-                if (colNum == 2){
-                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[1],data.get(i)[2],false);
+                if (colNum == 2) {
+                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[1], data.get(i)[2], false);
                     targetList.add(entry);
-                } else{
+                } else {
 
-                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0],"",false);
+                    PlayerHRM entry = new PlayerHRM(R.drawable.input_box_6, data.get(i)[0], "", false);
                     targetList.add(entry);
 
                 }
@@ -1735,13 +1713,10 @@ public class HeartRateMonitor extends AppCompatActivity {
 
         }
 
-
-
-     return targetList;
+        return targetList;
     }
 
-    private List<PlayerHRM> createListPlan (PlayerPolarAdapter adapter) {
-
+    private List<PlayerHRM> createListPlan(PlayerPolarAdapter adapter) {
 
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) + 1;
@@ -1751,8 +1726,9 @@ public class HeartRateMonitor extends AppCompatActivity {
         int second = calendar.get(Calendar.SECOND);
 
         String planFileLoc = this.getFilesDir() + "/hrm_plan_list/" + teamSelected + "/";
-//        String filename = "方案" + (planFileList.size()+1) + "_" + month+ "月" + day + "日" +"_" + version + ".csv";
-        String filename = month + "月" + day +"_" + hour + "_"+ minute+ "_" + second +".csv";
+        // String filename = "方案" + (planFileList.size()+1) + "_" + month+ "月" + day +
+        // "日" +"_" + version + ".csv";
+        String filename = month + "月" + day + "_" + hour + "_" + minute + "_" + second + ".csv";
 
         String writeTarget = planFileLoc + filename;
 
@@ -1761,10 +1737,11 @@ public class HeartRateMonitor extends AppCompatActivity {
             final FileWriter nameListFileWriter = new FileWriter(writeTarget);
             final CSVWriter nameListCSVWriter = new CSVWriter(nameListFileWriter);
 
-            for (int i = 0; i< iterMax;i++){
+            for (int i = 0; i < iterMax; i++) {
 
-                String[] data = new String[]{String.valueOf(mPopupNameList.get(i).getText()), (String) mPopupPolarIDList.get(i).getText()};
-                System.out.println(data[0] +  data[1]);
+                String[] data = new String[] { String.valueOf(mPopupNameList.get(i).getText()),
+                        (String) mPopupPolarIDList.get(i).getText() };
+                System.out.println(data[0] + data[1]);
                 nameListCSVWriter.writeNext(data);
             }
 
@@ -1777,11 +1754,10 @@ public class HeartRateMonitor extends AppCompatActivity {
         planList.clear();
         athletePolarIDPlanList = new ArrayList<>();
 
-        planFileNameList = getFileNameList(planFileLoc,"csv");
-        planFileList = getFileList(planFileLoc,"csv");
+        planFileNameList = getFileNameList(planFileLoc, "csv");
+        planFileList = getFileList(planFileLoc, "csv");
 
-
-        for (int i = 0; i<planFileNameList.size();i++){
+        for (int i = 0; i < planFileNameList.size(); i++) {
             try {
 
                 CSVReader reader = new CSVReader(new FileReader(planFileLoc + planFileList.get(i)));
@@ -1789,16 +1765,16 @@ public class HeartRateMonitor extends AppCompatActivity {
                 athletePolarIDPlanList.add(i, planData);
 
                 int size = 0;
-                for (int k = 0; k < planData.size();k++) {
+                for (int k = 0; k < planData.size(); k++) {
 
-                    if (!planData.get(k)[0].equals("")){
+                    if (!planData.get(k)[0].equals("")) {
                         size++;
                     }
                 }
 
-                planList.add(i, new String[]{planFileNameList.get(i), "人数:" + String.valueOf(size)});
+                planList.add(i, new String[] { planFileNameList.get(i), "人数:" + String.valueOf(size) });
 
-            }catch (IOException | CsvException e) {
+            } catch (IOException | CsvException e) {
                 e.printStackTrace();
             }
         }
@@ -1806,7 +1782,8 @@ public class HeartRateMonitor extends AppCompatActivity {
         lastCheckedPlanNumber = -1;
 
         List<PlayerHRM> initialListPlan_inner = createList(planList, 2, 1);
-        PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,initialListPlan_inner);
+        PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,
+                initialListPlan_inner);
         mPlanListHRM.setAdapter(adapterPlan_inner);
         adapter.notifyDataSetInvalidated();
 
@@ -1814,16 +1791,15 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     }
 
-    private List<PlayerHRM> deleteListPlan (PlayerPolarAdapter adapter, int selectedPos) {
+    private List<PlayerHRM> deleteListPlan(PlayerPolarAdapter adapter, int selectedPos) {
 
         String planFileLoc = this.getFilesDir() + "/hrm_plan_list/" + teamSelected + "/";
         String filename = "";
 
-
-        if (selectedPos >= 0 && selectedPos < planList.size()){
+        if (selectedPos >= 0 && selectedPos < planList.size()) {
             System.out.println("item_selected_number:" + selectedPos);
             System.out.println();
-            filename = planList.get(selectedPos)[0]+".csv";
+            filename = planList.get(selectedPos)[0] + ".csv";
 
         }
 
@@ -1832,10 +1808,10 @@ public class HeartRateMonitor extends AppCompatActivity {
 
         planList.clear();
         athletePolarIDPlanList = new ArrayList<>();
-        planFileNameList = getFileNameList(planFileLoc,"csv");
-        planFileList = getFileList(planFileLoc,"csv");
+        planFileNameList = getFileNameList(planFileLoc, "csv");
+        planFileList = getFileList(planFileLoc, "csv");
 
-        for (int i = 0; i<planFileNameList.size();i++){
+        for (int i = 0; i < planFileNameList.size(); i++) {
             try {
 
                 CSVReader reader = new CSVReader(new FileReader(planFileLoc + planFileList.get(i)));
@@ -1843,22 +1819,23 @@ public class HeartRateMonitor extends AppCompatActivity {
                 athletePolarIDPlanList.add(i, planData);
 
                 int size = 0;
-                for (int k = 0; k < planData.size();k++) {
+                for (int k = 0; k < planData.size(); k++) {
 
-                    if (!planData.get(k)[0].equals("")){
+                    if (!planData.get(k)[0].equals("")) {
                         size++;
                     }
                 }
 
-                planList.add(i, new String[]{planFileNameList.get(i), "人数:" + String.valueOf(size)});
+                planList.add(i, new String[] { planFileNameList.get(i), "人数:" + String.valueOf(size) });
 
-            }catch (IOException | CsvException e) {
+            } catch (IOException | CsvException e) {
                 e.printStackTrace();
             }
         }
 
         List<PlayerHRM> initialListPlan_inner = createList(planList, 2, 1);
-        PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,initialListPlan_inner);
+        PlayerPolarAdapter adapterPlan_inner = new PlayerPolarAdapter(HeartRateMonitor.this, R.layout.player_hrm_entry,
+                initialListPlan_inner);
         mPlanListHRM.setAdapter(adapterPlan_inner);
         adapter.notifyDataSetInvalidated();
 
@@ -1868,14 +1845,13 @@ public class HeartRateMonitor extends AppCompatActivity {
 
     }
 
-    private void deleteLog(String filePath){
+    private void deleteLog(String filePath) {
 
-            File file = new File(filePath);
-            if (file.isFile() && file.exists()) {
-                file.delete();
-            }
+        File file = new File(filePath);
+        if (file.isFile() && file.exists()) {
+            file.delete();
+        }
 
     }
 
 }
-

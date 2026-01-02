@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
+import com.motionrivalry.rowmasterpro.utils.TimerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -512,8 +513,7 @@ public class DataSelector extends AppCompatActivity {
 
                 } else {
                     v.setBackgroundResource(R.drawable.gradient_black);
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
+                    TimerManager.getInstance().schedule("buttonClick", new Runnable() {
                         @Override
                         public void run() {
                             Looper.prepare();
@@ -1470,43 +1470,25 @@ public class DataSelector extends AppCompatActivity {
 
         }
 
-        Timer timer = new Timer();
-        TimerTask task = new TimerTask() {
+        TimerManager.getInstance().scheduleOnMainThread("dismissWindow", new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        windowProcess.dismiss();
-                    }
-                });
+                windowProcess.dismiss();
             }
-        };
-        timer.schedule(task, 3000);
+        }, 3000);
 
-        Timer timer1 = new Timer();
-        TimerTask task1 = new TimerTask() {
+        TimerManager.getInstance().scheduleOnMainThread("uploadFiles", new Runnable() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        for (int i = 0; i < preparationList.size(); i++) {
-
-                            File file = new File(uploadFileLoc + preparationList.get(i));
-                            if (file.isFile() && file.exists()) {
-                                System.out.println("filename: " + preparationList.get(i).replace(".csv", ""));
-                                uploadAction(file, preparationList.get(i).replace(".csv", ""), totalUpload);
-                            }
-
-                        }
+                for (int i = 0; i < preparationList.size(); i++) {
+                    File file = new File(uploadFileLoc + preparationList.get(i));
+                    if (file.isFile() && file.exists()) {
+                        System.out.println("filename: " + preparationList.get(i).replace(".csv", ""));
+                        uploadAction(file, preparationList.get(i).replace(".csv", ""), totalUpload);
                     }
-                });
+                }
             }
-        };
-        timer1.schedule(task1, 4000);
+        }, 4000);
 
     }
 
@@ -1613,19 +1595,12 @@ public class DataSelector extends AppCompatActivity {
             currentUpload++;
             currentUploadNum.setText(String.valueOf(currentUpload));
             if (currentUpload == total) {
-                Timer timer = new Timer();
-                TimerTask task = new TimerTask() {
+                TimerManager.getInstance().scheduleOnMainThread("dismissUploadWindow", new Runnable() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                windowUpload.dismiss();
-                            }
-                        });
+                        windowUpload.dismiss();
                     }
-                };
-                timer.schedule(task, 2000);
+                }, 2000);
             }
             return;
         }
@@ -1665,21 +1640,12 @@ public class DataSelector extends AppCompatActivity {
                 currentUploadNum.setText(String.valueOf(currentUpload));
 
                 if (currentUpload == total) {
-                    Timer timer = new Timer();
-                    TimerTask task = new TimerTask() {
+                    TimerManager.getInstance().scheduleOnMainThread("dismissUploadWindow2", new Runnable() {
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    windowUpload.dismiss();
-
-                                }
-                            });
+                            windowUpload.dismiss();
                         }
-                    };
-                    timer.schedule(task, 3000);
+                    }, 3000);
 
                     if (uploadFailTrigger == 1) {
                         Log.e("Upload_Result", "Fail");
@@ -1717,21 +1683,12 @@ public class DataSelector extends AppCompatActivity {
                 currentUploadNum.setText(String.valueOf(currentUpload));
 
                 if (currentUpload == total) {
-                    Timer timer = new Timer();
-                    TimerTask task = new TimerTask() {
+                    TimerManager.getInstance().scheduleOnMainThread("dismissUploadWindow3", new Runnable() {
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    windowUpload.dismiss();
-
-                                }
-                            });
+                            windowUpload.dismiss();
                         }
-                    };
-                    timer.schedule(task, 3000);
+                    }, 3000);
                 }
             }
         });
